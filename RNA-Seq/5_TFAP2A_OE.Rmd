@@ -1,6 +1,5 @@
 ---
 title: "R Notebook"
-output: html_notebook
 ---
 
 Human TFAP2A OE RNA-Seq Analysis
@@ -41,7 +40,7 @@ GenesUniverse <- as.data.frame(GenesUniverse)
 ```
 
 ```{r}
-featureCounts <- read.delim("~/local_git/NC_Timecourse/RNA-Seq/Imports/TFAP2A-OE2_featureCounts.txt", comment.char="#")
+featureCounts <- read.delim("./Imports/TFAP2A-OE2_featureCounts.txt", comment.char="#")
 
 #Remove the gene information to just get the counts matrix.
 dat <- featureCounts[,7:10]
@@ -138,7 +137,7 @@ ggsave(filename = paste0("./Exports/",restest_title,"_labeled.pdf"), plot = g, w
 
 Let's investigate how the NC GRN looks compared to random 250 genes.
 ```{r}
-GRN_Genes <- read_delim(file = "/home/ash274/local_git/NC_Timecourse/ATAC-Seq/Imports/GRN_Genes.tsv",
+GRN_Genes <- read_delim(file = "../ATAC-Seq/Imports/GRN_Genes.tsv",
                       col_names = F, delim = "    ")
 
 colnames(GRN_Genes) <- c("Symbol", "Chick_ENSEMBL")
@@ -184,7 +183,7 @@ timecourse_meta2 <- data.frame(data = colnames(timecourse_dat),
                                Condition = c("D0","D0","D5","D5"),
                                Replicate = c("1","1","2","2"))
 
-featureCounts <- read.delim("~/local_git/NC_Timecourse/RNA-Seq/Imports/TFAP2A-OE2_featureCounts.txt", comment.char="#")
+featureCounts <- read.delim("./Imports/TFAP2A-OE2_featureCounts.txt", comment.char="#")
 
 #Remove the gene information to just get the counts matrix.
 dat <- featureCounts[,7:10]
