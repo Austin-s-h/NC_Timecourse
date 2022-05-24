@@ -3,3 +3,4 @@ plot.pdf
 *.png
 *.bed
 Exports/**
+*.html

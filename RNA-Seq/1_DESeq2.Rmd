@@ -255,13 +255,11 @@ DESeq2_Analyze <- function(timepoint = "", dds, genes.universe = genes.universe,
 
 NC6_NC16 <- DESeq2_Analyze(timepoint = "16", second_timepoint = "6", versusWE = F, dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = F, testBP = F, plotVolc = TRUE, labelPadj = 1e-8)
 
-NC6_NC16[[2]]
-ggsave()
-DESeq2_Analyze("8", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.00001)
-DESeq2_Analyze("10", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.001)
-DESeq2_Analyze("12", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.0001)
-DESeq2_Analyze("14", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.0005)
-DESeq2_Analyze("16", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.001)
+DESeq2_Analyze("8", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = FALSE, testBP = FALSE, plotVolc = TRUE, labelPadj = 0.00001)
+DESeq2_Analyze("10", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = FALSE, testBP = FALSE, plotVolc = TRUE, labelPadj = 0.001)
+DESeq2_Analyze("12", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = FALSE, testBP = FALSE, plotVolc = TRUE, labelPadj = 0.0001)
+DESeq2_Analyze("14", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = FALSE, testBP = FALSE, plotVolc = TRUE, labelPadj = 0.0005)
+DESeq2_Analyze("16", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = FALSE, testBP = FALSE, plotVolc = TRUE, labelPadj = 0.001)
 ```
 
 ```{r Export Rlog Counts}
