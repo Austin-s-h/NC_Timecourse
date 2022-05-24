@@ -1,0 +1,51 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Accessing the quality of different Oct4 Antibodies in H1 cells.
+
+```{r}
+library(rtracklayer)
+library(ChIPpeakAnno)
+
+# Get all Oct4 peaks
+OCT4_BInvitro <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/H1_Test_Oct4/Peaks/12857_10099_148664_HJGMYBGXK_H1_Oct4_BInvitro_GTGAAACG_R1_toGRCh38_nodups.bam_peaks.narrowPeak")
+OCT4_BMilli <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/H1_Test_Oct4/Peaks/12857_10099_148663_HJGMYBGXK_H1_Oct4_BMilli_GTCCGCAC_R1_toGRCh38_nodups.bam_peaks.narrowPeak")
+OCT4_CSInvitro <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/H1_Test_Oct4/Peaks/12857_10099_148666_HJGMYBGXK_H1_Oct4_CSInvitro_CGTACGTA_R1_toGRCh38_nodups.bam_peaks.narrowPeak")
+OCT4_CSMilli <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/H1_Test_Oct4/Peaks/12857_10099_148665_HJGMYBGXK_H1_Oct4_CSMilli_GTTTCGGA_R1_toGRCh38_nodups.bam_peaks.narrowPeak")
+
+# Remove duplicated peaks (different summits)
+OCT4_BInvitro <- reduce(OCT4_BInvitro)
+OCT4_BMilli <- reduce(OCT4_BMilli)
+OCT4_CSInvitro <- reduce(OCT4_CSInvitro)
+OCT4_CSMilli <- reduce(OCT4_CSMilli)
+
+makeVennDiagram(Peaks=list(OCT4_BInvitro,OCT4_CSInvitro),
+                       NameOfPeaks=c("OCT4_BInvitro","OCT4_CSInvitro"))
+
+makeVennDiagram(Peaks=list(OCT4_BMilli,OCT4_CSMilli),
+                       NameOfPeaks=c("OCT4_BMilli","OCT4_CSMilli"))
+
+
+All_Oct4_Peaks <- reduce(c(OCT4_BInvitro, OCT4_BMilli,
+         OCT4_CSInvitro, OCT4_CSMilli))
+
+
+makeVennDiagram(Peaks=list(OCT4_BInvitro,OCT4_CSInvitro,OCT4_BMilli,OCT4_CSMilli),
+                       NameOfPeaks=c("OCT4_BInvitro","OCT4_CSInvitro","OCT4_BMilli","OCT4_CSMilli"))
+
+# export.bed(object = All_Sox2_Peaks, con = "./Exports/All_Sox2_Peaks.bed")
+```
+Run Homer on each of these.
+```{bash}
+cd /data/Austin/workdir/NC_Timecourse_Data/H1_Test_Oct4/Peaks
+
+findMotifsGenome.pl 12857_10099_148666_HJGMYBGXK_H1_Oct4_CSInvitro_CGTACGTA_R1_toGRCh38_nodups.bam_peaks.narrowPeak /data/Austin/workdir/genome/hg38/dna/hg38.fa H1_Oct4_CSInvitro -p 62
+findMotifsGenome.pl 12857_10099_148665_HJGMYBGXK_H1_Oct4_CSMilli_GTTTCGGA_R1_toGRCh38_nodups.bam_peaks.narrowPeak /data/Austin/workdir/genome/hg38/dna/hg38.fa H1_Oct4_CSMilli -p 62
+findMotifsGenome.pl 12857_10099_148664_HJGMYBGXK_H1_Oct4_BInvitro_GTGAAACG_R1_toGRCh38_nodups.bam_peaks.narrowPeak /data/Austin/workdir/genome/hg38/dna/hg38.fa H1_Oct4_BInvitro -p 62
+findMotifsGenome.pl 12857_10099_148663_HJGMYBGXK_H1_Oct4_BMilli_GTCCGCAC_R1_toGRCh38_nodups.bam_peaks.narrowPeak /data/Austin/workdir/genome/hg38/dna/hg38.fa H1_Oct4_BMilli -p 62
+
+
+```
+

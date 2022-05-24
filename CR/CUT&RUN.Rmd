@@ -1,0 +1,431 @@
+---
+title: "CUTRRUN_fig3"
+output: html_document
+---
+
+```{r}
+setwd("/data/Debbie/final_analysis_files/")
+library(rtracklayer)
+library(GenomicRanges)
+
+Oct4_peaks = import("Oct4_CR_RD_peaks.bed", format = "bed")
+Sox2_peaks2 = import("Sox2_Rep1_peaks.bed", format = "bed")
+combined_Sox2_Oct4_peaks2 = c(Sox2_peaks2, Oct4_peaks)
+export(combined_Sox2_Oct4_peaks2, "combined_Sox2_Oct4_peaks2.bed", format ="bed")
+
+```
+```{bash}
+bedtools merge -i combined_Sox2_Oct4_peaks2_sorted.bed | wc -l 31269
+bedtools merge -i combined_Sox2_Oct4_peaks2_sorted.bed > consensus_sox2_oct4_peaks2.bed 
+#clustered heatmap with consensus peakset
+computeMatrix reference-point -S Sox2_Rep1.bam.bw Oct4_CR_RD.bam.bw -R consensus_sox2_oct4_peaks2.bed -b 1000 -a 1000 -bs 5 -o CR_Oct4_Sox2_combined.mat.gz --missingDataAsZero --referencePoint center
+plotHeatmap -m CR_Oct4_Sox2_combined.mat.gz -out CR_Oct4_Sox2_combined_2.png --colorMap Blues --dpi 600 --kmeans 6
+
+#Finding shared and unique Sox2/Oct4 peaks
+bedtools intersect -wa -a Sox2_Rep1_peaks.bed -b Oct4_CR_RD_peaks.bed | uniq > Sox2_Oct4_CR_peaks.bed | 6157
+bedtools intersect -wa -a Sox2_Rep1_peaks.bed -b Oct4_CR_RD_peaks.bed -v | uniq > Sox2_only_CR_peaks.bed| 18318
+bedtools intersect -wa -a Oct4_CR_RD_peaks.bed -b Sox2_Rep1_peaks.bed -v | uniq > Oct4_only_CR_peaks.bed | 7398
+
+#Plotheapmap profile at shared and uniq Sox2/Oct4 peaks
+computeMatrix reference-point -S Sox2_Rep1.bw Oct4_RD.bw -R Sox2_Oct4_CR_peaks.bed Sox2_only_CR_peaks.bed Oct4_only_CR_peaks.bed -b 1000 -a 1000 -bs 5 -o Oct4_Sox2_distinct_peaks.mat.gz --missingDataAsZero --referencePoint center
+plotProfile -m Oct4_Sox2_distinct_peaks.mat.gz -out Oct4_Sox2_distinct_peaks.png --plotType heatmap 
+
+#Plotprolifile at early, mid and late ATAC peaks
+computeMatrix reference-point -S Sox2_Rep1.bw  Oct4_RD.bw -R early_enriched_all.bed mid_peaks_uniq.bed late_enriched_all.bed  -b 2000 -a 2000 --skipZeros -o Sox2_Oct4_enriched_rep2.mat.gz --referencePoint center
+plotProfile -m Sox2_Oct4_enriched_rep2.mat.gz -out Sox2_Oct4_enriched_rep.png
+```
+
+
+```{r}
+# Measing ATAC peak score at Sox2_Oct4 shared and uniq peaks
+library(Diffbind)
+Sox2_Oct4_ATAC <- dba.peakset(NULL,peaks="Sox2_Oct4_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH6_1",tissue="NC",
+                              factor="ATAC",condition="early",replicate=1, bamReads="HH6_1.bam")
+Sox2_Oct4_ATAC <- dba.peakset(Sox2_Oct4_ATAC,peaks="Sox2_Oct4_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH6_2",tissue="NC",
+                              factor="ATAC",condition="early",replicate=2, bamReads="HH6_2.bam")
+Sox2_Oct4_ATAC <- dba.peakset(Sox2_Oct4_ATAC,peaks="Sox2_Oct4_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH8_1",tissue="NC",
+                              factor="ATAC",condition="early",replicate=1, bamReads="HH8_1.bam")
+Sox2_Oct4_ATAC <- dba.peakset(Sox2_Oct4_ATAC,peaks="Sox2_Oct4_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH8_2",tissue="NC",
+                              factor="ATAC",condition="early",replicate=2, bamReads="HH8_2.bam")
+Sox2_Oct4_ATAC <- dba.peakset(Sox2_Oct4_ATAC,peaks="Sox2_Oct4_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH10_1",tissue="NC",
+                              factor="ATAC",condition="mid",replicate=1, bamReads="HH10_1.bam")
+Sox2_Oct4_ATAC <- dba.peakset(Sox2_Oct4_ATAC,peaks="Sox2_Oct4_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH10_2",tissue="NC",
+                              factor="ATAC",condition="mid",replicate=2, bamReads="HH10_2.bam")
+Sox2_Oct4_ATAC <- dba.peakset(Sox2_Oct4_ATAC,peaks="Sox2_Oct4_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH12_1",tissue="NC",
+                              factor="ATAC",condition="mid",replicate=1, bamReads="HH12_1.bam")
+Sox2_Oct4_ATAC <- dba.peakset(Sox2_Oct4_ATAC,peaks="Sox2_Oct4_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH12_2",tissue="NC",
+                              factor="ATAC",condition="mid",replicate=2, bamReads="HH12_2.bam")
+Sox2_Oct4_ATAC <- dba.peakset(Sox2_Oct4_ATAC,peaks="Sox2_Oct4_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH14_1",tissue="NC",
+                              factor="ATAC",condition="mid",replicate=1, bamReads="HH14_1.bam")
+Sox2_Oct4_ATAC <- dba.peakset(Sox2_Oct4_ATAC,peaks="Sox2_Oct4_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH14_2",tissue="NC",
+                              factor="ATAC",condition="mid",replicate=1, bamReads="HH14_2.bam")
+Sox2_Oct4_ATAC <- dba.peakset(Sox2_Oct4_ATAC,peaks="Sox2_Oct4_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH16_1",tissue="NC",
+                              factor="ATAC",condition="late",replicate=1, bamReads="HH16_1.bam")
+Sox2_Oct4_ATAC <- dba.peakset(Sox2_Oct4_ATAC,peaks="Sox2_Oct4_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH16_2",tissue="NC",
+                              factor="ATAC",condition="late",replicate=2, bamReads="HH16_2.bam")
+Sox2_Oct4_ATAC <- dba.peakset(Sox2_Oct4_ATAC,peaks="Sox2_Oct4_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH18_1",tissue="NC",
+                              factor="ATAC",condition="late",replicate=1, bamReads="HH18_1.bam")
+Sox2_Oct4_ATAC <- dba.peakset(Sox2_Oct4_ATAC,peaks="Sox2_Oct4_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH18_2",tissue="NC",
+                              factor="ATAC",condition="late",replicate=2, bamReads="HH18_2.bam")
+Sox2_Oct4_ATAC <- dba.count(Sox2_Oct4_ATAC, score = DBA_SCORE_RPKM)
+Sox2_Oct4_ATAC.mat <- dba.peakset(Sox2_Oct4_ATAC, bRetrieve=T, DataType=DBA_DATA_FRAME)
+Sox2_Oct4_ATAC_avg = data.frame(Early = rowMeans(Sox2_Oct4_ATAC.mat[c('HH6_1','HH6_2',"HH8_1","HH8_2")], na.rm = TRUE), Mid = rowMeans(Sox2_Oct4_ATAC.mat[c('HH10_1','HH10_2', "HH12_1", "HH12_2",'HH14_1','HH14_2')]),
+                              late =rowMeans(Sox2_Oct4_ATAC.mat[c ('HH16_1', 'HH16_2',"HH18_1", "HH18_2")]))
+Sox2_Oct4_ATAC_zscore = apply(Sox2_Oct4_ATAC_avg, 1, function(x) (x-mean(x))/ sd(x))
+Sox2_Oct4_ATAC_zscore = melt(Sox2_Oct4_ATAC_zscore)
+Sox2_Oct4_ATAC_zscore$group = c("Shared")
+ 
+
+Sox2_only_ATAC <- dba.peakset(NULL,peaks="Sox2_only_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH6_1",tissue="NC",
+                              factor="ATAC",condition="early",replicate=1, bamReads="HH6_1.bam")
+Sox2_only_ATAC <- dba.peakset(Sox2_only_ATAC,peaks="Sox2_only_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH6_2",tissue="NC",
+                              factor="ATAC",condition="early",replicate=2, bamReads="HH6_2.bam")
+Sox2_only_ATAC <- dba.peakset(Sox2_only_ATAC,peaks="Sox2_only_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH8_1",tissue="NC",
+                              factor="ATAC",condition="early",replicate=1, bamReads="HH8_1.bam")
+Sox2_only_ATAC <- dba.peakset(Sox2_only_ATAC,peaks="Sox2_only_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH8_2",tissue="NC",
+                              factor="ATAC",condition="early",replicate=2, bamReads="HH8_2.bam")
+Sox2_only_ATAC <- dba.peakset(Sox2_only_ATAC,peaks="Sox2_only_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH10_1",tissue="NC",
+                              factor="ATAC",condition="mid",replicate=1, bamReads="HH10_1.bam")
+Sox2_only_ATAC <- dba.peakset(Sox2_only_ATAC,peaks="Sox2_only_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH10_2",tissue="NC",
+                              factor="ATAC",condition="mid",replicate=2, bamReads="HH10_2.bam")
+Sox2_only_ATAC <- dba.peakset(Sox2_only_ATAC,peaks="Sox2_only_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH12_1",tissue="NC",
+                              factor="ATAC",condition="mid",replicate=1, bamReads="HH12_1.bam")
+Sox2_only_ATAC <- dba.peakset(Sox2_only_ATAC,peaks="Sox2_only_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH12_2",tissue="NC",
+                              factor="ATAC",condition="mid",replicate=2, bamReads="HH12_2.bam")
+Sox2_only_ATAC <- dba.peakset(Sox2_only_ATAC,peaks="Sox2_only_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH14_1",tissue="NC",
+                              factor="ATAC",condition="mid",replicate=1, bamReads="HH14_1.bam")
+Sox2_only_ATAC <- dba.peakset(Sox2_only_ATAC,peaks="Sox2_only_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH14_2",tissue="NC",
+                              factor="ATAC",condition="mid",replicate=1, bamReads="HH14_2.bam")
+Sox2_only_ATAC <- dba.peakset(Sox2_only_ATAC,peaks="Sox2_only_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH16_1",tissue="NC",
+                              factor="ATAC",condition="late",replicate=1, bamReads="HH16_1.bam")
+Sox2_only_ATAC <- dba.peakset(Sox2_only_ATAC,peaks="Sox2_only_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH16_2",tissue="NC",
+                              factor="ATAC",condition="late",replicate=2, bamReads="HH16_2.bam")
+Sox2_only_ATAC <- dba.peakset(Sox2_only_ATAC,peaks="Sox2_only_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH18_1",tissue="NC",
+                              factor="ATAC",condition="late",replicate=1, bamReads="HH18_1.bam")
+Sox2_only_ATAC <- dba.peakset(Sox2_only_ATAC,peaks="Sox2_only_CR_peaks.bed",
+                              peak.caller="macs", peak.format= "macs",sampID="HH18_2",tissue="NC",
+                              factor="ATAC",condition="late",replicate=2, bamReads="HH18_2.bam")
+Sox2_only_ATAC <- dba.count(Sox2_only_ATAC, score = DBA_SCORE_RPKM)
+Sox2_only_ATAC.mat <- dba.peakset(Sox2_only_ATAC, bRetrieve=T, DataType=DBA_DATA_FRAME)
+Sox2_only_ATAC_avg = data.frame(Early = rowMeans(Sox2_only_ATAC.mat[c('HH6_1','HH6_2',"HH8_1","HH8_2")], na.rm = TRUE), Mid = rowMeans(Sox2_only_ATAC.mat[c('HH10_1','HH10_2', "HH12_1", "HH12_2",'HH14_1','HH14_2')]),
+                              late =rowMeans(Sox2_only_ATAC.mat[c ('HH16_1', 'HH16_2',"HH18_1", "HH18_2")]))
+
+Sox2_only_ATAC_zscore = apply(Sox2_only_ATAC_avg, 1, function(x) (x-mean(x))/ sd(x))
+Sox2_only_ATAC_zscore = melt(Sox2_only_ATAC_zscore)
+Sox2_only_ATAC_zscore$group = c("Sox2_only")
+
+ Oct4_only_ATAC <- dba.peakset(NULL,peaks="Oct4_only_CR_peaks.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH6_1",tissue="NC",
+                            factor="ATAC",condition="early",replicate=1, bamReads="HH6_1.bam")
+Oct4_only_ATAC <- dba.peakset(Oct4_only_ATAC,peaks="Oct4_only_CR_peaks.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH6_2",tissue="NC",
+                            factor="ATAC",condition="early",replicate=2, bamReads="HH6_2.bam")
+Oct4_only_ATAC <- dba.peakset(Oct4_only_ATAC,peaks="Oct4_only_CR_peaks.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH8_1",tissue="NC",
+                            factor="ATAC",condition="early",replicate=1, bamReads="HH8_1.bam")
+Oct4_only_ATAC <- dba.peakset(Oct4_only_ATAC,peaks="Oct4_only_CR_peaks.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH8_2",tissue="NC",
+                            factor="ATAC",condition="early",replicate=2, bamReads="HH8_2.bam")
+Oct4_only_ATAC <- dba.peakset(Oct4_only_ATAC,peaks="Oct4_only_CR_peaks.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH10_1",tissue="NC",
+                            factor="ATAC",condition="mid",replicate=1, bamReads="HH10_1.bam")
+Oct4_only_ATAC <- dba.peakset(Oct4_only_ATAC,peaks="Oct4_only_CR_peaks.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH10_2",tissue="NC",
+                            factor="ATAC",condition="mid",replicate=2, bamReads="HH10_2.bam")
+Oct4_only_ATAC <- dba.peakset(Oct4_only_ATAC,peaks="Oct4_only_CR_peaks.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH12_1",tissue="NC",
+                            factor="ATAC",condition="mid",replicate=1, bamReads="HH12_1.bam")
+Oct4_only_ATAC <- dba.peakset(Oct4_only_ATAC,peaks="Oct4_only_CR_peaks.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH12_2",tissue="NC",
+                            factor="ATAC",condition="mid",replicate=2, bamReads="HH12_2.bam")
+Oct4_only_ATAC <- dba.peakset(Oct4_only_ATAC,peaks="Oct4_only_CR_peaks.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH14_1",tissue="NC",
+                            factor="ATAC",condition="mid",replicate=1, bamReads="HH14_1.bam")
+Oct4_only_ATAC <- dba.peakset(Oct4_only_ATAC,peaks="Oct4_only_CR_peaks.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH14_2",tissue="NC",
+                            factor="ATAC",condition="mid",replicate=1, bamReads="HH14_2.bam")
+Oct4_only_ATAC <- dba.peakset(Oct4_only_ATAC,peaks="Oct4_only_CR_peaks.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH16_1",tissue="NC",
+                            factor="ATAC",condition="late",replicate=1, bamReads="HH16_1.bam")
+Oct4_only_ATAC <- dba.peakset(Oct4_only_ATAC,peaks="Oct4_only_CR_peaks.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH16_2",tissue="NC",
+                            factor="ATAC",condition="late",replicate=2, bamReads="HH16_2.bam")
+Oct4_only_ATAC <- dba.peakset(Oct4_only_ATAC,peaks="Oct4_only_CR_peaks.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH18_1",tissue="NC",
+                            factor="ATAC",condition="late",replicate=1, bamReads="HH18_1.bam")
+Oct4_only_ATAC <- dba.peakset(Oct4_only_ATAC,peaks="Oct4_only_CR_peaks.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH18_2",tissue="NC",
+                            factor="ATAC",condition="late",replicate=2, bamReads="HH18_2.bam")
+Oct4_only_ATAC <- dba.count(Oct4_only_ATAC, score = DBA_SCORE_RPKM)
+Oct4_only_ATAC.mat <- dba.peakset(Oct4_only_ATAC, bRetrieve=T, DataType=DBA_DATA_FRAME)
+Oct4_only_ATAC_avg = data.frame(Early = rowMeans(Oct4_only_ATAC.mat[c('HH6_1','HH6_2', "HH8_1","HH8_2")], na.rm = TRUE), Mid = rowMeans(Oct4_only_ATAC.mat[c('HH10_1','HH10_2', "HH12_1", "HH12_2","HH14_1","HH14_2")], na.rm = TRUE), late = rowMeans(Oct4_only_ATAC.mat[c("HH16_1", "HH16_2","HH18_1", "HH18_2")]))
+
+Oct4_only_ATAC_zscore = apply(Oct4_only_ATAC_avg, 1, function(x) (x-mean(x))/ sd(x))
+ Oct4_only_ATAC_zscore = melt(Oct4_only_ATAC_zscore)
+ Oct4_only_ATAC_zscore$group = c("Oct4_only")
+CR_all_peaks = rbind(Sox2_Oct4_ATAC_zscore, Sox2_only_ATAC_zscore, Oct4_only_ATAC_zscore)
+CR_all_peaks$group =factor(CR_all_peaks$group, levels = c("Shared", "Sox2_only","Oct4_only"), ordered =TRUE)
+
+p5 = ggplot(CR_all_peaks, aes(x =group, y =value)) +geom_boxplot(aes(color =Var1), outlier.shape = NA) + ylim(-2, 2) + theme_classic() + xlab("") +ylab("Z-score") + theme(legend.title = element_blank(), axis.text.x = element_text(size =13, color ="black"), axis.title.y = element_text(size =14, color ="black"), legend.text = element_text(size =12))
+
+```
+
+```{r}
+WGCNA analysis
+
+samples_CR <- dba.peakset(NULL,peaks="all_ATAC_400bp_fixed.bed",
+                          peak.caller="macs", peak.format= "macs",sampID="Sox2_1",tissue="NC",
+                          factor="ATAC",condition="early",replicate=1, bamReads="Sox2_Rep1.bam")
+samples_CR <- dba.peakset(samples_CR,peaks="all_ATAC_400bp_fixed.bed",
+                          peak.caller="macs", peak.format= "macs",sampID="Sox2_2",tissue="NC",
+                          factor="ATAC",condition="early",replicate=2, bamReads="Sox2_Rep2.bam")
+samples_CR <- dba.peakset(samples_CR,peaks="all_ATAC_400bp_fixed.bed",
+                          peak.caller="macs", peak.format= "macs",sampID="Oct4",tissue="NC",
+                          factor="ATAC",condition="early",replicate=1, bamReads="Oct4_CR_RD.bam")
+samples_CR = dba.count(samples_CR, filter =2, score =DBA_SCORE_RPKM,filterFun = mean)
+counts_CR_RPKM.mat =dba.peakset(samples_CR,bRetrieve = T,DataType = DBA_DATA_FRAME)
+View(counts_CR_RPKM.mat)
+
+ATAC_all_peaks = readPeakFile("all_ATAC_400bp_fixed.bed")
+TxDb_galGal6 <- makeTxDbFromEnsembl(organism = "Gallus gallus", release = 99)
+ATAC_all_peaks_anno =annotatePeak(ATAC_all_peaks, tssRegion = c(-1000,1000), TxDb = TxDb_galGal6, annoDb = "org.Gg.eg.db")
+ATAC_all_peaks_anno.df = data.frame(ATAC_all_peaks_anno)
+View(ATAC_all_peaks_anno.df)
+counts_CR_RPKM.mat$START = counts_CR_RPKM.mat$START + 1
+colnames(counts_CR_RPKM.mat) = c("seqnames", "start", "end", "Sox2_1", "Sox2_2", "Oct4")
+CR_all_score_anno = merge(counts_CR_RPKM.mat, ATAC_all_peaks_anno.df, by = c("seqnames", "start", "end"))
+
+WGCNA_Gene_Modules <- read_csv("/data/Debbie/NC_Timecourse/RNA-Seq/Exports/WGCNA_Gene_Modules.csv")
+View(WGCNA_Gene_Modules)
+colnames(WGCNA_Gene_Modules) = c("geneId", "Chick_Ensembl", "Symbol", "Chick_Entrezid", "Human_Entrezid","TF_status", "Group")
+WGCNA_CR_anno = merge(CR_all_score_anno, WGCNA_Gene_Modules, by = "geneId")
+
+WGCNA_CR_counts = data.frame(Sox2_counts = rowMeans(WGCNA_CR_anno[c('Sox2_1', 'Sox2_2')], na.rm=TRUE), Oct4_counts = WGCNA_CR_anno$Oct4 ,Groups = WGCNA_CR_anno$Group)
+
+WGCNA_CR_counts$product = WGCNA_CR_counts$Sox2_counts* WGCNA_CR_counts$Oct4_counts
+
+WGCNA_CR_counts$Groups = factor(WGCNA_CR_counts$Groups, levels = c("blue","greenyellow","turquoise","midnightblue","yellow","black","red","grey60", "cyan", "lightcyan"), ordered = TRUE)
+
+ggplot(WGCNA_CR_counts, aes(x = Groups, y = log(product)))+ geom_point(aes(color =Groups),size =1, alpha =0.2) + geom_jitter(aes(color = Groups), size =1, alpha =0.2) + ylim(-1,8) + theme_classic() + geom_boxplot(outlier.shape = NA, width =0.4, notch =TRUE) + 
+  scale_colour_manual(values = c("#3498DB","#ADFF2F","#00CED1","midnightblue","yellow","black","red","grey60", "cyan", "#6495ED"))+ theme(legend.position = "none")
+
+
+ggsave("WGCNA_CR.eps", plot = p5, device ="eps", path ="/data/Debbie/final_analysis_files/figures/")
+
+p6 = ggplot(WGCNA_CR_counts, aes(x = Groups, y = log(product)))+ geom_point(aes(color =Groups),size =1, alpha =0.2) + geom_jitter(aes(color = Groups), size =1, alpha =0.2) + ylim(-1,8) + theme_classic() + 
+  scale_colour_manual(values = c("#3498DB","#ADFF2F","#00CED1","midnightblue","yellow","black","red","grey60", "cyan", "#6495ED"))+ theme(legend.position = "none")
+p6
+
+ggsave("WGCNA_CR_no_bp.eps", plot = p6, device ="eps", path ="/data/Debbie/final_analysis_files/figures/")
+```
+
+```{bash}
+Sox2/Oct4 EChO
+#FOCI MODE
+bedtools sort -n Oct4_NF_RD_R1_toGalGal6_nodups.BAM | bedtools bamtobed -bedpe -i | awk '$1==$4 && $6-$2 < 1000 {print $0}' | cut -f 1,2,6 | sort -k1,1 -k2,2n -k3,3n > Oct4_fragment_file.bed
+samtools sort -n Sox2_Rep1.bam| bedtools bamtobed -bedpe -i | awk '$1==$4 && $6-$2 < 1000 {print $0}' | cut -f 1,2,6 | sort -k1,1 -k2,2n -k3,3n > Sox2_fragment_file.bed
+./EChO/EChO_1.0.sh Sox2_Oct4_CR_peaks.bed Sox2_fragment_file.bed foci Sox2_Rep1_CR | 27343
+./EChO/EChO_1.0.sh Sox2_Oct4_CR_peaks.bed Oct4_fragment_file.bed foci Oct4_Rep1_CR | 14620
+
+#initial file prep
+bedtools intersect -wao -a Sox2_Oct4_CR_peaks.bed -b Sox2_Rep1_CR.EChO.bed > Sox2_peaks_foci.bed
+cut -f 1-3,5 Sox2_peaks_foci.bed > Sox2_mat_input.bed
+bedtools intersect -wao -a Sox2_Oct4_CR_peaks.bed -b Oct4_Rep1_CR.EChO.bed > Oct4_peaks_foci.bed
+cut -f 1-3,5 Oct4_peaks_foci.bed > Oct4_mat_input.bed
+
+./EChO/EChO_1.0.sh Sox2_mat_input.bed Sox2_fragment_file.bed matrix Sox2_CR_matrix_full
+./EChO/EChO_1.0.sh Oct4_mat_input.bed Oct4_fragment_file.bed matrix Oct4_CR_matrix2_full
+
+```
+
+```{r}
+#preparing matrix_foci file
+#for Pax7 I used a reduced form of the matrix which I has initially perfromed just for chr 9 and 21. the same files were used.
+#sox2
+Sox2_reduced2_matrix = read.table("Sox2_Rep1_CR_matrix2.EChO.matrix", sep = "\t")
+View(Sox2_reduced2_matrix)
+Sox2_reduced2_foci = read.table("Sox2_reduced2_foci.bed", sep = "\t")
+Sox2_reduced2_foci = subset(Sox2_reduced2_foci, Sox2_reduced2_foci$V4 %in% Sox2_reduced2_matrix$V201)
+Sox2_reduced2_matrix =subset(Sox2_reduced2_matrix, Sox2_reduced2_matrix$V201 %in% Sox2_reduced2_foci$V4)
+Sox2_reduced2_foci =Sox2_reduced2_foci[!duplicated(Sox2_reduced2_foci[,4]),]
+View(Sox2_reduced2_matrix)
+View(Sox2_reduced2_foci)
+Sox2_foci_matrix2 = cbind(Sox2_reduced2_foci, Sox2_reduced2_matrix)
+View(Sox2_foci_matrix2)
+#Oct4
+Oct4_reduced2_matrix = read.table("Oct4_Rep1_CR_matrix2.EChO.matrix", sep = "\t")
+View(Oct4_reduced2_matrix)
+Oct4_reduced2_foci = read.table("Oct4_reduced2_foci.bed", sep = "\t")
+Oct4_reduced2_foci = subset(Oct4_reduced2_foci, Oct4_reduced2_foci$V4 %in% Oct4_reduced2_matrix$V201)
+Oct4_reduced2_matrix =subset(Oct4_reduced2_matrix, Oct4_reduced2_matrix$V201 %in% Oct4_reduced2_foci$V4)
+Oct4_reduced2_foci =Oct4_reduced2_foci[!duplicated(Oct4_reduced2_foci[,4]),]
+Oct4_reduced2_matrix =Oct4_reduced2_matrix[!duplicated(Oct4_reduced2_matrix[,201]),]
+View(Oct4_reduced2_matrix)
+View(Oct4_reduced2_foci)
+Oct4_foci_matrix2 = cbind(Oct4_reduced2_foci, Oct4_reduced2_matrix)
+View(Oct4_foci_matrix2)
+#Pax7
+Sox2_foci_matrix2_E1 = Sox2_foci_matrix2[109:114,]
+rownames(Sox2_foci_matrix2_E1) = Sox2_foci_matrix2_E1$V2
+Sox2_foci_matrix2_E1 = Sox2_foci_matrix2_E1[,7:407]
+Sox2_foci_matrix2_E1 = data.frame(t(Sox2_foci_matrix2_E1))
+colnames(Sox2_foci_matrix2_E1) = c("Fragsize1", "Fragsize2", "Fragsize3","Fragsize4", "Fragsize5", "Fragsize6")
+Sox2_foci_matrix2_E1$index = seq(-200, 200)
+Sox2_foci_matrix2_E1$foci1 = c(4465714)
+Sox2_foci_matrix2_E1$foci2 = c(4465905)
+Sox2_foci_matrix2_E1$foci3 = c(4466053)
+Sox2_foci_matrix2_E1$foci4 = c(4466056)
+Sox2_foci_matrix2_E1$foci5 = c(4466063)
+Sox2_foci_matrix2_E1$foci6 = c(4466108)
+Sox2_foci_matrix2_E1$position1 =  Sox2_foci_matrix2_E1$foci1 + Sox2_foci_matrix2_E1$index
+Sox2_foci_matrix2_E1$position2 =  Sox2_foci_matrix2_E1$foci2 + Sox2_foci_matrix2_E1$index
+Sox2_foci_matrix2_E1$position3 =  Sox2_foci_matrix2_E1$foci3 + Sox2_foci_matrix2_E1$index
+Sox2_foci_matrix2_E1$position4 =  Sox2_foci_matrix2_E1$foci4 + Sox2_foci_matrix2_E1$index
+Sox2_foci_matrix2_E1$position5 =  Sox2_foci_matrix2_E1$foci5 + Sox2_foci_matrix2_E1$index
+Sox2_foci_matrix2_E1$position6 =  Sox2_foci_matrix2_E1$foci6 + Sox2_foci_matrix2_E1$index
+Sox2_E1_foci1 = data.frame("Fragment_size" = Sox2_foci_matrix2_E1$Fragsize1, "Position" = Sox2_foci_matrix2_E1$position1, "Foci" = Sox2_foci_matrix2_E1$foci1)
+Sox2_E1_foci2 = data.frame("Fragment_size" = Sox2_foci_matrix2_E1$Fragsize2, "Position" = Sox2_foci_matrix2_E1$position2, "Foci" = Sox2_foci_matrix2_E1$foci2)
+Sox2_E1_foci3 = data.frame("Fragment_size" = Sox2_foci_matrix2_E1$Fragsize3, "Position" = Sox2_foci_matrix2_E1$position3, "Foci" = Sox2_foci_matrix2_E1$foci3)
+Sox2_E1_foci4 = data.frame("Fragment_size" = Sox2_foci_matrix2_E1$Fragsize4, "Position" = Sox2_foci_matrix2_E1$position4, "Foci" = Sox2_foci_matrix2_E1$foci4)
+Sox2_E1_foci5 = data.frame("Fragment_size" = Sox2_foci_matrix2_E1$Fragsize5, "Position" = Sox2_foci_matrix2_E1$position5, "Foci" = Sox2_foci_matrix2_E1$foci5)
+Sox2_E1_foci6 = data.frame("Fragment_size" = Sox2_foci_matrix2_E1$Fragsize6, "Position" = Sox2_foci_matrix2_E1$position6, "Foci" = Sox2_foci_matrix2_E1$foci6)
+Sox2_mat_2_E1_all = rbind(Sox2_E1_foci1, Sox2_E1_foci2, Sox2_E1_foci3, Sox2_E1_foci4, Sox2_E1_foci5, Sox2_E1_foci6) 
+Sox2_mat_2_E1_all$group = c("Sox2")
+#Pax7-Oct4
+Oct4_foci_matrix2_E1 = Oct4_foci_matrix2[34:38,]
+rownames(Oct4_foci_matrix2_E1) = Oct4_foci_matrix2_E1$V2
+Oct4_foci_matrix2_E1 = Oct4_foci_matrix2_E1[,7:407]
+Oct4_foci_matrix2_E1 = data.frame(t(Oct4_foci_matrix2_E1))
+colnames(Oct4_foci_matrix2_E1) = c("Fragsize1", "Fragsize2", "Fragsize3","Fragsize4", "Fragsize5")
+Oct4_foci_matrix2_E1$index = seq(-200, 200)
+Oct4_foci_matrix2_E1$foci1 = c(4465649)
+Oct4_foci_matrix2_E1$foci2 = c(4465805)
+Oct4_foci_matrix2_E1$foci3 = c(4465811)
+Oct4_foci_matrix2_E1$foci4 = c(4465847)
+Oct4_foci_matrix2_E1$foci5 = c(4466081)
+Oct4_foci_matrix2_E1$position1 =  Oct4_foci_matrix2_E1$foci1 + Oct4_foci_matrix2_E1$index
+Oct4_foci_matrix2_E1$position2 =  Oct4_foci_matrix2_E1$foci2 + Oct4_foci_matrix2_E1$index
+Oct4_foci_matrix2_E1$position3 =  Oct4_foci_matrix2_E1$foci3 + Oct4_foci_matrix2_E1$index
+Oct4_foci_matrix2_E1$position4 =  Oct4_foci_matrix2_E1$foci4 + Oct4_foci_matrix2_E1$index
+Oct4_foci_matrix2_E1$position5 =  Oct4_foci_matrix2_E1$foci5 + Oct4_foci_matrix2_E1$index
+Oct4_E1_foci1 = data.frame("Fragment_size" = Oct4_foci_matrix2_E1$Fragsize1, "Position" = Oct4_foci_matrix2_E1$position1, "Foci" = Oct4_foci_matrix2_E1$foci1)
+Oct4_E1_foci2 = data.frame("Fragment_size" = Oct4_foci_matrix2_E1$Fragsize2, "Position" = Oct4_foci_matrix2_E1$position2, "Foci" = Oct4_foci_matrix2_E1$foci2)
+Oct4_E1_foci3 = data.frame("Fragment_size" = Oct4_foci_matrix2_E1$Fragsize3, "Position" = Oct4_foci_matrix2_E1$position3, "Foci" = Oct4_foci_matrix2_E1$foci3)
+Oct4_E1_foci4 = data.frame("Fragment_size" = Oct4_foci_matrix2_E1$Fragsize4, "Position" = Oct4_foci_matrix2_E1$position4, "Foci" = Oct4_foci_matrix2_E1$foci4)
+Oct4_E1_foci5 = data.frame("Fragment_size" = Oct4_foci_matrix2_E1$Fragsize5, "Position" = Oct4_foci_matrix2_E1$position5, "Foci" = Oct4_foci_matrix2_E1$foci5)
+Oct4_mat_2_E1_all = rbind(Oct4_E1_foci1, Oct4_E1_foci2, Oct4_E1_foci3, Oct4_E1_foci4, Oct4_E1_foci5)
+Oct4_mat_2_E1_all$group = c("Oct4")
+
+mat2_E1_all = rbind(Sox2_mat_2_E1_all, Oct4_mat_2_E1_all)
+
+ggplot(mat2_E1_all, aes(x = Position, y =Fragment_size)) + geom_point(aes(color =group), size =1) + theme_classic()
+```
+```{r}
+#full matrix
+
+Sox2_matrix = read.table("Sox2_CR_matrix_full.EChO.matrix", sep = "\t")
+View(Sox2_matrix)
+Sox2_foci = read.table("Sox2_Rep1_CR.EChO.bed", sep = "\t")
+Sox2_foci = subset(Sox2_foci, Sox2_foci$V4 %in% Sox2_matrix$V201)
+Sox2_matrix =subset(Sox2_matrix, Sox2_matrix$V201 %in% Sox2_foci$V4)
+Sox2_foci =Sox2_foci[!duplicated(Sox2_foci[,4]),]
+Sox2_matrix =Sox2_matrix[!duplicated(Sox2_matrix[,201]),]
+View(Sox2_reduced2_matrix)
+View(Sox2_reduced2_foci)
+Sox2_foci_matrix = cbind(Sox2_foci, Sox2_matrix)
+rownames(Sox2_foci_matrix) = 1:nrow(Sox2_foci_matrix)
+View(Sox2_foci_matrix)
+#Oct4
+Oct4_reduced2_matrix = read.table("Oct4_CR_matrix2_full.EChO.matrix", sep = "\t")
+View(Oct4_reduced2_matrix)
+Oct4_foci = read.table("Oct4_Rep1_CR.EChO.bed", sep = "\t")
+Oct4_foci = subset(Oct4_foci, Oct4_foci$V4 %in% Oct4_matrix$V201)
+Oct4__matrix =subset(Oct4_reduced2_matrix, Oct4_reduced2_matrix$V201 %in% Oct4_reduced2_foci$V4)
+Oct4_foci =Oct4_foci[!duplicated(Oct4_foci[,4]),]
+Oct4_matrix =Oct4_matrix[!duplicated(Oct4_matrix[,201]),]
+View(Oct4_matrix)
+View(Oct4_foci)
+Oct4_foci_matrix = cbind(Oct4_foci, Oct4_matrix)
+rownames(Oct4_foci_matrix) =1:nrow(Oct4_foci_matrix)
+View(Oct4_foci_matrix)
+Sox2_foci_matrix_zic1 = Sox2_foci_matrix[15801:15805,]
+rownames(Sox2_foci_matrix_zic1) = Sox2_foci_matrix_zic1$V2
+Sox2_foci_matrix_zic1 = Sox2_foci_matrix_zic1[,7:407]
+Sox2_foci_matrix_zic1 = data.frame(t(Sox2_foci_matrix_zic1))
+colnames(Sox2_foci_matrix_zic1) = c("Fragsize1", "Fragsize2", "Fragsize3","Fragsize4", "Fragsize5")
+Sox2_foci_matrix_zic1$index = seq(-200, 200)
+Sox2_foci_matrix_zic1$foci1 = c(12148193)
+Sox2_foci_matrix_zic1$foci2 = c(12148214)
+Sox2_foci_matrix_zic1$foci3 = c(12148314)
+Sox2_foci_matrix_zic1$foci4 = c(12148325)
+Sox2_foci_matrix_zic1$foci5 = c(12148408)
+Sox2_foci_matrix_zic1$position1 =  Sox2_foci_matrix_zic1$foci1 + Sox2_foci_matrix_zic1$index
+Sox2_foci_matrix_zic1$position2 =  Sox2_foci_matrix_zic1$foci2 + Sox2_foci_matrix_zic1$index
+Sox2_foci_matrix_zic1$position3 =  Sox2_foci_matrix_zic1$foci3 + Sox2_foci_matrix_zic1$index
+Sox2_foci_matrix_zic1$position4 =  Sox2_foci_matrix_zic1$foci4 + Sox2_foci_matrix_zic1$index
+Sox2_foci_matrix_zic1$position5 =  Sox2_foci_matrix_zic1$foci5 + Sox2_foci_matrix_zic1$index
+Sox2_zic1_foci1 = data.frame("Fragment_size" = Sox2_foci_matrix_zic1$Fragsize1, "Position" = Sox2_foci_matrix_zic1$position1, "Foci" = Sox2_foci_matrix_zic1$foci1)
+Sox2_zic1_foci2 = data.frame("Fragment_size" = Sox2_foci_matrix_zic1$Fragsize2, "Position" = Sox2_foci_matrix_zic1$position2, "Foci" = Sox2_foci_matrix_zic1$foci2)
+Sox2_zic1_foci3 = data.frame("Fragment_size" = Sox2_foci_matrix_zic1$Fragsize3, "Position" = Sox2_foci_matrix_zic1$position3, "Foci" = Sox2_foci_matrix_zic1$foci3)
+Sox2_zic1_foci4 = data.frame("Fragment_size" = Sox2_foci_matrix_zic1$Fragsize4, "Position" = Sox2_foci_matrix_zic1$position4, "Foci" = Sox2_foci_matrix_zic1$foci4)
+Sox2_zic1_foci5 = data.frame("Fragment_size" = Sox2_foci_matrix_zic1$Fragsize5, "Position" = Sox2_foci_matrix_zic1$position5, "Foci" = Sox2_foci_matrix_zic1$foci5)
+Sox2_mat_zic1_all = rbind(Sox2_zic1_foci1, Sox2_zic1_foci2, Sox2_zic1_foci3, Sox2_zic1_foci4, Sox2_zic1_foci5) 
+Sox2_mat_zic1_all$group = c("Sox2")
+#Zic1-Oct4
+Oct4_foci_matrix_zic1 = Oct4_foci_matrix[8039:8040,]
+rownames(Oct4_foci_matrix_zic1) = Oct4_foci_matrix_zic1$V2
+Oct4_foci_matrix_zic1 = Oct4_foci_matrix_zic1[,7:407]
+Oct4_foci_matrix_zic1 = data.frame(t(Oct4_foci_matrix_zic1))
+colnames(Oct4_foci_matrix_zic1) = c("Fragsize1", "Fragsize2")
+Oct4_foci_matrix_zic1$index = seq(-200, 200)
+Oct4_foci_matrix_zic1$foci1 = c(12148170)
+Oct4_foci_matrix_zic1$foci2 = c(12148374)
+Oct4_foci_matrix_zic1$position1 =  Oct4_foci_matrix_zic1$foci1 + Oct4_foci_matrix_zic1$index
+Oct4_foci_matrix_zic1$position2 =  Oct4_foci_matrix_zic1$foci2 + Oct4_foci_matrix_zic1$index
+Oct4_zic1_foci1 = data.frame("Fragment_size" = Oct4_foci_matrix_zic1$Fragsize1, "Position" = Oct4_foci_matrix_zic1$position1, "Foci" = Oct4_foci_matrix_zic1$foci1)
+Oct4_zic1_foci2 = data.frame("Fragment_size" = Oct4_foci_matrix_zic1$Fragsize2, "Position" = Oct4_foci_matrix_zic1$position2, "Foci" = Oct4_foci_matrix_zic1$foci2)
+Oct4_mat_zic1_all = rbind(Oct4_zic1_foci1, Oct4_zic1_foci2)
+Oct4_mat_zic1_all$group = c("Oct4")
+zic1_all = rbind(Sox2_mat_zic1_all, Oct4_mat_zic1_all)
+
+ggplot(zic1_all, aes(x = Position, y =Fragment_size)) + geom_point(aes(color = group), size =1) + theme_classic() 
+```
+
+```{bash}
+motif analysis with Echo
+awk '$4 < 150' Sox2_Rep1_CR.EChO.bed >  Sox2_Rep1_direct_foci.bed
+awk '$4 < 150' Oct4_Rep1_CR.EChO.bed >  Oct4_direct_foci.bed
+cat  Sox2_Rep1_direct_foci.bed Oct4_direct_foci.bed > shared_peaks_direct_foci.bed
+findMotifsGenome.pl shared_peaks_direct_foci.bed /data/Debbie/Organized_NC_ATAC_and_Sox2-Oct4/ATAC/Diffbind_data/Gallus_gallus.GRCg6a.dna.toplevel.fa /data/Debbie/epi_vs_NF/Sox2_Oct4_EChO_homer -size 50 
+
+```
+
+
+

@@ -1,0 +1,171 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+Run the standard CR Pipeline (CUT-RUN_6-8-20.sh)
+
+```{r}
+# Read in peaks
+library(rtracklayer)
+library(ChIPpeakAnno)
+DB_Sox2_R1 <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Sox2_Oct4_CR/Peaks/DB_Sox2_R1_toGalGal6_nodups.BAM_peaks.narrowPeak")
+Oct4_NF_RD_R1 <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Sox2_Oct4_CR/Peaks/Oct4_NF_RD_R1_toGalGal6_nodups.BAM_peaks.narrowPeak")
+ASH_NF_Oct4_1 <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Sox2_Oct4_CR/Peaks/ASH_NF_Oct4_1_R1_toGalGal6_nodups.BAM_peaks.narrowPeak")
+ASH_Sox2_2 <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Sox2_Oct4_CR/Peaks/11246_10946_109086_HFLTYBGXC_Hovland_10-9-19_HH9_Sox2_2_GTCCGCAT_R1_toGalGal6_nodups.BAM_peaks.narrowPeak")
+
+DB_Sox2_R1 <- reduce(DB_Sox2_R1)
+Oct4_NF_RD_R1 <- reduce(Oct4_NF_RD_R1)
+ASH_NF_Oct4_1 <- reduce(ASH_NF_Oct4_1)
+ASH_Sox2_2 <- reduce(ASH_Sox2_2)
+
+res <- makeVennDiagram(Peaks=list(DB_Sox2_R1,
+                                  ASH_Sox2_2),
+                       NameOfPeaks=c("DB_Sox2_R1", "ASH_Sox2_2"))
+
+
+res2 <- makeVennDiagram(Peaks=list(Oct4_NF_RD_R1,
+                                  ASH_NF_Oct4_1),
+                       NameOfPeaks=c("Oct4_NF_RD_R1","ASH_NF_Oct4_1"))
+res3 <- makeVennDiagram(Peaks=list(Oct4_NF_RD_R1,
+                                  ASH_NF_Oct4_1),
+                       NameOfPeaks=c("Oct4_NF_RD_R1","ASH_NF_Oct4_1"))
+
+res4 <- makeVennDiagram(Peaks=list(ASH_Sox2_2,
+                                  Oct4_NF_RD_R1),
+                       NameOfPeaks=c("ASH_Sox2_2","Oct4_NF_RD_R1"))
+Oct4_sharedperc <- (res4$vennCounts[4,3]/(res4$vennCounts[2,3]+res4$vennCounts[4,3]))*100
+
+Sox2_sharedperc <- (res4$vennCounts[4,3]/(res4$vennCounts[3,3]+res4$vennCounts[4,3]))*100
+
+ASH_Both_Oct4_Sox2 <- Oct4_NF_RD_R1[Oct4_NF_RD_R1 %over% ASH_Sox2_2]
+# 60.1% of Oct4 peaks are shared with Sox2.
+# 25.1% of Sox2 peaks are shared with Oct4.
+
+# Compare this with Debbie's Peaksets.
+Sox2_Rep1_peaks <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Sox2_Oct4_CR/Debbie_Files/Sox2_Rep1_peaks.bed")
+Sox2_Rep1_peaks <- reduce(Sox2_Rep1_peaks)
+res5 <- makeVennDiagram(Peaks=list(ASH_Sox2_2,
+                                  Sox2_Rep1_peaks),
+                       NameOfPeaks=c("ASH_Sox2_2","Sox2_Rep1_peaks_Debbie"))
+
+res6 <- makeVennDiagram(Peaks=list(DB_Sox2_R1,
+                                  Sox2_Rep1_peaks),
+                       NameOfPeaks=c("DB_Sox2_R1","Sox2_Rep1_peaks_Debbie"))
+
+Oct4_CR_RD_peaks <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Sox2_Oct4_CR/Debbie_Files/Oct4_CR_RD_peaks.bed")
+Oct4_CR_RD_peaks <- reduce(Oct4_CR_RD_peaks)
+
+res7 <- makeVennDiagram(Peaks=list(Oct4_NF_RD_R1,
+                                  Oct4_CR_RD_peaks),
+                       NameOfPeaks=c("Oct4_NF_RD_R1","Oct4_CR_RD_peaks"))
+
+Consensus_Sox2_Oct4_peaks2 <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Sox2_Oct4_CR/Debbie_Files/consensus_sox2_oct4_peaks2.bed")
+
+res8 <- makeVennDiagram(Peaks=list(ASH_Both_Oct4_Sox2,
+                                  Consensus_Sox2_Oct4_peaks2),
+                       NameOfPeaks=c("ASH_Both_Oct4_Sox2","Consensus_Sox2_Oct4_peaks2"))
+
+Sox2_Oct4_CR_peaks_DB <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Sox2_Oct4_CR/Debbie_Files/Sox2_Oct4_CR_peaks.bed")
+
+res9 <- makeVennDiagram(Peaks=list(ASH_Both_Oct4_Sox2,
+                                  Sox2_Oct4_CR_peaks_DB),
+                       NameOfPeaks=c("ASH_Both_Oct4_Sox2","Sox2_Oct4_CR_peaks_DB"))
+```
+So from all of that, it looks like 'Sox2_Oct4_CR_peaks.bed' from Debbie contains the majority of Oct4+Sox2 peaks I'm finding.
+
+Additionally, it looks like ASH_Sox2_2 and Sox2_Rep1_peaks from Debbie are the two good Sox2 samples.
+Let's define peaksets clearly.
+```{r}
+# Consensus peaks from both good Sox2 replicates.
+ASH_Sox2_peaks <- Sox2_Rep1_peaks[Sox2_Rep1_peaks %over% ASH_Sox2_2]
+# There is only one good Oct4 replicate
+ASH_Oct4_peaks <- Oct4_NF_RD_R1
+# A concatenation of both Sox2 and Oct4 peaks
+ASH_Combined_Sox2_Oct4_peaks <- reduce(c(ASH_Sox2_peaks, ASH_Oct4_peaks))
+# A set of shared Sox2 and Oct4 peaks
+ASH_Shared_Sox2_Oct4_peaks <- ASH_Sox2_peaks[ASH_Sox2_peaks %over% ASH_Oct4_peaks]
+```
+
+Great. Let's run HOMER (no de-novo) for these peaksets to ensure that they are pulling the expected motifs.
+
+```{r}
+export.bed(ASH_Sox2_peaks, con = "Exports/ASH_Sox2_peaks.bed")
+export.bed(ASH_Oct4_peaks, con = "Exports/ASH_Oct4_peaks.bed")
+export.bed(ASH_Combined_Sox2_Oct4_peaks, con = "Exports/ASH_Combined_Sox2_Oct4_peaks.bed")
+export.bed(ASH_Shared_Sox2_Oct4_peaks, con = "Exports/ASH_Shared_Sox2_Oct4_peaks.bed")
+```
+
+```{bash}
+findMotifsGenome.pl ./Exports/ASH_Sox2_peaks.bed ENSEMBL_galGal6_99 ./Exports/ASH_Sox2_peaks_homer -size 200 -p 12 -nomotif
+findMotifsGenome.pl ./Exports/ASH_Oct4_peaks.bed ENSEMBL_galGal6_99 ./Exports/ASH_Oct4_peaks_homer -size 200 -p 12 -nomotif
+findMotifsGenome.pl ./Exports/ASH_Combined_Sox2_Oct4_peaks.bed ENSEMBL_galGal6_99 ./Exports/ASH_Combined_Sox2_Oct4_peaks_homer -size 200 -p 12 -nomotif
+findMotifsGenome.pl ./Exports/ASH_Shared_Sox2_Oct4_peaks.bed ENSEMBL_galGal6_99 ./Exports/ASH_Shared_Sox2_Oct4_peaks_homer -size 200 -p 12 -nomotif
+```
+
+Looks like the Sox2 set is great, but the Oct4_NF_RD_R1/ASH_Oct4_peaks isn't pulling the Oct4 motif very well at all. Let's try running this on Debbie's previously identified Oct4 peaks directly.
+
+```{r}
+Oct4_only_CR_peaks <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Sox2_Oct4_CR/Debbie_Files/Oct4_only_CR_peaks.bed")
+Oct4_CR_RD_peaks <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Sox2_Oct4_CR/Debbie_Files/Oct4_CR_RD_peaks.bed")
+
+res10 <- makeVennDiagram(Peaks=list(Oct4_CR_RD_peaks, ASH_Oct4_peaks),NameOfPeaks=c("Oct4_CR_RD_peaks","ASH_Oct4_peaks"))
+export.bed(Oct4_CR_RD_peaks, con = "./Exports/Oct4_CR_RD_peaks.bed")
+export.bed(Oct4_only_CR_peaks, con = "./Exports/Oct4_only_CR_peaks.bed")
+```
+
+```{bash}
+findMotifsGenome.pl ./Exports/Oct4_CR_RD_peaks.bed ENSEMBL_galGal6_99 ./Exports/Oct4_CR_RD_peaks_homer -size 200 -p 12 -nomotif
+findMotifsGenome.pl ./Exports/Oct4_only_CR_peaks.bed ENSEMBL_galGal6_99 ./Exports/Oct4_only_CR_peaks_homer -size 200 -p 60 -nomotif
+```
+Yeah, so... that does not pull the OCT4 motif. This is not good. 
+
+```{r}
+Sox10 <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Igg_control/Sox10.narrowPeak")
+Sox10 <- reduce(Sox10)
+
+rbFoxD3 <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Igg_control/rbFoxD3_HH8.narrowPeak")
+rbFoxD3 <- reduce(rbFoxD3)
+
+res10 <- makeVennDiagram(Peaks=list(Sox10, Oct4_NF_RD_R1),NameOfPeaks=c("Sox10","Oct4_NF_RD_R1"))
+
+res10 <- makeVennDiagram(Peaks=list(Sox10, ASH_Sox2_peaks),NameOfPeaks=c("Sox10","ASH_Sox2_peaks"))
+
+res10 <- makeVennDiagram(Peaks=list(rbFoxD3, ASH_Sox2_peaks),NameOfPeaks=c("rbFoxD3","ASH_Sox2_peaks"))
+
+res10 <- makeVennDiagram(Peaks=list(rbFoxD3, Oct4_NF_RD_R1, ASH_Sox2_peaks),NameOfPeaks=c("rbFoxD3","Oct4_NF_RD_R1","ASH_Sox2_peaks"))
+
+IGG_HH9A1 <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Igg_control/BAM/10360_10099_87771_HM23LBGX9_IgG_HH9A1_GCCAAT_R1_toGalGal6.BAM_peaks.narrowPeak")
+IGG_HH9A1 <- reduce(IGG_HH9A1)
+IGG_2_CCGTCC <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Igg_control/BAM/9591_10055_75003_HW5JKBGX5_CR-IgG-2_CCGTCC_R1_toGalGal6.BAM_peaks.narrowPeak")
+IGG_2_CCGTCC <- reduce(IGG_2_CCGTCC)
+IGG_1_GTGGCC <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Igg_control/BAM/9398_10055_73295_HKNGHBGX5_M_IgG1_GTGGCC_R1_toGalGal6.BAM_peaks.narrowPeak")
+IGG_1_GTGGCC <- reduce(IGG_1_GTGGCC)
+
+res10 <- makeVennDiagram(Peaks=list(IGG_HH9A1, IGG_2_CCGTCC,IGG_1_GTGGCC),NameOfPeaks=c("IGG_HH9A1","IGG_2_CCGTCC","IGG_1_GTGGCC"))
+
+res10 <- makeVennDiagram(Peaks=list(IGG_HH9A1, IGG_2_CCGTCC,IGG_1_GTGGCC, Oct4_NF_RD_R1),NameOfPeaks=c("IGG_HH9A1","IGG_2_CCGTCC","IGG_1_GTGGCC","Oct4_NF_RD_R1"))
+
+IGG_total <- reduce(c(IGG_HH9A1,IGG_2_CCGTCC,IGG_1_GTGGCC))
+
+res10 <- makeVennDiagram(Peaks=list(IGG_total,Oct4_NF_RD_R1),NameOfPeaks=c("IGG_total","Oct4_NF_RD_R1"))
+
+Oct4_NF_RD_IGGFilt <- Oct4_NF_RD_R1[!Oct4_NF_RD_R1 %over% IGG_total]
+ASH_Sox2_peaks_IGGFilt <- ASH_Sox2_peaks[!ASH_Sox2_peaks %over% IGG_total]
+# A concatenation of both Sox2 and Oct4 peaks filtered
+ASH_Combined_Sox2_Oct4_peaks_Filt <- reduce(c(ASH_Sox2_peaks_IGGFilt, Oct4_NF_RD_IGGFilt))
+# A set of shared Sox2 and Oct4 peaks filtered
+ASH_Shared_Sox2_Oct4_peaks_Filt <- ASH_Sox2_peaks_IGGFilt[ASH_Sox2_peaks_IGGFilt %over% Oct4_NF_RD_IGGFilt]
+
+export.bed(Oct4_NF_RD_IGGFilt, con = "./Exports/Oct4_NF_RD_IGGFilt.bed")
+export.bed(ASH_Sox2_peaks_IGGFilt, con = "./Exports/ASH_Sox2_peaks_IGGFilt.bed")
+export.bed(ASH_Combined_Sox2_Oct4_peaks_Filt, con = "./Exports/ASH_Combined_Sox2_Oct4_peaks_Filt.bed")
+export.bed(ASH_Shared_Sox2_Oct4_peaks_Filt, con = "./Exports/ASH_Shared_Sox2_Oct4_peaks_Filt.bed")
+```
+
+```{bash}
+findMotifsGenome.pl ./Exports/Oct4_NF_RD_IGGFilt.bed ENSEMBL_galGal6_99 ./Exports/Oct4_NF_RD_IGGFilt_homer -size 200 -p 60 -nomotif
+
+findMotifsGenome.pl ./Exports/ASH_Sox2_peaks_IGGFilt.bed ENSEMBL_galGal6_99 ./Exports/ASH_Sox2_peaks_IGGFilt_homer -size 200 -p 60 -nomotif
+```
+
+After this, it boosted the Oct4-Sox2 Motif to 1e-30, which is a good improvement. Discussions in the lab about how to use a blacklist/IgG regions was good. We need to try to develop a couple different use cases. 

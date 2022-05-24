@@ -1,0 +1,21 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Creating C+R Count Matricies at ATAC Peaks
+
+```{r}
+samples_CR <- dba.peakset(NULL,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="Sox2_1",tissue="NC",
+                            factor="ATAC",condition="early",replicate=1, bamReads="Sox2_Rep1.bam")
+samples_CR <- dba.peakset(samples_CR,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="Sox2_2",tissue="NC",
+                            factor="ATAC",condition="early",replicate=2, bamReads="Sox2_Rep2.bam")
+samples_CR <- dba.peakset(samples_CR,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="Oct4",tissue="NC",
+                            factor="ATAC",condition="early",replicate=1, bamReads="Oct4_CR_RD.bam")
+samples_CR = dba.count(samples_CR, filter =2, score =DBA_SCORE_RPKM)
+counts_CR_RPKM.mat =dba.peakset(samples_CR,bRetrieve = T,DataType = DBA_DATA_FRAME)
+View(counts_CR_RPKM.mat)
+```

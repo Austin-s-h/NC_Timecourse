@@ -1,0 +1,54 @@
+---
+title: "CR Motif Type"
+output: html_notebook
+---
+
+Check out different Oct4-Sox2 motifs from Tapia 2015 paper.
+
+Fgf4-like (HWTTSWNNNNATGYWDWD),
+Utf1-like (HWTTSWNATGYWDGD), and
+Hoxb1-like (HWTTSWNATGYWDWD)
+
+![motifs](sox2-oct4-motifs.png)
+
+```{bash}
+# Create homer motifs from consesus.
+seq2profile.pl HWTTSWNNNNATGYWDWD 1 Sox2-Oct4-Fgf4-like > Sox2-Oct4-Fgf4-like.motif
+seq2profile.pl HWTTSWNATGYWDGD 1 Sox2-Oct4-Utf1-like > Sox2-Oct4-Utf1-like.motif
+seq2profile.pl HWTTSWNATGYWDWD 1 Sox2-Oct4-Hoxb1-like > Sox2-Oct4-Hoxb1-like.motif
+```
+
+``` {bash}
+# Example
+annotatePeaks.pl ARpeaks.txt hg18 -size 1000 -hist 5 -m are.motif fox.motif ap1.motif > outputfile.txt
+
+cd ./Exports
+annotatePeaks.pl consensus_sox2_oct4_peaks2.bed ENSEMBL_galGal6_99 -size 800 -hist 5 -m Sox2-Oct4-Fgf4-like.motif Sox2-Oct4-Utf1-like.motif Sox2-Oct4-Hoxb1-like.motif Sox2-Oct4-MA0142.1-JASPAR.motif > sox2_oct4_peaks2_dimertype.txt
+
+```
+
+Now let's plot these in R
+```{r}
+library(ggplot2)
+library(readr)
+
+sox2_oct4_peaks2_dimertype <- read_delim("Exports/sox2_oct4_peaks2_dimertype.txt", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+colnames(sox2_oct4_peaks2_dimertype)[1] <- "Distance from Center"
+
+
+test_df <- data.frame(x = sox2_oct4_peaks2_dimertype$`Distance from Center`, y = sox2_oct4_peaks2_dimertype$`Sox2-Oct4-Fgf4-like total sites`, group = "Fgf4-like")
+
+test_df2 <- data.frame(x = sox2_oct4_peaks2_dimertype$`Distance from Center`, y = sox2_oct4_peaks2_dimertype$`Sox2-Oct4-Utf1-like total sites`, group = "Utf1-like")
+
+test_df3 <- data.frame(x = sox2_oct4_peaks2_dimertype$`Distance from Center`, y = sox2_oct4_peaks2_dimertype$`Sox2-Oct4-Hoxb1-like total sites`, group = "Hoxb1-like")
+
+test_df4 <- data.frame(x = sox2_oct4_peaks2_dimertype$`Distance from Center`, y = sox2_oct4_peaks2_dimertype$`Pou5f1.Sox2_P20263.P48432_ChIPseq total sites`, group = "MA0142.1")
+
+final_df <- rbind(test_df4, test_df3, test_df2, test_df)
+
+
+ggplot(data = final_df, aes(x = x ,y = y, group = group, col = group)) +
+  geom_line() + facet_grid(cols = vars(group))
+
+```

@@ -1,0 +1,52 @@
+---
+title: "ATAC_CR"
+output: html_document
+---
+
+```{r}
+samples_CR <- dba.peakset(NULL,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="Sox2_1",tissue="NC",
+                            factor="ATAC",condition="early",replicate=1, bamReads="Sox2_Rep1.bam")
+samples_CR <- dba.peakset(samples_CR,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="Sox2_2",tissue="NC",
+                            factor="ATAC",condition="early",replicate=2, bamReads="Sox2_Rep2.bam")
+samples_CR <- dba.peakset(samples_CR,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="Oct4",tissue="NC",
+                            factor="ATAC",condition="early",replicate=1, bamReads="Oct4_CR_RD.bam")
+samples_CR = dba.count(samples_CR, filter =2, score =DBA_SCORE_RPKM)
+counts_CR_RPKM.mat =dba.peakset(samples_CR,bRetrieve = T,DataType = DBA_DATA_FRAME)
+View(counts_CR_RPKM.mat)
+
+ATAC_all_peaks = readPeakFile("all_ATAC_400bp_fixed.bed")
+TxDb_galGal6 <- makeTxDbFromEnsembl(organism = "Gallus gallus", release = 99)
+ATAC_all_peaks_anno =annotatePeak(ATAC_all_peaks, tssRegion = c(-1000,1000), TxDb = TxDb_galGal6, annoDb = "org.Gg.eg.db")
+ATAC_all_peaks_anno.df = data.frame(ATAC_all_peaks_anno)
+View(ATAC_all_peaks_anno.df)
+counts_CR_RPKM.mat$START = counts_CR_RPKM.mat$START + 1
+colnames(counts_CR_RPKM.mat) = c("seqnames", "start", "end", "Sox2_1", "Sox2_2", "Oct4")
+CR_all_score_anno = merge(counts_CR_RPKM.mat, ATAC_all_peaks_anno.df, by = c("seqnames", "start", "end"))
+  
+WGCNA_Gene_Modules <- read_csv("/data/Debbie/NC_Timecourse/RNA-Seq/Exports/WGCNA_Gene_Modules.csv")
+View(WGCNA_Gene_Modules)
+colnames(WGCNA_Gene_Modules) = c("geneId", "Chick_Ensembl", "Symbol", "Chick_Entrezid", "Human_Entrezid","TF_status", "Group")
+WGCNA_CR_anno = merge(CR_all_score_anno, WGCNA_Gene_Modules, by = "geneId")
+
+WGCNA_CR_counts = data.frame(Sox2_counts = rowMeans(WGCNA_CR_anno[c('Sox2_1', 'Sox2_2')], na.rm=TRUE), Oct4_counts = WGCNA_CR_anno$Oct4 ,Groups = WGCNA_CR_anno$Group)
+
+WGCNA_CR_counts$product = WGCNA_CR_counts$Sox2_counts* WGCNA_CR_counts$Oct4_counts
+
+WGCNA_CR_counts$Groups = factor(WGCNA_CR$Groups, levels = c("blue","greenyellow","turquoise","midnightblue","yellow","black","red","grey60", "cyan", "lightcyan"), ordered = TRUE)
+
+p5 =ggplot(WGCNA_CR_counts, aes(x = Groups, y = log(product)))+ geom_point(aes(color =Groups),size =1, alpha =0.2) + geom_jitter(aes(color = Groups), size =1, alpha =0.2) + ylim(-1,8) + theme_classic() + geom_boxplot(outlier.shape = NA, width =0.4, notch =TRUE) + 
+ scale_colour_manual(values = c("#3498DB","#ADFF2F","#00CED1","midnightblue","yellow","black","red","grey60", "cyan", "#6495ED"))+ theme(legend.position = "none")
+p5
+
+ggsave("WGCNA_CR.eps", plot = p5, device ="eps", path ="/data/Debbie/final_analysis_files/figures/")
+
+p6 = ggplot(WGCNA_CR_counts, aes(x = Groups, y = log(product)))+ geom_point(aes(color =Groups),size =1, alpha =0.2) + geom_jitter(aes(color = Groups), size =1, alpha =0.2) + ylim(-1,8) + theme_classic() + 
+ scale_colour_manual(values = c("#3498DB","#ADFF2F","#00CED1","midnightblue","yellow","black","red","grey60", "cyan", "#6495ED"))+ theme(legend.position = "none")
+p6
+
+ggsave("WGCNA_CR_no_bp.eps", plot = p6, device ="eps", path ="/data/Debbie/final_analysis_files/figures/")
+```
+

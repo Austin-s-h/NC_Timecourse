@@ -1,0 +1,69 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Analysis of FIMO results of the dual-motif presence of TFAP2A
+
+```{r}
+library(readr)
+library(rtracklayer)
+library(cowplot)
+
+# I used a threshold of 1e-3 for checking motifs.
+TFAP2A_ESC <- read_delim("./Exports/TFAP2A_ESC_Specific/fimo.tsv", 
+    "\t", escape_double = FALSE, trim_ws = TRUE, comment = "#")
+TFAP2A_NC <- read_delim("./Exports/TFAP2A_NC_Specific/fimo.tsv", 
+    "\t", escape_double = FALSE, trim_ws = TRUE, comment = "#")
+
+# Dotplot of all dual-motifs in the conditions, then color if they have an TFAP2A motif in them.
+ESC_motif_locations <- import.bed("./Exports/ESC_Specific_motifs.bed")
+NC_motif_locations <- import.bed("./Exports/NC_Specific_motifs.bed")
+
+# Convert reported locations to GRanges
+TFAP2A_ESC.gr <- Signac::StringToGRanges(TFAP2A_ESC$sequence_name, sep = c(":","-"))
+TFAP2A_NC.gr <- Signac::StringToGRanges(TFAP2A_NC$sequence_name, sep = c(":","-"))
+
+ESC_motif_locations$hasTFAP2A <- ESC_motif_locations %over% TFAP2A_ESC.gr
+NC_motif_locations$hasTFAP2A <- NC_motif_locations %over% TFAP2A_NC.gr
+
+ESC_motif_locations_df <- as.data.frame(ESC_motif_locations)
+NC_motif_locations_df <- as.data.frame(NC_motif_locations)
+
+
+ESC_motif_locations_df$origin <- "ESC"
+NC_motif_locations_df$origin <- "NC"
+
+combined_df <- rbind(ESC_motif_locations_df, NC_motif_locations_df)
+
+combined_df$order <- sample(seq_len(length(combined_df$seqnames)))
+
+write_csv(combined_df, file = "Exports/TFAP2A_FIMO_in_DimerLocations.csv")
+ESC_TFAP2A <- combined_df[combined_df$hasTFAP2A == "TRUE" & combined_df$origin == "ESC",]
+NC_TFAP2A <- combined_df[combined_df$hasTFAP2A == "TRUE" & combined_df$origin == "NC",]
+
+export.bed(ESC_TFAP2A[,1:3], con = "Exports/ESC_TFAP2A.bed")
+export.bed(NC_TFAP2A[,1:3], con = "Exports/NC_TFAP2A.bed")
+
+g1 <- ggplot(combined_df, mapping = aes(x = order, y = origin)) + 
+  geom_jitter(mapping = aes(color = hasTFAP2A), height = 0.2) + 
+  scale_color_manual(values = c("#B7B7B7","#F3766E")) + 
+  theme(legend.position = "none")
+
+# NC dual-motif with TFAP2A motif (31.8%)
+73/229 
+# ESC dual-motif with TFAP2A motif (22.6%)
+38/168
+
+
+g2 <- ggplot(data = combined_df, mapping = aes(fill = hasTFAP2A, x = origin, y = hasTFAP2A)) + 
+  geom_bar(position="stack", stat="identity") + 
+  scale_fill_manual("legend", values = c("TRUE" = "#F3766E", "FALSE" = "#B7B7B7")) + theme(legend.position = "none")
+
+g2
+
+plot_grid(plotlist = list(g1,g2), ncol = 2, rel_widths = c(0.8,0.3))
+ggsave(filename = "Exports/Sox2-Oct4_Motifs_with_TFAP2A.eps", width = 6, height = 5)
+
+```
+

@@ -1,0 +1,66 @@
+---
+title: "NYSTEM Figure 3"
+output: html_notebook
+---
+
+Need to compare Epi vs HH8 NF samples for H3k27Ac. Combine peak sets
+```{r}
+library(rtracklayer)
+library(ChIPpeakAnno)
+library(dplyr)
+
+H3K27Ac_Epi_peaks <- import(con = "/data/Austin/workdir/NC_Timecourse_Data/Epiblast_vs_NF_CR/Peaks/H3K27ac_Epi_R1_toGalGal6_nodups.BAM_peaks.narrowPeak")
+H3K27Ac_Epi_peaks_top2k <- as.data.frame(H3K27Ac_Epi_peaks) %>% top_n(n = 2000, wt = qValue)
+H3K27Ac_Epi_peaks_top2k <- makeGRangesFromDataFrame(H3K27Ac_Epi_peaks_top2k)
+
+H3K27Ac_Epi_peaks_top2k <- reduce(H3K27Ac_Epi_peaks_top2k)
+H3K27Ac_Epi_peaks <- reduce(H3K27Ac_Epi_peaks)
+
+H3K27Ac_NF_peaks <- import(con = "/data/Austin/workdir/H3K27Ac_peaks_for_HiChip/Peaks/9778_10331_78129_HF75MBGX7_H3K27ac_new_1_CTTGTA_R1_toGalGal6_nodups.BAM_peaks.narrowPeak")
+H3K27Ac_NF_peaks_top2k <- as.data.frame(H3K27Ac_NF_peaks) %>% top_n(n = 2000, wt = qValue)
+H3K27Ac_NF_peaks_top2k <- makeGRangesFromDataFrame(H3K27Ac_NF_peaks_top2k)
+H3K27Ac_NF_peaks_top2k <- reduce(H3K27Ac_NF_peaks_top2k)
+H3K27Ac_NF_peaks <- reduce(H3K27Ac_NF_peaks)
+
+res <- makeVennDiagram(Peaks=list(H3K27Ac_Epi_peaks_top2k, H3K27Ac_NF_peaks_top2k),NameOfPeaks=c("H3K27Ac_Epi_peaks_top2k","H3K27Ac_NF_peaks_top2k"))
+
+All_H3K27Ac_peaks <- reduce(c(H3K27Ac_Epi_peaks, H3K27Ac_NF_peaks))
+export.bed(All_H3K27Ac_peaks, con = "CR/Exports/All_H3K27Ac_peaks.bed")
+export.bed(H3K27Ac_Epi_peaks, con = "CR/Exports/H3K27Ac_Epi_peaks.bed")
+export.bed(H3K27Ac_NF_peaks, con = "CR/Exports/H3K27Ac_NF_peaks.bed")
+
+All_H3K27Ac_peaks_top <- reduce(c(H3K27Ac_Epi_peaks_top2k, H3K27Ac_NF_peaks_top2k))
+export.bed(All_H3K27Ac_peaks_top, con = "~/local_git/NC_Timecourse/CR/Exports/All_H3K27Ac_peaks_top.bed")
+
+H3K27Ac_Epi_peaks_top2k_uniq <- H3K27Ac_Epi_peaks_top2k[!H3K27Ac_Epi_peaks_top2k %over%H3K27Ac_NF_peaks_top2k]
+
+export.bed(H3K27Ac_Epi_peaks_top2k_uniq, con = "~/local_git/NC_Timecourse/CR/Exports/H3K27Ac_Epi_peaks_top2k_uniq.bed")
+
+H3K27Ac_NF_peaks_top2k_uniq <- H3K27Ac_NF_peaks_top2k[!H3K27Ac_NF_peaks_top2k %over% H3K27Ac_Epi_peaks_top2k]
+
+export.bed(H3K27Ac_NF_peaks_top2k_uniq, con = "~/local_git/NC_Timecourse/CR/Exports/H3K27Ac_NF_peaks_top2k_uniq.bed")
+```
+
+```{bash}
+fluff heatmap -f ~/local_git/NC_Timecourse/CR/Exports/All_H3K27Ac_peaks.bed \
+-d /data/Austin/workdir/H3K27Ac_peaks_for_HiChip/BAM/9778_10331_78129_HF75MBGX7_H3K27ac_new_1_CTTGTA_R1_toGalGal6_nodups.bam \
+/data/Austin/workdir/NC_Timecourse_Data/Epiblast_vs_NF_CR/BAM/H3K27ac_Epi_R1_toGalGal6_nodups.bam \
+-C kmeans -k 3 -g -M Pearson -P 62 -o /data/Austin/workdir/NC_Timecourse_Data/Epiblast_vs_NF_CR/Fluff_NF_vs_Epi
+```
+
+We should compare the signal of Sox2 and Oct4 in NF vs Epi H3K27Ac clusters.
+Maybe split the Fluff clusters?
+```{bash}
+computeMatrix reference-point -S /data/Austin/workdir/NC_Timecourse_Data/Sox2_Oct4_CR/Debbie_Files/Sox2_Rep1.bam.bw  /data/Austin/workdir/NC_Timecourse_Data/Sox2_Oct4_CR/Debbie_Files/Oct4_CR_RD.bam.bw -R ~/local_git/NC_Timecourse/CR/Exports/H3K27Ac_NF_peaks.bed ~/local_git/NC_Timecourse/CR/Exports/H3K27Ac_Epi_peaks.bed ~/local_git/NC_Timecourse/CR/Exports/All_H3K27Ac_peaks.bed -b 1000 -a 1000 --skipZeros -o /data/Austin/workdir/NC_Timecourse_Data/Epiblast_vs_NF_CR/H3K27Ac_NF_Epi_All.mat.gz --referencePoint center -p 62
+
+plotProfile -m /data/Austin/workdir/NC_Timecourse_Data/Epiblast_vs_NF_CR/H3K27Ac_NF_Epi_All.mat.gz -out /data/Austin/workdir/NC_Timecourse_Data/Epiblast_vs_NF_CR/H3K27Ac_NF_Epi_All_profile.eps
+```
+
+Trying with unique and top strength peaks
+```{bash}
+computeMatrix reference-point -S /data/Austin/workdir/NC_Timecourse_Data/Sox2_Oct4_CR/Debbie_Files/Sox2_Rep1.bam.bw  /data/Austin/workdir/NC_Timecourse_Data/Sox2_Oct4_CR/Debbie_Files/Oct4_CR_RD.bam.bw -R ~/local_git/NC_Timecourse/CR/Exports/H3K27Ac_NF_peaks_top2k_uniq.bed ~/local_git/NC_Timecourse/CR/Exports/H3K27Ac_Epi_peaks_top2k_uniq.bed ~/local_git/NC_Timecourse/CR/Exports/All_H3K27Ac_peaks_top.bed -b 1000 -a 1000 --skipZeros -o /data/Austin/workdir/NC_Timecourse_Data/Epiblast_vs_NF_CR/H3K27Ac_NF_Epi_All_top2k.mat.gz --referencePoint center -p 62
+
+plotProfile -m /data/Austin/workdir/NC_Timecourse_Data/Epiblast_vs_NF_CR/H3K27Ac_NF_Epi_All_top2k.mat.gz -out /data/Austin/workdir/NC_Timecourse_Data/Epiblast_vs_NF_CR/H3K27Ac_NF_Epi_All_top2k_profile.eps
+
+```
+
