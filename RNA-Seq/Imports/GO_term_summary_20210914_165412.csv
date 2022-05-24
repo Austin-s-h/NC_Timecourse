@@ -1,0 +1,612 @@
+﻿MGI Gene/Marker ID,Symbol,Name,Chr,Qualifier,Annotated Term,Context,Proteoform,Evidence,Inferred From,Reference(s)
+MGI:1913855,1700017N19Rik,RIKEN cDNA 1700017N19 gene,10,,mRNA binding,,,IBA,PTN001039228 ,J:265628 
+MGI:2685229,4921511C20Rik,RIKEN cDNA 4921511C20 gene,X,,mRNA binding,,,IBA,PTN001318954 ,J:265628 
+MGI:1918238,4931428L18Rik,RIKEN cDNA 4931428L18 gene,1,,mRNA binding,,,IBA,PTN000462807 ,J:265628 
+MGI:1917115,A1cf,APOBEC1 complementation factor,19,,mRNA binding,,,IBA,PTN002723140 ,J:265628 
+MGI:1917115,A1cf,APOBEC1 complementation factor,19,,mRNA binding,,,ISO,RGD:619834 ,J:155856 
+MGI:87879,Aco1,aconitase 1,4,,iron-responsive element binding,,,IBA,PTN000186705 ,J:265628 
+MGI:87879,Aco1,aconitase 1,4,,iron-responsive element binding,uses Tfrc,,IDA,,J:66321 
+MGI:87879,Aco1,aconitase 1,4,,iron-responsive element binding,happens in brown fat|happens in metanephros,,IDA,,J:87889 
+MGI:87879,Aco1,aconitase 1,4,,iron-responsive element binding,happens in fibroblast,,IDA,,J:94824 
+MGI:87879,Aco1,aconitase 1,4,,iron-responsive element binding,,,IDA,,J:95352 
+MGI:87879,Aco1,aconitase 1,4,,iron-responsive element binding,,,ISO,RGD:2019 ,J:155856 
+MGI:87879,Aco1,aconitase 1,4,,iron-responsive element binding,,,ISO,P21399 ,J:164563 
+MGI:87879,Aco1,aconitase 1,4,,mRNA 5'-UTR binding,,,ISO,RGD:2019 ,J:155856 
+MGI:2446632,Ago2,argonaute RISC catalytic subunit 2,15,,mRNA binding,,,IDA,,J:167546 J:201967 
+MGI:2446632,Ago2,argonaute RISC catalytic subunit 2,15,,mRNA cap binding,,,ISO,Q9UKV8 ,J:164563 
+MGI:1341044,Alyref,Aly/REF export factor,11,,mRNA binding,,,IBA,PTN000462807 ,J:265628 
+MGI:1913144,Alyref2,Aly/REF export factor 2,1,,mRNA binding,,,IBA,PTN000462807 ,J:265628 
+MGI:1196310,Angel2,angel homolog 2,1,,mRNA 3'-UTR binding,,,IBA,PTN002637015 ,J:265628 
+MGI:1196310,Angel2,angel homolog 2,1,,mRNA 3'-UTR binding,,,ISO,Q5VTE6 ,J:164563 
+MGI:103298,Apobec1,"apolipoprotein B mRNA editing enzyme, catalytic polypeptide 1",6,,mRNA 3'-UTR AU-rich region binding,uses Ptgs2,,IDA,,J:93425 
+MGI:103298,Apobec1,"apolipoprotein B mRNA editing enzyme, catalytic polypeptide 1",6,,mRNA binding,,,ISO,RGD:2133 ,J:155856 
+MGI:1276102,Aqr,aquarius,2,,mRNA binding,,,IBA,PTN000094619 ,J:265628 
+MGI:88067,Arc,activity regulated cytoskeletal-associated protein,15,,mRNA binding,,,ISO,RGD:62037 ,J:155856 
+MGI:1338011,Auh,AU RNA binding protein/enoyl-coenzyme A hydratase,13,,mRNA 3'-UTR binding,,,ISO,Q13825 ,J:164563 
+MGI:1922638,Boll,"boule homolog, RNA binding protein",1,,mRNA 3'-UTR binding,,,IBA,PTN000877352 ,J:265628 
+MGI:1922638,Boll,"boule homolog, RNA binding protein",1,,mRNA binding,,,IEA,IPR037366 ,J:72247 
+MGI:1194505,C1qbp,"complement component 1, q subcomponent binding protein",11,,mRNA binding,,,IDA,,J:196232 
+MGI:88252,Calr,calreticulin,8,,mRNA binding,,,IDA,,J:140380 
+MGI:88252,Calr,calreticulin,8,,mRNA binding,,,ISO,RGD:620288 ,J:155856 
+MGI:88252,Calr,calreticulin,8,,mRNA binding,,,ISO,P27797 ,J:164563 
+MGI:1196368,Carhsp1,calcium regulated heat stable protein 1,16,,mRNA 3'-UTR binding,,,IBA,PTN000311282 ,J:265628 
+MGI:1196368,Carhsp1,calcium regulated heat stable protein 1,16,,mRNA 3'-UTR binding,,,ISO,Q9Y2V2 ,J:164563 
+MGI:107185,Cct5,"chaperonin containing Tcp1, subunit 5 (epsilon)",15,,mRNA 3'-UTR binding,,,ISO,P48643 ,J:164563 
+MGI:107185,Cct5,"chaperonin containing Tcp1, subunit 5 (epsilon)",15,,mRNA 5'-UTR binding,,,ISO,P48643 ,J:164563 
+MGI:1918963,Cdc40,cell division cycle 40,10,,mRNA binding,,,IBA,PTN000457693 ,J:265628 
+MGI:1342295,Celf1,"CUGBP, Elav-like family member 1",2,,mRNA 3'-UTR binding,,,IBA,PTN002539198 ,J:265628 
+MGI:1342295,Celf1,"CUGBP, Elav-like family member 1",2,,mRNA 3'-UTR binding,,,ISO,RGD:1307721 ,J:155856 
+MGI:1342295,Celf1,"CUGBP, Elav-like family member 1",2,,mRNA 3'-UTR binding,,,ISO,Q92879 ,J:164563 
+MGI:1342295,Celf1,"CUGBP, Elav-like family member 1",2,,mRNA 5'-UTR binding,"uses PR:Q61701-1,uses PR:Q61701-6,uses PR:Q61701-10,happens in neuroblast (sensu Vertebrata)",PR:P28659-1,IDA,,J:287170 
+MGI:1342295,Celf1,"CUGBP, Elav-like family member 1",2,,mRNA binding,,,IBA,PTN000609546 ,J:265628 
+MGI:1342295,Celf1,"CUGBP, Elav-like family member 1",2,,mRNA binding,"uses PR:Q61701-1,uses PR:Q61701-4,uses PR:Q61701-6,uses PR:Q61701-10,happens in neocortex",,IDA,,J:287170 
+MGI:1342295,Celf1,"CUGBP, Elav-like family member 1",2,,mRNA binding,uses Ppargc1a,,IPI,,J:245403 
+MGI:1342295,Celf1,"CUGBP, Elav-like family member 1",2,,mRNA binding,,,ISO,Q92879 ,J:164563 
+MGI:1338822,Celf2,"CUGBP, Elav-like family member 2",2,,mRNA 3'-UTR binding,,,IBA,PTN002539198 ,J:265628 
+MGI:1338822,Celf2,"CUGBP, Elav-like family member 2",2,,mRNA 3'-UTR binding,,,ISO,RGD:68347 ,J:155856 
+MGI:1338822,Celf2,"CUGBP, Elav-like family member 2",2,,mRNA binding,,,IBA,PTN000609546 ,J:265628 
+MGI:1926034,Celf3,"CUGBP, Elav-like family member 3",3,,mRNA binding,,,IBA,PTN000609546 ,J:265628 
+MGI:1932407,Celf4,"CUGBP, Elav-like family member 4",18,,mRNA binding,,,IBA,PTN000609546 ,J:265628 
+MGI:1932407,Celf4,"CUGBP, Elav-like family member 4",18,,mRNA binding,,,IDA,,J:67386 
+MGI:2442333,Celf5,"CUGBP, Elav-like family member 5",10,,mRNA binding,,,IBA,PTN000609546 ,J:265628 
+MGI:1923433,Celf6,"CUGBP, Elav-like family member 6",9,,mRNA binding,,,IBA,PTN000609546 ,J:265628 
+MGI:1913761,Chtop,chromatin target of PRMT1,3,,mRNA binding,,,IBA,PTN000462807 ,J:265628 
+MGI:893588,Cirbp,cold inducible RNA binding protein,10,,mRNA 3'-UTR binding,,,ISO,Q14011 ,J:164563 
+MGI:1921398,Cluh,clustered mitochondria (cluA/CLU1) homolog,11,,mRNA binding,,,IBA,PTN000287979 ,J:265628 
+MGI:1921398,Cluh,clustered mitochondria (cluA/CLU1) homolog,11,,mRNA binding,,,ISO,O75153 ,J:164563 
+MGI:88431,Cnbp,cellular nucleic acid binding protein,6,,mRNA binding,,,IBA,PTN000543537 ,J:265628 
+MGI:1334462,Copa,coatomer protein complex subunit alpha,1,,mRNA binding,,,IDA,,J:170496 
+MGI:108442,Cpeb1,cytoplasmic polyadenylation element binding protein 1,7,,mRNA 3'-UTR AU-rich region binding,,,IDA,,J:204958 
+MGI:108442,Cpeb1,cytoplasmic polyadenylation element binding protein 1,7,,mRNA 3'-UTR binding,,,IBA,PTN000286163 ,J:265628 
+MGI:108442,Cpeb1,cytoplasmic polyadenylation element binding protein 1,7,,mRNA 3'-UTR binding,,,ISO,RGD:1310421 ,J:155856 
+MGI:108442,Cpeb1,cytoplasmic polyadenylation element binding protein 1,7,,mRNA binding,uses Sycp1|uses Sycp3,,IDA,,J:102097 
+MGI:2442640,Cpeb2,cytoplasmic polyadenylation element binding protein 2,5,,mRNA 3'-UTR AU-rich region binding,,,IDA,,J:204958 
+MGI:2442640,Cpeb2,cytoplasmic polyadenylation element binding protein 2,5,,mRNA 3'-UTR binding,,,IBA,PTN000286163 ,J:265628 
+MGI:2443075,Cpeb3,cytoplasmic polyadenylation element binding protein 3,19,,mRNA 3'-UTR AU-rich region binding,,,IDA,,J:119665 
+MGI:2443075,Cpeb3,cytoplasmic polyadenylation element binding protein 3,19,,mRNA 3'-UTR binding,,,IBA,PTN000286163 ,J:265628 
+MGI:2443075,Cpeb3,cytoplasmic polyadenylation element binding protein 3,19,,mRNA 3'-UTR binding,,,IDA,,J:178916 J:186714 J:202741 
+MGI:2443075,Cpeb3,cytoplasmic polyadenylation element binding protein 3,19,,mRNA 3'-UTR binding,,,ISO,Q8NE35 ,J:164563 
+MGI:1914829,Cpeb4,cytoplasmic polyadenylation element binding protein 4,11,,mRNA 3'-UTR binding,,,IBA,PTN000286163 ,J:265628 
+MGI:2679722,Cpsf1,cleavage and polyadenylation specific factor 1,15,,mRNA 3'-UTR AU-rich region binding,,,ISO,Q10570 ,J:164563 
+MGI:1913948,Cpsf6,cleavage and polyadenylation specific factor 6,10,,mRNA binding,,,ISO,Q16630 ,J:164563 
+MGI:88527,Cryz,"crystallin, zeta",3,,mRNA 3'-UTR binding,,,IBA,PTN001364171 ,J:265628 
+MGI:88527,Cryz,"crystallin, zeta",3,,mRNA 3'-UTR binding,,,ISO,RGD:1311639 ,J:155856 
+MGI:88527,Cryz,"crystallin, zeta",3,,mRNA 3'-UTR binding,,,ISO,Q08257 ,J:164563 
+MGI:2146027,Csdc2,"cold shock domain containing C2, RNA binding",15,,mRNA 3'-UTR binding,,,IBA,PTN000311282 ,J:265628 
+MGI:1343054,Cstf2,"cleavage stimulation factor, 3' pre-RNA subunit 2",X,,mRNA binding,,,IBA,PTN000566843 ,J:265628 
+MGI:1932622,Cstf2t,"cleavage stimulation factor, 3' pre-RNA subunit 2, tau",19,,mRNA binding,,,IBA,PTN000566843 ,J:265628 
+MGI:1351825,Cstf3,"cleavage stimulation factor, 3' pre-RNA, subunit 3",2,,mRNA binding,,,IBA,PTN000463331 ,J:265628 
+MGI:91842,D1Pas1,"DNA segment, Chr 1, Pasteur Institute 1",1,,mRNA 5'-UTR binding,,,ISO,O00571 ,J:164563 
+MGI:91842,D1Pas1,"DNA segment, Chr 1, Pasteur Institute 1",1,,mRNA binding,,,ISO,O00571 ,J:164563 
+MGI:1917498,Dazap1,DAZ associated protein 1,10,,mRNA 3'-UTR binding,,,IBA,PTN002689981 ,J:265628 
+MGI:1342328,Dazl,deleted in azoospermia-like,17,,mRNA 3'-UTR binding,,,IBA,PTN000877352 ,J:265628 
+MGI:1342328,Dazl,deleted in azoospermia-like,17,,mRNA 3'-UTR binding,,,IDA,,J:74010 
+MGI:1342328,Dazl,deleted in azoospermia-like,17,,mRNA binding,,,IEA,IPR037366 ,J:72247 
+MGI:1923151,Dcp1a,decapping mRNA 1A,14,,mRNA binding,,,IBA,PTN000418281 ,J:265628 
+MGI:2442404,Dcp1b,decapping mRNA 1B,6,,mRNA binding,,,IBA,PTN000418281 ,J:265628 
+MGI:103064,Ddx3x,"DEAD box helicase 3, X-linked",X,,mRNA 5'-UTR binding,,,ISO,O00571 ,J:164563 
+MGI:103064,Ddx3x,"DEAD box helicase 3, X-linked",X,,mRNA binding,,,ISO,O00571 ,J:164563 
+MGI:105037,Ddx5,DEAD box helicase 5,11,,mRNA 3'-UTR binding,,,ISO,P17844 ,J:164563 
+MGI:104976,Ddx6,DEAD (Asp-Glu-Ala-Asp) box polypeptide 6,9,,mRNA binding,,,IBA,PTN002777617 ,J:265628 
+MGI:1915434,Denr,density-regulated protein,5,,mRNA binding,,,IBA,PTN000300443 ,J:265628 
+MGI:94890,Dhfr,dihydrofolate reductase,13,,mRNA binding,,,ISO,P00374 ,J:164563 
+MGI:94890,Dhfr,dihydrofolate reductase,13,,mRNA binding,,,ISO,Q86XF0 ,J:164563 
+MGI:94890,Dhfr,dihydrofolate reductase,13,,sequence-specific mRNA binding,,,ISO,P00374 ,J:164563 
+MGI:108177,Dhx9,DEAH (Asp-Glu-Ala-His) box polypeptide 9,1,,mRNA binding,,,ISO,Q08211 ,J:164563 
+MGI:108177,Dhx9,DEAH (Asp-Glu-Ala-His) box polypeptide 9,1,,sequence-specific mRNA binding,,,ISO,Q08211 ,J:164563 
+MGI:2445102,Dhx33,DEAH (Asp-Glu-Ala-His) box polypeptide 33,11,,mRNA binding,,,ISO,Q9H6R0 ,J:164563 
+MGI:1919412,Dhx36,DEAH (Asp-Glu-Ala-His) box polypeptide 36,3,,mRNA 3'-UTR AU-rich region binding,,,ISO,Q9H2U1 ,J:164563 
+MGI:1919412,Dhx36,DEAH (Asp-Glu-Ala-His) box polypeptide 36,3,,mRNA 3'-UTR binding,,,ISO,Q9H2U1 ,J:164563 
+MGI:1919412,Dhx36,DEAH (Asp-Glu-Ala-His) box polypeptide 36,3,,mRNA 5'-UTR binding,,,ISO,Q9H2U1 ,J:164563 
+MGI:2447763,Dnd1,DND microRNA-mediated repression inhibitor 1,18,,mRNA 3'-UTR binding,,,ISO,Q8IYX4 ,J:164563 
+MGI:2447763,Dnd1,DND microRNA-mediated repression inhibitor 1,18,,mRNA binding,,,IBA,PTN002723140 ,J:265628 
+MGI:101800,Dppa5a,developmental pluripotency associated 5A,9,,mRNA binding,,,IBA,PTN001264421 ,J:265628 
+MGI:101800,Dppa5a,developmental pluripotency associated 5A,9,,mRNA binding,,,IDA,,J:115671 
+MGI:1890444,Dxo,decapping exoribonuclease,17,,mRNA binding,,,IDA,,J:196446 
+MGI:2142951,Edc3,enhancer of mRNA decapping 3,9,,mRNA binding,,,IBA,PTN000341086 ,J:265628 
+MGI:1096881,Eef1a1,eukaryotic translation elongation factor 1 alpha 1,9,,mRNA binding,,,ISO,RGD:67387 ,J:155856 
+MGI:2137092,Eefsec,"eukaryotic elongation factor, selenocysteine-tRNA-specific",6,,selenocysteine insertion sequence binding,,,IDA,,J:192960 
+MGI:1098684,Eif2a,eukaryotic translation initiation factor 2A,3,,mRNA binding,,,IBA,PTN000325517 ,J:265628 
+MGI:1914454,Eif2s2,"eukaryotic translation initiation factor 2, subunit 2 (beta)",2,,mRNA binding,,,IBA,PTN000543461 ,J:265628 
+MGI:95301,Eif3a,"eukaryotic translation initiation factor 3, subunit A",19,,mRNA binding,,,IBA,PTN000360893 ,J:265628 
+MGI:1933181,Eif3d,"eukaryotic translation initiation factor 3, subunit D",15,,mRNA cap binding,,,ISO,O15371 ,J:164563 
+MGI:1923731,Eif4a3,eukaryotic translation initiation factor 4A3,11,,mRNA binding,,,IBA,PTN002777794 ,J:265628 
+MGI:1923731,Eif4a3,eukaryotic translation initiation factor 4A3,11,,mRNA binding,,,ISO,P38919 ,J:164563 
+MGI:1923731,Eif4a3,eukaryotic translation initiation factor 4A3,11,,selenocysteine insertion sequence binding,,,ISO,RGD:1591139 ,J:155856 
+MGI:3644226,Eif4a3l1,eukaryotic translation initiation factor 4A3 like 1,6,,mRNA binding,,,IBA,PTN002777794 ,J:265628 
+MGI:3644226,Eif4a3l1,eukaryotic translation initiation factor 4A3 like 1,6,,mRNA binding,,,ISO,P38919 ,J:164563 
+MGI:3644226,Eif4a3l1,eukaryotic translation initiation factor 4A3 like 1,6,,selenocysteine insertion sequence binding,,,ISO,RGD:1591139 ,J:155856 
+MGI:3646594,Eif4a3l2,eukaryotic translation initiation factor 4A3 like 2,6,,mRNA binding,,,IBA,PTN002777794 ,J:265628 
+MGI:1921453,Eif4enif1,eukaryotic translation initiation factor 4E nuclear import factor 1,11,,mRNA binding,,,IBA,PTN001283523 ,J:265628 
+MGI:1921453,Eif4enif1,eukaryotic translation initiation factor 4E nuclear import factor 1,11,,mRNA binding,,,IDA,,J:217461 
+MGI:2384784,Eif4g1,"eukaryotic translation initiation factor 4, gamma 1",16,,mRNA binding,,,IBA,PTN000583430 ,J:265628 
+MGI:2384784,Eif4g1,"eukaryotic translation initiation factor 4, gamma 1",16,,mRNA binding,,,ISO,Q04637 ,J:164563 
+MGI:109207,Eif4g2,"eukaryotic translation initiation factor 4, gamma 2",7,,mRNA binding,,,IBA,PTN000583430 ,J:265628 
+MGI:1923935,Eif4g3,"eukaryotic translation initiation factor 4 gamma, 3",4,,mRNA binding,,,IBA,PTN000583430 ,J:265628 
+MGI:1100851,Elavl1,"ELAV (embryonic lethal, abnormal vision)-like 1 (Hu antigen R)",8,,mRNA 3'-UTR AU-rich region binding,,,IDA,,J:235263 J:235264 
+MGI:1100851,Elavl1,"ELAV (embryonic lethal, abnormal vision)-like 1 (Hu antigen R)",8,,mRNA 3'-UTR AU-rich region binding,,,ISO,Q15717 ,J:164563 J:191937 
+MGI:1100851,Elavl1,"ELAV (embryonic lethal, abnormal vision)-like 1 (Hu antigen R)",8,,mRNA 3'-UTR binding,"uses UniProtKB:P28659,is a part of posttranscriptional gene silencing,happens in heart",,IDA,,J:298275 
+MGI:1100851,Elavl1,"ELAV (embryonic lethal, abnormal vision)-like 1 (Hu antigen R)",8,,mRNA 3'-UTR binding,,,IDA,,J:207885 
+MGI:1100851,Elavl1,"ELAV (embryonic lethal, abnormal vision)-like 1 (Hu antigen R)",8,,mRNA 3'-UTR binding,,,ISO,RGD:1308649 ,J:155856 
+MGI:1100851,Elavl1,"ELAV (embryonic lethal, abnormal vision)-like 1 (Hu antigen R)",8,,mRNA 3'-UTR binding,,,ISO,Q15717 ,J:164563 
+MGI:1100851,Elavl1,"ELAV (embryonic lethal, abnormal vision)-like 1 (Hu antigen R)",8,,mRNA binding,,,IDA,,J:235264 
+MGI:109157,Elavl3,ELAV like RNA binding protein 3,9,,mRNA 3'-UTR AU-rich region binding,,,IDA,,J:152741 
+MGI:109157,Elavl3,ELAV like RNA binding protein 3,9,,mRNA 3'-UTR AU-rich region binding,,,ISO,Q14576 ,J:164563 
+MGI:107427,Elavl4,ELAV like RNA binding protein 4,4,,mRNA 3'-UTR AU-rich region binding,,,ISO,P26378 ,J:164563 
+MGI:107427,Elavl4,ELAV like RNA binding protein 4,4,,mRNA 3'-UTR binding,,,ISO,RGD:1560027 ,J:155856 
+MGI:107427,Elavl4,ELAV like RNA binding protein 4,4,,mRNA 3'-UTR binding,,,ISO,P26378 ,J:164563 
+MGI:107427,Elavl4,ELAV like RNA binding protein 4,4,,mRNA binding,,,IDA,,J:201521 J:289078 
+MGI:107427,Elavl4,ELAV like RNA binding protein 4,4,,mRNA binding,,,ISO,RGD:1560027 ,J:155856 
+MGI:1917326,Esrp1,epithelial splicing regulatory protein 1,4,,mRNA binding,,,IBA,PTN001018050 ,J:265628 
+MGI:1917326,Esrp1,epithelial splicing regulatory protein 1,4,,mRNA binding,,,ISO,Q6NXG1 ,J:164563 
+MGI:1924661,Esrp2,epithelial splicing regulatory protein 2,8,,mRNA binding,,,IBA,PTN001018050 ,J:265628 
+MGI:1924661,Esrp2,epithelial splicing regulatory protein 2,8,,mRNA binding,,,ISO,Q9H6T0 ,J:164563 
+MGI:2385071,Etf1,eukaryotic translation termination factor 1,18,,sequence-specific mRNA binding,,,IBA,PTN000012041 ,J:265628 
+MGI:2385071,Etf1,eukaryotic translation termination factor 1,18,,sequence-specific mRNA binding,,,ISO,P62495 ,J:164563 
+MGI:1923576,Exosc4,exosome component 4,15,,mRNA 3'-UTR AU-rich region binding,,,ISO,Q9NPD3 ,J:164563 
+MGI:1916889,Exosc8,exosome component 8,3,,mRNA 3'-UTR AU-rich region binding,,,ISO,Q96B26 ,J:164563 
+MGI:1355319,Exosc9,exosome component 9,3,,mRNA 3'-UTR AU-rich region binding,,,ISO,Q06265 ,J:164563 
+MGI:95513,Fech,ferrochelatase,18,,iron-responsive element binding,,,IDA,,J:28927 
+MGI:95564,Fmr1,FMRP translational regulator 1,X,,mRNA 3'-UTR binding,,,IBA,PTN001318100 ,J:265628 
+MGI:95564,Fmr1,FMRP translational regulator 1,X,,mRNA 3'-UTR binding,,,IDA,,J:87312 J:231207 
+MGI:95564,Fmr1,FMRP translational regulator 1,X,,mRNA 3'-UTR binding,,,ISO,Q06787 ,J:164563 
+MGI:95564,Fmr1,FMRP translational regulator 1,X,,mRNA 5'-UTR binding,,,ISO,Q06787 ,J:164563 
+MGI:95564,Fmr1,FMRP translational regulator 1,X,,mRNA binding,,,IDA,,J:87312 
+MGI:95564,Fmr1,FMRP translational regulator 1,X,,mRNA binding,,,ISO,RGD:2623 ,J:155856 
+MGI:95564,Fmr1,FMRP translational regulator 1,X,,mRNA binding,,,ISO,Q06787 ,J:164563 
+MGI:95564,Fmr1,FMRP translational regulator 1,X,,sequence-specific mRNA binding,,,ISO,Q06787 ,J:164563 
+MGI:1196294,Fubp1,far upstream element (FUSE) binding protein 1,3,,mRNA binding,,,IBA,PTN000032600 ,J:265628 
+MGI:2443699,Fubp3,far upstream element (FUSE) binding protein 3,2,,mRNA binding,,,IBA,PTN000032600 ,J:265628 
+MGI:1353633,Fus,fused in sarcoma,7,,mRNA 3'-UTR binding,,,IDA,,J:240782 
+MGI:104860,Fxr1,"fragile X mental retardation gene 1, autosomal homolog",3,,mRNA 3'-UTR binding,,,IBA,PTN001318100 ,J:265628 
+MGI:104860,Fxr1,"fragile X mental retardation gene 1, autosomal homolog",3,,mRNA 3'-UTR binding,,PR:Q61584-5,IDA,,J:96927 
+MGI:104860,Fxr1,"fragile X mental retardation gene 1, autosomal homolog",3,,mRNA binding,,,IEA,IPR040148 ,J:72247 
+MGI:1346074,Fxr2,"fragile X mental retardation, autosomal homolog 2",11,,mRNA 3'-UTR binding,,,IBA,PTN001318100 ,J:265628 
+MGI:1346074,Fxr2,"fragile X mental retardation, autosomal homolog 2",11,,mRNA binding,,,IEA,IPR040148 ,J:72247 
+MGI:1917955,Fyttd1,forty-two-three domain containing 1,16,,mRNA binding,,,IBA,PTN002325909 ,J:265628 
+MGI:1917955,Fyttd1,forty-two-three domain containing 1,16,,mRNA binding,,,ISO,Q96QD9 ,J:164563 
+MGI:1351465,G3bp1,GTPase activating protein (SH3 domain) binding protein 1,11,,mRNA binding,,,IBA,PTN000074904 ,J:265628 
+MGI:1351465,G3bp1,GTPase activating protein (SH3 domain) binding protein 1,11,,mRNA binding,uses Ctnnb1,,IDA,,J:183055 
+MGI:2442040,G3bp2,GTPase activating protein (SH3 domain) binding protein 2,5,,mRNA binding,,,IBA,PTN000074904 ,J:265628 
+MGI:2449311,Gemin5,gem nuclear organelle associated protein 5,11,,mRNA 3'-UTR binding,,,IDA,,J:238443 
+MGI:2449311,Gemin5,gem nuclear organelle associated protein 5,11,,mRNA 3'-UTR binding,,,ISO,Q8TEQ6 ,J:164563 
+MGI:2685228,Gm382,predicted gene 382,X,,mRNA binding,,,IBA,PTN001318954 ,J:265628 
+MGI:3782481,Gm4301,predicted gene 4301,10,,mRNA binding,,,IBA,PTN000462807 ,J:265628 
+MGI:3782482,Gm4302,predicted gene 4302,10,,mRNA binding,,,IBA,PTN000462807 ,J:265628 
+MGI:3782483,Gm4303,predicted gene 4303,10,,mRNA binding,,,IBA,PTN000462807 ,J:265628 
+MGI:3782524,Gm4340,predicted gene 4340,10,,mRNA binding,,,IBA,PTN000462807 ,J:265628 
+MGI:3649020,Gm5698,predicted gene 5698,1,,mRNA binding,,,IBA,PTN000462807 ,J:265628 
+MGI:5434648,Gm21293,"predicted gene, 21293",10,,mRNA binding,,,IBA,PTN000462807 ,J:265628 
+MGI:5439461,Gm21992,predicted gene 21992,19,,mRNA binding,,,IBA,PTN002751717 ,J:265628 
+MGI:5804828,Gm45713,predicted gene 45713,7,,mRNA binding,,,IBA,PTN000166701 ,J:265628 
+MGI:1353651,Gnl3,guanine nucleotide binding protein-like 3 (nucleolar),14,,mRNA 5'-UTR binding,,,ISO,Q9BVP2 ,J:164563 
+MGI:99256,Hdlbp,high density lipoprotein (HDL) binding protein,1,,mRNA binding,,,IBA,PTN001318954 ,J:265628 
+MGI:1924384,Hnrnpa0,heterogeneous nuclear ribonucleoprotein A0,13,,mRNA 3'-UTR AU-rich region binding,,,IDA,,J:180488 
+MGI:1924384,Hnrnpa0,heterogeneous nuclear ribonucleoprotein A0,13,,mRNA 3'-UTR AU-rich region binding,,,ISO,Q13151 ,J:164563 
+MGI:1924384,Hnrnpa0,heterogeneous nuclear ribonucleoprotein A0,13,,mRNA binding,,,IBA,PTN002690849 ,J:265628 
+MGI:104820,Hnrnpa1,heterogeneous nuclear ribonucleoprotein A1,15,,mRNA 3'-UTR binding,,,ISO,RGD:69234 ,J:155856 
+MGI:104820,Hnrnpa1,heterogeneous nuclear ribonucleoprotein A1,15,,mRNA binding,,,ISO,RGD:69234 ,J:155856 
+MGI:104820,Hnrnpa1,heterogeneous nuclear ribonucleoprotein A1,15,,sequence-specific mRNA binding,,,ISO,RGD:69234 ,J:155856 
+MGI:104819,Hnrnpa2b1,heterogeneous nuclear ribonucleoprotein A2/B1,6,,mRNA 3'-UTR binding,,,ISO,RGD:1310403 ,J:155856 
+MGI:104819,Hnrnpa2b1,heterogeneous nuclear ribonucleoprotein A2/B1,6,,mRNA 3'-UTR binding,,,ISO,P22626 ,J:164563 
+MGI:104819,Hnrnpa2b1,heterogeneous nuclear ribonucleoprotein A2/B1,6,,mRNA CDS binding,,,ISO,RGD:1310403 ,J:155856 
+MGI:1917171,Hnrnpa3,heterogeneous nuclear ribonucleoprotein A3,2,,mRNA binding,,,ISO,RGD:727807 ,J:155856 
+MGI:107795,Hnrnpc,heterogeneous nuclear ribonucleoprotein C,14,,mRNA 3'-UTR binding,,,ISO,P07910 ,J:164563 
+MGI:107795,Hnrnpc,heterogeneous nuclear ribonucleoprotein C,14,,mRNA binding,,,IDA,,J:39647 
+MGI:107795,Hnrnpc,heterogeneous nuclear ribonucleoprotein C,14,,mRNA binding,,,ISO,RGD:1309982 ,J:155856 
+MGI:101947,Hnrnpd,heterogeneous nuclear ribonucleoprotein D,5,,mRNA 3'-UTR AU-rich region binding,,,ISO,RGD:620365 ,J:155856 
+MGI:101947,Hnrnpd,heterogeneous nuclear ribonucleoprotein D,5,,mRNA binding,,,ISO,RGD:620365 ,J:155856 
+MGI:99894,Hnrnpk,heterogeneous nuclear ribonucleoprotein K,13,,mRNA 3'-UTR binding,,,ISO,RGD:71058 ,J:155856 
+MGI:99894,Hnrnpk,heterogeneous nuclear ribonucleoprotein K,13,,mRNA binding,,,IBA,PTN000032600 ,J:265628 
+MGI:99894,Hnrnpk,heterogeneous nuclear ribonucleoprotein K,13,,mRNA CDS binding,,,ISO,RGD:71058 ,J:155856 
+MGI:104816,Hnrnpl,heterogeneous nuclear ribonucleoprotein L,7,,mRNA 3'-UTR binding,,,ISO,RGD:71059 ,J:155856 
+MGI:104816,Hnrnpl,heterogeneous nuclear ribonucleoprotein L,7,,mRNA binding,,,IBA,PTN002538397 ,J:265628 
+MGI:104816,Hnrnpl,heterogeneous nuclear ribonucleoprotein L,7,,mRNA CDS binding,,,ISO,RGD:71059 ,J:155856 
+MGI:1919942,Hnrnpll,heterogeneous nuclear ribonucleoprotein L-like,17,,mRNA binding,,,IBA,PTN002538397 ,J:265628 
+MGI:1919942,Hnrnpll,heterogeneous nuclear ribonucleoprotein L-like,17,,mRNA binding,,,ISO,Q8WVV9 ,J:164563 
+MGI:1926465,Hnrnpm,heterogeneous nuclear ribonucleoprotein M,17,,mRNA binding,,,IBA,PTN002345455 ,J:265628 
+MGI:1891692,Hnrnpr,heterogeneous nuclear ribonucleoprotein R,4,,mRNA 3'-UTR binding,,,ISO,RGD:631348 ,J:155856 
+MGI:1891692,Hnrnpr,heterogeneous nuclear ribonucleoprotein R,4,,mRNA binding,,,IBA,PTN002723140 ,J:265628 
+MGI:1858195,Hnrnpu,heterogeneous nuclear ribonucleoprotein U,1,,mRNA 3'-UTR binding,,,ISO,Q00839 ,J:164563 
+MGI:1890357,Igf2bp1,insulin-like growth factor 2 mRNA binding protein 1,11,,mRNA 3'-UTR binding,,,IBA,PTN000815570 ,J:265628 
+MGI:1890357,Igf2bp1,insulin-like growth factor 2 mRNA binding protein 1,11,,mRNA 3'-UTR binding,,,ISO,RGD:708580 ,J:155856 
+MGI:1890357,Igf2bp1,insulin-like growth factor 2 mRNA binding protein 1,11,,mRNA 3'-UTR binding,,,ISO,Q9NZI8 ,J:164563 
+MGI:1890357,Igf2bp1,insulin-like growth factor 2 mRNA binding protein 1,11,,mRNA 5'-UTR binding,,,ISO,Q9NZI8 ,J:164563 
+MGI:1890357,Igf2bp1,insulin-like growth factor 2 mRNA binding protein 1,11,,mRNA binding,,,IBA,PTN000032600 ,J:265628 
+MGI:1890357,Igf2bp1,insulin-like growth factor 2 mRNA binding protein 1,11,,mRNA binding,,,ISO,Q9NZI8 ,J:164563 
+MGI:1890358,Igf2bp2,insulin-like growth factor 2 mRNA binding protein 2,16,,mRNA 3'-UTR binding,,,IBA,PTN000815570 ,J:265628 
+MGI:1890358,Igf2bp2,insulin-like growth factor 2 mRNA binding protein 2,16,,mRNA 3'-UTR binding,,,ISO,Q9Y6M1 ,J:164563 
+MGI:1890358,Igf2bp2,insulin-like growth factor 2 mRNA binding protein 2,16,,mRNA 5'-UTR binding,,,ISO,Q9Y6M1 ,J:164563 
+MGI:1890358,Igf2bp2,insulin-like growth factor 2 mRNA binding protein 2,16,,mRNA binding,,,IBA,PTN000032600 ,J:265628 
+MGI:1890359,Igf2bp3,insulin-like growth factor 2 mRNA binding protein 3,6,,mRNA 3'-UTR binding,,,IBA,PTN000815570 ,J:265628 
+MGI:1890359,Igf2bp3,insulin-like growth factor 2 mRNA binding protein 3,6,,mRNA 3'-UTR binding,,,ISO,O00425 ,J:164563 
+MGI:1890359,Igf2bp3,insulin-like growth factor 2 mRNA binding protein 3,6,,mRNA 5'-UTR binding,,,ISO,O00425 ,J:164563 
+MGI:1890359,Igf2bp3,insulin-like growth factor 2 mRNA binding protein 3,6,,mRNA binding,,,IBA,PTN000032600 ,J:265628 
+MGI:1339973,Ilf3,interleukin enhancer binding factor 3,9,,mRNA 3'-UTR AU-rich region binding,,,ISO,Q12906 ,J:164563 
+MGI:1928268,Ireb2,iron responsive element binding protein 2,9,,iron-responsive element binding,,,IBA,PTN000186705 ,J:265628 
+MGI:1928268,Ireb2,iron responsive element binding protein 2,9,,iron-responsive element binding,happens in liver|happens in cerebellum|happens in metanephros|happens in brown fat,,IDA,,J:87889 
+MGI:1928268,Ireb2,iron responsive element binding protein 2,9,,iron-responsive element binding,,,IDA,,J:66321 
+MGI:1928268,Ireb2,iron responsive element binding protein 2,9,,iron-responsive element binding,,,ISO,RGD:621539 ,J:155856 
+MGI:1928268,Ireb2,iron responsive element binding protein 2,9,,iron-responsive element binding,,,ISO,P48200 ,J:164563 
+MGI:106214,Jrk,jerky,15,,mRNA binding,,,IDA,,J:73495 
+MGI:893579,Khdrbs1,"KH domain containing, RNA binding, signal transduction associated 1",4,,mRNA binding,,,IBA,PTN000129548 ,J:265628 
+MGI:2159649,Khdrbs2,"KH domain containing, RNA binding, signal transduction associated 2",1,,mRNA binding,,,IBA,PTN000129548 ,J:265628 
+MGI:1313312,Khdrbs3,"KH domain containing, RNA binding, signal transduction associated 3",15,,mRNA binding,,,IBA,PTN000129548 ,J:265628 
+MGI:2451333,Khnyn,KH and NYN domain containing,14,,mRNA binding,,,IBA,PTN001767779 ,J:265628 
+MGI:1336214,Khsrp,KH-type splicing regulatory protein,17,,mRNA 3'-UTR AU-rich region binding,,,ISO,Q92945 ,J:164563 
+MGI:1336214,Khsrp,KH-type splicing regulatory protein,17,,mRNA 3'-UTR binding,,,ISO,RGD:621828 ,J:155856 
+MGI:1336214,Khsrp,KH-type splicing regulatory protein,17,,mRNA binding,,,IBA,PTN000032600 ,J:265628 
+MGI:1336214,Khsrp,KH-type splicing regulatory protein,17,,mRNA binding,,,IDA,,J:188151 
+MGI:1890165,Larp1,"La ribonucleoprotein domain family, member 1",11,,mRNA 3'-UTR binding,,,ISO,Q6PKG0 ,J:164563 
+MGI:1890165,Larp1,"La ribonucleoprotein domain family, member 1",11,,mRNA 5'-UTR binding,,,ISO,Q6PKG0 ,J:164563 
+MGI:2443114,Larp4,"La ribonucleoprotein domain family, member 4",15,,mRNA 3'-UTR binding,,,ISO,Q71RC2 ,J:164563 
+MGI:106330,Larp4b,"La ribonucleoprotein domain family, member 4B",13,,mRNA 3'-UTR binding,,,ISO,Q92615 ,J:164563 
+MGI:1914807,Larp6,"La ribonucleoprotein domain family, member 6",9,,mRNA 5'-UTR binding,,,ISO,Q9BRS8 ,J:164563 
+MGI:1914807,Larp6,"La ribonucleoprotein domain family, member 6",9,,sequence-specific mRNA binding,,,ISO,Q9BRS8 ,J:164563 
+MGI:1890546,Lin28a,lin-28 homolog A,4,,mRNA binding,,,IDA,,J:121228 
+MGI:1890546,Lin28a,lin-28 homolog A,4,,sequence-specific mRNA binding,,,IDA,,J:235236 
+MGI:1914457,Lsm1,"LSM1 homolog, mRNA degradation associated",8,,mRNA binding,,,ISO,RGD:1304967 ,J:155856 
+MGI:1914320,Lsm14a,LSM14A mRNA processing body assembly factor,7,,mRNA binding,,,IBA,PTN000340056 ,J:265628 
+MGI:3040677,Lsm14b,LSM family member 14B,2,,mRNA binding,,,IBA,PTN000340056 ,J:265628 
+MGI:1914228,Luc7l,Luc7-like,17,,mRNA binding,,,IBA,PTN000271979 ,J:265628 
+MGI:2183260,Luc7l2,LUC7-like 2 (S. cerevisiae),6,,mRNA binding,,,IBA,PTN000271979 ,J:265628 
+MGI:1914934,Luc7l3,LUC7-like 3 (S. cerevisiae),11,,mRNA binding,,,IBA,PTN000271979 ,J:265628 
+MGI:1914934,Luc7l3,LUC7-like 3 (S. cerevisiae),11,,mRNA binding,,,ISO,O95232 ,J:164563 
+MGI:2444505,Marf1,meiosis regulator and mRNA stability 1,16,,mRNA binding involved in posttranscriptional gene silencing,,,IBA,PTN004460523 ,J:265628 
+MGI:1333813,Mbd2,methyl-CpG binding domain protein 2,18,,mRNA binding,,,IDA,,J:94991 
+MGI:99918,Mecp2,methyl CpG binding protein 2,X,,mRNA binding,,,IDA,,J:94991 
+MGI:1927165,Mettl3,methyltransferase like 3,14,,mRNA binding,,,ISO,Q86U44 ,J:164563 
+MGI:2442926,Mettl14,methyltransferase like 14,3,,mRNA binding,,,IBA,PTN000318665 ,J:265628 
+MGI:2442926,Mettl14,methyltransferase like 14,3,,mRNA binding,,,ISO,Q9HCE5 ,J:164563 
+MGI:2681847,Mex3d,mex3 RNA binding family member D,10,,mRNA 3'-UTR AU-rich region binding,,,ISO,Q86XN8 ,J:164563 
+MGI:2681847,Mex3d,mex3 RNA binding family member D,10,,mRNA 3'-UTR binding,,,ISO,AF458084 ,J:73065 
+MGI:2676911,Mir9-1,microRNA 9-1,3,,mRNA 3'-UTR binding,,,IDA,,J:286588 
+MGI:2676911,Mir9-1,microRNA 9-1,3,,mRNA 3'-UTR binding,,,IMP,,J:286588 
+MGI:2676911,Mir9-1,microRNA 9-1,3,,mRNA binding involved in posttranscriptional gene silencing,,,IDA,,J:286588 
+MGI:2676911,Mir9-1,microRNA 9-1,3,,mRNA binding involved in posttranscriptional gene silencing,,,IMP,,J:286588 
+MGI:2676885,Mir21a,microRNA 21a,11,,mRNA 3'-UTR binding,uses Hdac8,,IEP,,J:251316 
+MGI:2676885,Mir21a,microRNA 21a,11,,mRNA binding involved in posttranscriptional gene silencing,uses Hdac8,,IEP,,J:251316 
+MGI:5531333,Mir21b,microRNA 21b,3,,mRNA 3'-UTR binding,uses Hdac8,,IEP,,J:251316 
+MGI:5531333,Mir21b,microRNA 21b,3,,mRNA binding involved in posttranscriptional gene silencing,uses Hdac8,,IEP,,J:251316 
+MGI:5531395,Mir21c,microRNA 21c,8,,mRNA 3'-UTR binding,uses Hdac8,,IEP,,J:251316 
+MGI:5531395,Mir21c,microRNA 21c,8,,mRNA binding involved in posttranscriptional gene silencing,uses Hdac8,,IEP,,J:251316 
+MGI:2676897,Mir23a,microRNA 23a,8,,mRNA binding,uses Pten|uses 2700046G09Rik,,IDA,,J:201967 
+MGI:2676899,Mir24-1,microRNA 24-1,13,,mRNA 3'-UTR binding,,,IDA,,J:215255 
+MGI:2676899,Mir24-1,microRNA 24-1,13,,mRNA 3'-UTR binding,,,IMP,,J:215255 
+MGI:3618755,Mir24-2,microRNA 24-2,8,,mRNA 3'-UTR binding,,,IDA,,J:215255 
+MGI:3618755,Mir24-2,microRNA 24-2,8,,mRNA 3'-UTR binding,,,IMP,,J:215255 
+MGI:1917691,Mir124-2hg,Mir124-2 host gene (non-protein coding),3,,mRNA 3'-UTR binding,,,IDA,,J:203846 
+MGI:2676807,Mir124a-1,microRNA 124a-1,14,,mRNA binding,,,IDA,,J:150716 
+MGI:3618700,Mir124a-2,microRNA 124a-2,3,,mRNA binding,,,IDA,,J:150716 
+MGI:3618704,Mir124a-3,microRNA 124a-3,2,,mRNA binding,,,IDA,,J:150716 
+MGI:2676814,Mir129,microRNA 129,UN,,mRNA binding involved in posttranscriptional gene silencing,uses Kcna1,,IDA,,J:201521 
+MGI:2676820,Mir135a-1,microRNA 135a-1,9,,mRNA 3'-UTR binding,,,IDA,,J:286588 
+MGI:2676820,Mir135a-1,microRNA 135a-1,9,,mRNA 3'-UTR binding,,,IMP,,J:286588 
+MGI:2676820,Mir135a-1,microRNA 135a-1,9,,mRNA binding involved in posttranscriptional gene silencing,,,IDA,,J:286588 
+MGI:2676820,Mir135a-1,microRNA 135a-1,9,,mRNA binding involved in posttranscriptional gene silencing,,,IMP,,J:286588 
+MGI:2676850,Mir186,microRNA 186,3,,mRNA 3'-UTR binding,,,IMP,,J:231480 
+MGI:3711327,Mir294,microRNA 294,7,,mRNA binding,,,IDA,,J:167546 
+MGI:3783378,Mir466l,microRNA 466l,2,,mRNA 3'-UTR AU-rich region binding,,,IDA,,J:161235 
+MGI:3718564,Mir874,microRNA 874,13,,mRNA 3'-UTR binding,,,IDA,,J:206664 
+MGI:5562735,Mir7116,microRNA 7116,11,,mRNA binding,,,IDA,,J:243491 
+MGI:2676800,Mirlet7g,microRNA let7g,9,,mRNA 3'-UTR binding,,,IDA,,J:286588 
+MGI:2676800,Mirlet7g,microRNA let7g,9,,mRNA 3'-UTR binding,,,IMP,,J:286588 
+MGI:2676800,Mirlet7g,microRNA let7g,9,,mRNA binding involved in posttranscriptional gene silencing,,,IDA,,J:286588 
+MGI:2676800,Mirlet7g,microRNA let7g,9,,mRNA binding involved in posttranscriptional gene silencing,,,IMP,,J:286588 
+MGI:2137218,Mrpl13,mitochondrial ribosomal protein L13,15,,mRNA binding,,,IBA,PTN000166701 ,J:265628 
+MGI:1354367,Mrps7,mitchondrial ribosomal protein S7,11,,mRNA binding,,,IBA,PTN000128889 ,J:265628 
+MGI:1915244,Mrps11,mitochondrial ribosomal protein S11,7,,mRNA 5'-UTR binding,,,IBA,PTN000204884 ,J:265628 
+MGI:102491,mt-Ta,mitochondrially encoded tRNA alanine,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102490,mt-Tc,mitochondrially encoded tRNA cysteine,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102489,mt-Td,mitochondrially encoded tRNA aspartic acid,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102488,mt-Te,mitochondrially encoded tRNA glutamic acid,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102487,mt-Tf,mitochondrially encoded tRNA phenylalanine,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102486,mt-Tg,mitochondrially encoded tRNA glycine,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102485,mt-Th,mitochondrially encoded tRNA histidine,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102484,mt-Ti,mitochondrially encoded tRNA isoleucine,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102483,mt-Tk,mitochondrially encoded tRNA lysine,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102482,mt-Tl1,mitochondrially encoded tRNA leucine 1,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102481,mt-Tl2,mitochondrially encoded tRNA leucine 2,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102480,mt-Tm,mitochondrially encoded tRNA methionine,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102479,mt-Tn,mitochondrially encoded tRNA asparagine,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102478,mt-Tp,mitochondrially encoded tRNA proline,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102477,mt-Tq,mitochondrially encoded tRNA glutamine,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102476,mt-Tr,mitochondrially encoded tRNA arginine,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102475,mt-Ts1,mitochondrially encoded tRNA serine 1,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102474,mt-Ts2,mitochondrially encoded tRNA serine 2,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102473,mt-Tt,mitochondrially encoded tRNA threonine,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102472,mt-Tv,mitochondrially encoded tRNA valine,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102471,mt-Tw,mitochondrially encoded tRNA tryptophan,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:102470,mt-Ty,mitochondrially encoded tRNA tyrosine,MT,,triplet codon-amino acid adaptor activity,,,ISS,,J:22484 
+MGI:107624,Mvk,mevalonate kinase,5,,mRNA binding,,,ISO,RGD:621295 ,J:155856 
+MGI:107624,Mvk,mevalonate kinase,5,,sequence-specific mRNA binding,,,ISO,RGD:621295 ,J:155856 
+MGI:104592,Myef2,"myelin basic protein expression factor 2, repressor",2,,mRNA binding,,,IBA,PTN002345455 ,J:265628 
+MGI:1930780,Myh10,"myosin, heavy polypeptide 10, non-muscle",11,,mRNA 5'-UTR binding,,,ISO,P35580 ,J:164563 
+MGI:2136825,N4bp1,NEDD4 binding protein 1,8,,mRNA binding,,,ISO,O75113 ,J:164563 
+MGI:4413807,n-TCgca40,nuclear encoded tRNA cysteine 40 (anticodon GCA),6,,triplet codon-amino acid adaptor activity,,,IDA,,J:23858 
+MGI:4413892,n-THgtg2,nuclear encoded tRNA histidine 2 (anticodon GTG),3,,triplet codon-amino acid adaptor activity,,,ISS,,J:17544 
+MGI:4413893,n-THgtg3,nuclear encoded tRNA histidine 3 (anticodon GTG),2,,triplet codon-amino acid adaptor activity,,,ISS,,J:16297 
+MGI:4413895,n-THgtg5,nuclear encoded tRNA histidine 5 (anticodon GTG),2,,triplet codon-amino acid adaptor activity,,,ISS,,J:16297 
+MGI:4413898,n-THgtg8,nuclear encoded tRNA histidine 8 (anticodon GTG),3,,triplet codon-amino acid adaptor activity,,,ISS,,J:16297 
+MGI:4413733,n-TRtct5,nuclear encoded tRNA arginine 5 (anticodon TCT),1,,AGA codon-amino acid adaptor activity,,,IMP,,J:211326 
+MGI:4414022,n-TUtca2,nuclear encoded tRNA selenocysteine 2 (anticodon TCA),7,,triplet codon-amino acid adaptor activity,,,IDA,,J:16838 J:28801 
+MGI:2669254,Nanos1,nanos C2HC-type zinc finger 1,19,,mRNA binding,,,IBA,PTN000984469 ,J:265628 
+MGI:2676627,Nanos2,nanos C2HC-type zinc finger 2,7,,mRNA binding,,,IBA,PTN000984469 ,J:265628 
+MGI:2676627,Nanos2,nanos C2HC-type zinc finger 2,7,,mRNA binding,uses Rhox13,,IDA,,J:185766 
+MGI:2675387,Nanos3,nanos C2HC-type zinc finger 3,8,,mRNA binding,,,IBA,PTN000984469 ,J:265628 
+MGI:1891840,Ncbp1,nuclear cap binding protein subunit 1,4,,mRNA binding,,,IBA,PTN000275634 ,J:265628 
+MGI:1915342,Ncbp2,nuclear cap binding protein subunit 2,16,,mRNA binding,,,ISO,P52298 ,J:164563 
+MGI:1914124,Ncbp3,nuclear cap binding subunit 3,11,,mRNA binding,,,IBA,PTN000418368 ,J:265628 
+MGI:1914124,Ncbp3,nuclear cap binding subunit 3,11,,mRNA binding,,,ISO,Q53F19 ,J:164563 
+MGI:97286,Ncl,nucleolin,1,,mRNA 5'-UTR binding,,,ISO,P19338 ,J:164563 
+MGI:97286,Ncl,nucleolin,1,,selenocysteine insertion sequence binding,,,ISO,RGD:3153 ,J:155856 
+MGI:1098547,Nhp2,NHP2 ribonucleoprotein,11,,mRNA 3'-UTR binding,,,ISO,RGD:1309435 ,J:155856 
+MGI:109382,Noct,nocturnin,3,,mRNA binding,,,IDA,,J:165676 
+MGI:104297,Nova1,NOVA alternative splicing regulator 1,12,,mRNA 3'-UTR binding,,,IDA,,J:240782 
+MGI:104297,Nova1,NOVA alternative splicing regulator 1,12,,mRNA binding,,,IBA,PTN000032600 ,J:265628 
+MGI:104297,Nova1,NOVA alternative splicing regulator 1,12,,mRNA binding,happens in brain,,IDA,,J:60771 
+MGI:104297,Nova1,NOVA alternative splicing regulator 1,12,,mRNA binding,,,IDA,,J:306711 
+MGI:104297,Nova1,NOVA alternative splicing regulator 1,12,,sequence-specific mRNA binding,,,IDA,,J:306578 J:306636 
+MGI:104297,Nova1,NOVA alternative splicing regulator 1,12,,sequence-specific mRNA binding,,,ISO,P51513 ,J:164563 
+MGI:104296,Nova2,NOVA alternative splicing regulator 2,7,,mRNA binding,,,IBA,PTN000032600 ,J:265628 
+MGI:104296,Nova2,NOVA alternative splicing regulator 2,7,,mRNA binding,,,IDA,,J:306711 
+MGI:104296,Nova2,NOVA alternative splicing regulator 2,7,,sequence-specific mRNA binding,,,ISO,Q9UNW9 ,J:164563 
+MGI:2144305,Nsrp1,nuclear speckle regulatory protein 1,11,,mRNA binding,,,ISO,Q9H0G5 ,J:164563 
+MGI:1922936,Nudt16,nudix (nucleoside diphosphate linked moiety X)-type motif 16,9,,mRNA binding,,,ISO,Q96DE0 ,J:164563 
+MGI:1920782,Nudt16l2,nudix (nucleoside diphosphate linked moiety X)-type motif 16-like 2,9,,mRNA binding,,,ISO,Q96DE0 ,J:164563 
+MGI:1915469,Nudt21,nudix (nucleoside diphosphate linked moiety X)-type motif 21,8,,mRNA 3'-UTR AU-rich region binding,,,ISO,O43809 ,J:164563 
+MGI:1915469,Nudt21,nudix (nucleoside diphosphate linked moiety X)-type motif 21,8,,mRNA binding,,,IBA,PTN000316079 ,J:265628 
+MGI:1915469,Nudt21,nudix (nucleoside diphosphate linked moiety X)-type motif 21,8,,mRNA binding,,,ISO,O43809 ,J:164563 
+MGI:109404,Nup98,nucleoporin 98,7,,mRNA binding,,,ISO,P52948 ,J:164563 
+MGI:1858330,Nxf1,nuclear RNA export factor 1,19,,mRNA binding,,,IDA,,J:97549 
+MGI:1933192,Nxf2,nuclear RNA export factor 2,X,,mRNA binding,,,IDA,,J:97549 
+MGI:2685230,Nxf3,nuclear RNA export factor 3,X,,mRNA binding,,,IDA,,J:97549 
+MGI:2159343,Nxf7,nuclear RNA export factor 7,X,,mRNA binding,,,IDA,,J:97549 
+MGI:2652872,Nynrin,NYN domain and retroviral integrase containing,14,,mRNA binding,,,IBA,PTN001767779 ,J:265628 
+MGI:1349722,Pabpc1,"poly(A) binding protein, cytoplasmic 1",15,,mRNA 3'-UTR binding,,,IBA,PTN000610044 ,J:265628 
+MGI:1349722,Pabpc1,"poly(A) binding protein, cytoplasmic 1",15,,mRNA 3'-UTR binding,,,ISO,P11940 ,J:164563 
+MGI:1349722,Pabpc1,"poly(A) binding protein, cytoplasmic 1",15,,mRNA binding,,,ISO,RGD:619838 ,J:155856 
+MGI:1922908,Pabpc1l,"poly(A) binding protein, cytoplasmic 1-like",2,,mRNA 3'-UTR binding,,,IBA,PTN000610044 ,J:265628 
+MGI:1349723,Pabpc2,"poly(A) binding protein, cytoplasmic 2",18,,mRNA 3'-UTR binding,,,IBA,PTN000610044 ,J:265628 
+MGI:1349723,Pabpc2,"poly(A) binding protein, cytoplasmic 2",18,,mRNA 3'-UTR binding,,,ISO,P11940 ,J:164563 
+MGI:2385206,Pabpc4,"poly(A) binding protein, cytoplasmic 4",4,,mRNA 3'-UTR binding,,,IBA,PTN000610044 ,J:265628 
+MGI:2385206,Pabpc4,"poly(A) binding protein, cytoplasmic 4",4,,mRNA binding,,,IDA,,J:213525 
+MGI:3643087,Pabpc4l,"poly(A) binding protein, cytoplasmic 4-like",3,,mRNA 3'-UTR binding,,,IBA,PTN000610044 ,J:265628 
+MGI:2136401,Pabpc5,"poly(A) binding protein, cytoplasmic 5",X,,mRNA 3'-UTR binding,,,IBA,PTN000610044 ,J:265628 
+MGI:1914793,Pabpc6,"poly(A) binding protein, cytoplasmic 6",17,,mRNA 3'-UTR binding,,,IBA,PTN000610044 ,J:265628 
+MGI:1914793,Pabpc6,"poly(A) binding protein, cytoplasmic 6",17,,mRNA 3'-UTR binding,,,ISO,P11940 ,J:164563 
+MGI:1915119,Paip2,polyadenylate-binding protein-interacting protein 2,18,,mRNA binding,happens in brain,,IDA,,J:197896 
+MGI:2135637,Park7,"Parkinson disease (autosomal recessive, early onset) 7",4,,mRNA binding,,,ISO,Q99497 ,J:164563 
+MGI:1345635,Pcbp1,poly(rC) binding protein 1,6,,mRNA binding,,,IBA,PTN000032600 ,J:265628 
+MGI:1345635,Pcbp1,poly(rC) binding protein 1,6,,mRNA binding,,,ISO,Q15365 ,J:164563 
+MGI:108202,Pcbp2,poly(rC) binding protein 2,15,,mRNA binding,,,IBA,PTN000032600 ,J:265628 
+MGI:1890470,Pcbp3,poly(rC) binding protein 3,10,,mRNA binding,,,IBA,PTN000032600 ,J:265628 
+MGI:1890471,Pcbp4,poly(rC) binding protein 4,9,,mRNA 3'-UTR binding,,,ISO,P57723 ,J:73065 
+MGI:1890471,Pcbp4,poly(rC) binding protein 4,9,,mRNA binding,,,IBA,PTN000032600 ,J:265628 
+MGI:1919579,Pcf11,PCF11 cleavage and polyadenylation factor subunit,7,,mRNA binding,,,IBA,PTN000408520 ,J:265628 
+MGI:1928897,Piwil1,piwi-like RNA-mediated gene silencing 1,5,,mRNA binding,,,IDA,,J:77015 J:112901 
+MGI:1930036,Piwil2,piwi-like RNA-mediated gene silencing 2,14,,mRNA binding,,,IDA,,J:147897 
+MGI:97591,Pkm,"pyruvate kinase, muscle",9,,mRNA binding,,,IDA,,J:277769 
+MGI:1921076,Poldip3,"polymerase (DNA-directed), delta interacting protein 3",15,,mRNA binding,,,IBA,PTN000462807 ,J:265628 
+MGI:1917118,Ppie,peptidylprolyl isomerase E (cyclophilin E),4,,mRNA binding,,,ISO,Q9UNP9 ,J:164563 
+MGI:2140494,Ppp1r8,"protein phosphatase 1, regulatory subunit 8",4,,mRNA binding,,,IBA,PTN002359305 ,J:265628 
+MGI:97791,Ptbp1,polypyrimidine tract binding protein 1,10,,mRNA binding,,,IBA,PTN002538397 ,J:265628 
+MGI:97791,Ptbp1,polypyrimidine tract binding protein 1,10,,mRNA binding,,,ISO,RGD:62047 ,J:155856 
+MGI:1860489,Ptbp2,polypyrimidine tract binding protein 2,3,,mRNA binding,,,IBA,PTN002538397 ,J:265628 
+MGI:1860489,Ptbp2,polypyrimidine tract binding protein 2,3,,mRNA binding,happens in cerebral cortex,,IDA,,J:185949 
+MGI:1860489,Ptbp2,polypyrimidine tract binding protein 2,3,,mRNA binding,,,IDA,,J:62658 
+MGI:1923334,Ptbp3,polypyrimidine tract binding protein 3,4,,mRNA binding,,,IBA,PTN002538397 ,J:265628 
+MGI:1931749,Pum1,pumilio RNA-binding family member 1,4,,mRNA 3'-UTR binding,,,IBA,PTN000283518 ,J:265628 
+MGI:1931749,Pum1,pumilio RNA-binding family member 1,4,,mRNA 3'-UTR binding,,,IDA,,J:182280 J:221497 
+MGI:1931749,Pum1,pumilio RNA-binding family member 1,4,,mRNA 3'-UTR binding,,,ISO,Q14671 ,J:164563 
+MGI:1931749,Pum1,pumilio RNA-binding family member 1,4,,mRNA binding,,,IBA,PTN000283516 ,J:265628 
+MGI:1931751,Pum2,pumilio RNA-binding family member 2,12,,mRNA 3'-UTR binding,,,IBA,PTN000283518 ,J:265628 
+MGI:1931751,Pum2,pumilio RNA-binding family member 2,12,,mRNA 3'-UTR binding,,,ISO,Q8TB72 ,J:164563 
+MGI:1931751,Pum2,pumilio RNA-binding family member 2,12,,mRNA binding,,,IBA,PTN000283516 ,J:265628 
+MGI:106253,Pum3,pumilio RNA-binding family member 3,19,,mRNA binding,,,IBA,PTN000333308 ,J:265628 
+MGI:1338779,Purb,purine rich element binding protein B,11,,mRNA binding,,,IDA,,J:114102 
+MGI:97837,Qk,"quaking, KH domain containing RNA binding",17,,mRNA binding,,,IBA,PTN000129548 ,J:265628 
+MGI:97837,Qk,"quaking, KH domain containing RNA binding",17,,mRNA binding,uses RefSeq:NM_011715,PR:Q9QYS9-6,IDA,,J:182851 
+MGI:97856,Rara,"retinoic acid receptor, alpha",11,,mRNA 5'-UTR binding,,,ISO,RGD:3534 ,J:155856 
+MGI:1919016,Raver1,"ribonucleoprotein, PTB-binding 1",9,,mRNA binding,,,IBA,PTN001142786 ,J:265628 
+MGI:2443623,Raver2,"ribonucleoprotein, PTB-binding 2",4,,mRNA binding,,,IBA,PTN001142786 ,J:265628 
+MGI:1926224,Rbfox1,"RNA binding protein, fox-1 homolog (C. elegans) 1",16,,mRNA 3'-UTR binding,,,IDA,,J:240782 
+MGI:1926224,Rbfox1,"RNA binding protein, fox-1 homolog (C. elegans) 1",16,,mRNA binding,,,IBA,PTN001037261 ,J:265628 
+MGI:1933973,Rbfox2,"RNA binding protein, fox-1 homolog (C. elegans) 2",15,,mRNA binding,,,IBA,PTN001037261 ,J:265628 
+MGI:1933973,Rbfox2,"RNA binding protein, fox-1 homolog (C. elegans) 2",15,,mRNA binding,,,IDA,,J:181631 
+MGI:106368,Rbfox3,"RNA binding protein, fox-1 homolog (C. elegans) 3",11,,mRNA binding,,,IBA,PTN001037261 ,J:265628 
+MGI:1100865,Rbm4,RNA binding motif protein 4,19,,mRNA 3'-UTR binding,,,IDA,,J:119742 
+MGI:1100865,Rbm4,RNA binding motif protein 4,19,,mRNA binding,,,IBA,PTN002751717 ,J:265628 
+MGI:1100865,Rbm4,RNA binding motif protein 4,19,,mRNA binding,,,ISO,Q9BWF3 ,J:164563 
+MGI:1913954,Rbm4b,RNA binding motif protein 4B,19,,mRNA binding,,,IBA,PTN002751717 ,J:265628 
+MGI:1933204,Rbm5,RNA binding motif protein 5,9,,mRNA binding,,,ISO,P52756 ,J:164563 
+MGI:1913129,Rbm8a,RNA binding motif protein 8a,3,,mRNA binding,,,IBA,PTN000566947 ,J:265628 
+MGI:1913129,Rbm8a,RNA binding motif protein 8a,3,,mRNA binding,,,IDA,,J:64698 
+MGI:3612447,Rbm8a2,RNA binding motif protein 8A2,1,,mRNA binding,,,IBA,PTN000566947 ,J:265628 
+MGI:1929092,Rbm14,RNA binding motif protein 14,19,,mRNA binding,,,IBA,PTN002751717 ,J:265628 
+MGI:2443205,Rbm15,RNA binding motif protein 15,3,,mRNA binding,,,IBA,PTN001142786 ,J:265628 
+MGI:2443205,Rbm15,RNA binding motif protein 15,3,,mRNA binding,,,ISO,Q96T37 ,J:164563 
+MGI:1923598,Rbm15b,RNA binding motif protein 15B,9,,mRNA binding,,,IBA,PTN001142786 ,J:265628 
+MGI:1920963,Rbm20,RNA binding motif protein 20,19,,mRNA binding,,,IBA,PTN002538397 ,J:265628 
+MGI:3610364,Rbm24,RNA binding motif protein 24,13,,mRNA 3'-UTR AU-rich region binding,,,ISO,Q9BX46 ,J:164563 
+MGI:3610364,Rbm24,RNA binding motif protein 24,13,,mRNA 3'-UTR binding,,,IBA,PTN002690896 ,J:265628 
+MGI:3610364,Rbm24,RNA binding motif protein 24,13,,mRNA 3'-UTR binding,,,IDA,,J:171772 
+MGI:3610364,Rbm24,RNA binding motif protein 24,13,,mRNA 3'-UTR binding,,,ISO,Q9BX46 ,J:164563 
+MGI:3610364,Rbm24,RNA binding motif protein 24,13,,mRNA CDS binding,,,ISO,Q9BX46 ,J:164563 
+MGI:3610364,Rbm24,RNA binding motif protein 24,13,,sequence-specific mRNA binding,,,ISO,Q9BX46 ,J:164563 
+MGI:1914289,Rbm25,RNA binding motif protein 25,12,,mRNA binding,,,IBA,PTN000428218 ,J:265628 
+MGI:1914289,Rbm25,RNA binding motif protein 25,12,,mRNA binding,,,ISO,P49756 ,J:164563 
+MGI:1889294,Rbm38,RNA binding motif protein 38,2,,mRNA 3'-UTR binding,,,ISO,Q9H0Z9 ,J:164563 
+MGI:1889294,Rbm38,RNA binding motif protein 38,2,,mRNA binding,,,IMP,,J:158325 
+MGI:1889294,Rbm38,RNA binding motif protein 38,2,,mRNA binding,,,ISO,Q9H0Z9 ,J:164563 
+MGI:3645057,Rbm46,RNA binding motif protein 46,3,,mRNA binding,,,IBA,PTN002723140 ,J:265628 
+MGI:2384294,Rbm47,RNA binding motif protein 47,5,,mRNA binding,,,IBA,PTN002723140 ,J:265628 
+MGI:1861774,Rbms1,"RNA binding motif, single stranded interacting protein 1",2,,mRNA 3'-UTR binding,,,IBA,PTN000610044 ,J:265628 
+MGI:1861776,Rbms2,"RNA binding motif, single stranded interacting protein 2",10,,mRNA 3'-UTR binding,,,IBA,PTN000610044 ,J:265628 
+MGI:2444477,Rbms3,"RNA binding motif, single stranded interacting protein",9,,mRNA 3'-UTR AU-rich region binding,,,ISO,Q6XE24 ,J:164563 
+MGI:2444477,Rbms3,"RNA binding motif, single stranded interacting protein",9,,mRNA 3'-UTR binding,,,IBA,PTN000610044 ,J:265628 
+MGI:2444477,Rbms3,"RNA binding motif, single stranded interacting protein",9,,mRNA 3'-UTR binding,,,IDA,,J:199211 
+MGI:1343044,Rbmx,"RNA binding motif protein, X chromosome",X,,mRNA binding,,,ISO,P38159 ,J:164563 
+MGI:104732,Rbmy,"RNA binding motif protein, Y chromosome",Y,,mRNA binding,,,ISO,P0DJD3 ,J:164563 
+MGI:1334446,Rbpms,RNA binding protein gene with multiple splicing,8,,mRNA binding,,,IBA,PTN002574557 ,J:265628 
+MGI:1919223,Rbpms2,RNA binding protein with multiple splicing 2,9,,mRNA binding,,,IBA,PTN002574557 ,J:265628 
+MGI:1919223,Rbpms2,RNA binding protein with multiple splicing 2,9,,mRNA binding,,,ISO,Q6ZRY4 ,J:164563 
+MGI:2685397,Rc3h1,RING CCCH (C3H) domains 1,1,,mRNA 3'-UTR binding,,,IDA,,J:162534 J:228359 J:229326 
+MGI:2685397,Rc3h1,RING CCCH (C3H) domains 1,1,,mRNA binding,,,IBA,PTN004405653 ,J:265628 
+MGI:2685397,Rc3h1,RING CCCH (C3H) domains 1,1,,mRNA binding,,,IDA,,J:196136 
+MGI:2442789,Rc3h2,ring finger and CCCH-type zinc finger domains 2,2,,mRNA binding,,,IBA,PTN004405653 ,J:265628 
+MGI:2442789,Rc3h2,ring finger and CCCH-type zinc finger domains 2,2,,mRNA binding,,,IDA,,J:196136 
+MGI:1095401,Rida,reactive intermediate imine deaminase A homolog,15,,mRNA binding,,,ISO,P52758 ,J:164563 
+MGI:1925927,Rnf20,ring finger protein 20,4,,mRNA 3'-UTR binding,,,ISO,Q5VTR2 ,J:164563 
+MGI:2142048,Rnf40,ring finger protein 40,7,,mRNA 3'-UTR binding,,,ISO,O75150 ,J:164563 
+MGI:97960,Rnps1,RNA binding protein with serine rich domain 1,17,,mRNA 3'-UTR binding,,,ISO,Q15287 ,J:164563 
+MGI:102854,Rpl5,ribosomal protein L5,5,,mRNA 3'-UTR binding,,,ISO,P46777 ,J:164563 
+MGI:102854,Rpl5,ribosomal protein L5,5,,mRNA 5'-UTR binding,,,ISO,P46777 ,J:164563 
+MGI:102854,Rpl5,ribosomal protein L5,5,,mRNA binding,,,ISO,RGD:619825 ,J:155856 
+MGI:108057,Rpl6,ribosomal protein L6,5,,mRNA binding,,,ISO,RGD:619826 ,J:155856 
+MGI:98073,Rpl7,ribosomal protein L7,1,,mRNA binding,,,ISO,P18124 ,J:4014 
+MGI:1351455,Rpl13a,ribosomal protein L13A,7,,mRNA binding,,,IBA,PTN000166701 ,J:265628 
+MGI:1351455,Rpl13a,ribosomal protein L13A,7,,mRNA binding,,,IDA,,J:194920 
+MGI:1915443,Rpl24,ribosomal protein L24,16,,mRNA binding,,,IBA,PTN000082479 ,J:265628 
+MGI:106022,Rpl26,ribosomal protein L26,11,,mRNA 5'-UTR binding,,,ISO,P61254 ,J:164563 
+MGI:98037,Rpl30,ribosomal protein L30,15,,selenocysteine insertion sequence binding,,,ISO,RGD:621201 ,J:155856 
+MGI:1913739,Rpl35,ribosomal protein L35,2,,mRNA binding,,,IBA,PTN000356124 ,J:265628 
+MGI:1915195,Rpl41,ribosomal protein L41,10,,mRNA 3'-UTR binding,,,ISO,P62945 ,J:164563 
+MGI:1915195,Rpl41,ribosomal protein L41,10,,mRNA 5'-UTR binding,,,ISO,P62945 ,J:164563 
+MGI:105110,Rps2,ribosomal protein S2,17,,mRNA binding,,,ISO,P15880 ,J:164563 
+MGI:1350917,Rps3,ribosomal protein S3,7,,mRNA binding,,,ISO,P23396 ,J:164563 
+MGI:1202063,Rps3a1,ribosomal protein S3A1,3,,mRNA 5'-UTR binding,,,ISO,P61247 ,J:164563 
+MGI:1202063,Rps3a1,ribosomal protein S3A1,3,,mRNA binding,,,ISO,RGD:62078 ,J:155856 
+MGI:1097682,Rps5,ribosomal protein S5,7,,mRNA binding,,,IBA,PTN000128889 ,J:265628 
+MGI:1097682,Rps5,ribosomal protein S5,7,,mRNA binding,,,ISO,P46782 ,J:164563 
+MGI:1333818,Rps7,ribosomal protein S7,12,,mRNA 3'-UTR binding,,,ISO,P62081 ,J:164563 
+MGI:1333818,Rps7,ribosomal protein S7,12,,mRNA 5'-UTR binding,,,ISO,P62081 ,J:164563 
+MGI:1915302,Rps13,ribosomal protein S13,7,,mRNA 5'-UTR binding,,,ISO,P62277 ,J:164563 
+MGI:1915302,Rps13,ribosomal protein S13,7,,mRNA binding,,,ISO,P62277 ,J:164563 
+MGI:98107,Rps14,ribosomal protein S14,18,,mRNA 5'-UTR binding,,,IBA,PTN000204884 ,J:265628 
+MGI:98107,Rps14,ribosomal protein S14,18,,mRNA 5'-UTR binding,,,ISO,P62263 ,J:164563 
+MGI:1351628,Rps26,ribosomal protein S26,10,,mRNA binding,,,IBA,PTN000283756 ,J:265628 
+MGI:1351628,Rps26,ribosomal protein S26,10,,mRNA binding,,,ISO,P62854 ,J:164563 
+MGI:1913659,Rsl1d1,ribosomal L1 domain containing 1,16,,mRNA 3'-UTR binding,,,ISO,O76021 ,J:164563 
+MGI:1913659,Rsl1d1,ribosomal L1 domain containing 1,16,,mRNA 5'-UTR binding,,,ISO,O76021 ,J:164563 
+MGI:1921730,Samd4,sterile alpha motif domain containing 4,14,,mRNA binding,,,IBA,PTN000282210 ,J:265628 
+MGI:2448542,Samd4b,sterile alpha motif domain containing 4B,7,,mRNA binding,,,IBA,PTN000282210 ,J:265628 
+MGI:2448542,Samd4b,sterile alpha motif domain containing 4B,7,,mRNA binding,uses Nanos1,,IDA,,J:227840 
+MGI:1925212,Scaf8,SR-related CTD-associated factor 8,17,,mRNA binding,,,IBA,PTN000408520 ,J:265628 
+MGI:1922670,Secisbp2,SECIS binding protein 2,13,,mRNA 3'-UTR binding,,,IBA,PTN000328589 ,J:265628 
+MGI:1922670,Secisbp2,SECIS binding protein 2,13,,mRNA 3'-UTR binding,,,ISO,RGD:620991 ,J:155856 
+MGI:1922670,Secisbp2,SECIS binding protein 2,13,,mRNA 3'-UTR binding,,,ISO,Q96T21 ,J:164563 
+MGI:1922670,Secisbp2,SECIS binding protein 2,13,,selenocysteine insertion sequence binding,,,IBA,PTN000328589 ,J:265628 
+MGI:1922670,Secisbp2,SECIS binding protein 2,13,,selenocysteine insertion sequence binding,,,IDA,,J:192960 
+MGI:1922670,Secisbp2,SECIS binding protein 2,13,,selenocysteine insertion sequence binding,,,ISO,RGD:620991 ,J:155856 
+MGI:1917604,Secisbp2l,SECIS binding protein 2-like,2,,mRNA 3'-UTR binding,,,IBA,PTN000328589 ,J:265628 
+MGI:1917604,Secisbp2l,SECIS binding protein 2-like,2,,selenocysteine insertion sequence binding,,,IBA,PTN000328589 ,J:265628 
+MGI:1914120,Serbp1,serpine1 mRNA binding protein 1,6,,mRNA 3'-UTR binding,,,IBA,PTN002642187 ,J:265628 
+MGI:1914120,Serbp1,serpine1 mRNA binding protein 1,6,,mRNA 3'-UTR binding,,,ISO,Q8NC51 ,J:164563 
+MGI:1095403,Sf1,splicing factor 1,19,,mRNA binding,,,IBA,PTN000129548 ,J:265628 
+MGI:1932339,Sf3b1,"splicing factor 3b, subunit 1",1,,mRNA binding,,,IBA,PTN000250426 ,J:265628 
+MGI:1913305,Sf3b6,"splicing factor 3B, subunit 6",12,,mRNA binding,,,ISO,Q9Y3B4 ,J:164563 
+MGI:2441788,Shfl,shiftless antiviral inhibitor of ribosomal frameshifting,9,,sequence-specific mRNA binding,,,IBA,PTN001043680 ,J:265628 
+MGI:2441788,Shfl,shiftless antiviral inhibitor of ribosomal frameshifting,9,,sequence-specific mRNA binding,,,ISO,Q9NUL5 ,J:164563 
+MGI:98299,Shmt1,serine hydroxymethyltransferase 1 (soluble),11,,mRNA 5'-UTR binding,,,IBA,PTN000913301 ,J:265628 
+MGI:98299,Shmt1,serine hydroxymethyltransferase 1 (soluble),11,,mRNA 5'-UTR binding,,,ISO,P34896 ,J:164563 
+MGI:1277989,Shmt2,serine hydroxymethyltransferase 2 (mitochondrial),10,,mRNA 5'-UTR binding,,,IBA,PTN000913301 ,J:265628 
+MGI:108402,Slbp,stem-loop binding protein,5,,mRNA binding,,,IBA,PTN000425771 ,J:265628 
+MGI:108402,Slbp,stem-loop binding protein,5,,mRNA binding,,,IDA,,J:93870 
+MGI:108402,Slbp,stem-loop binding protein,5,,mRNA binding,,,ISO,Q14493 ,J:164563 
+MGI:1196608,Slc4a1ap,"solute carrier family 4 (anion exchanger), member 1, adaptor protein",5,,mRNA binding,,,IBA,PTN002359305 ,J:265628 
+MGI:109297,Slpi,secretory leukocyte peptidase inhibitor,2,,mRNA binding,,,ISO,P03973 ,J:164563 
+MGI:2156003,Snip1,Smad nuclear interacting protein 1,4,,mRNA binding,,,IBA,PTN002359305 ,J:265628 
+MGI:1923417,Snrnp35,small nuclear ribonucleoprotein 35 (U11/U12),5,,mRNA binding,,,IBA,PTN000359236 ,J:265628 
+MGI:98341,Snrnp70,small nuclear ribonucleoprotein 70 (U1),7,,mRNA binding,,,IBA,PTN000359236 ,J:265628 
+MGI:4454897,Sox4os,"SRY (sex determining region Y)-box 4, opposite strand",13,,mRNA binding,"happens in brain,happens in cytoplasm,uses Sox4",,IDA,,J:230817 
+MGI:1891706,Spen,spen family transcription repressor,4,,mRNA binding,,,IBA,PTN001142786 ,J:265628 
+MGI:1925836,Srbd1,S1 RNA binding domain 1,17,,mRNA binding,,,IBA,PTN000076677 ,J:265628 
+MGI:1923206,Srrm2,serine/arginine repetitive matrix 2,17,,mRNA binding,,,IBA,PTN002857912 ,J:265628 
+MGI:1920309,Srrm3,serine/arginine repetitive matrix 3,5,,mRNA binding,,,IBA,PTN002857912 ,J:265628 
+MGI:1916205,Srrm4,serine/arginine repetitive matrix 4,5,,mRNA binding,,,IBA,PTN002857912 ,J:265628 
+MGI:1916205,Srrm4,serine/arginine repetitive matrix 4,5,,mRNA binding,,,IDA,,J:155499 
+MGI:98283,Srsf1,serine and arginine-rich splicing factor 1,11,,mRNA binding,"is a part of signal transduction involved in regulation of gene expression,is a part of mRNA stabilization,is a part of interleukin-17-mediated signaling pathway",,IMP,,J:176465 
+MGI:98283,Srsf1,serine and arginine-rich splicing factor 1,11,,mRNA binding,,,ISO,Q07955 ,J:197742 
+MGI:98285,Srsf3,serine and arginine-rich splicing factor 3,17,,sequence-specific mRNA binding,,,ISO,RGD:1309233 ,J:155856 
+MGI:1890577,Srsf4,serine and arginine-rich splicing factor 4,4,,mRNA binding,,,IBA,PTN002751717 ,J:265628 
+MGI:1890577,Srsf4,serine and arginine-rich splicing factor 4,4,,sequence-specific mRNA binding,,,ISO,RGD:1561347 ,J:155856 
+MGI:98287,Srsf5,serine and arginine-rich splicing factor 5,12,,mRNA binding,,,IBA,PTN002751717 ,J:265628 
+MGI:1915246,Srsf6,serine and arginine-rich splicing factor 6,2,,mRNA binding,,,IBA,PTN002751717 ,J:265628 
+MGI:98423,Ssb,Sjogren syndrome antigen B,2,,sequence-specific mRNA binding,,,ISO,P05455 ,J:164563 
+MGI:1329037,Strap,serine/threonine kinase receptor associated protein,6,,mRNA binding,"is a part of alternative mRNA splicing, via spliceosome,is a part of neuron differentiation,is a part of anatomical structure development,happens in neuron",,IDA,,J:299860 
+MGI:1202400,Supt5,"suppressor of Ty 5, DSIF elongation factor subunit",7,,mRNA binding,,,IBA,PTN000122628 ,J:265628 
+MGI:1891690,Syncrip,"synaptotagmin binding, cytoplasmic RNA interacting protein",9,,mRNA 3'-UTR binding,,,ISO,RGD:1305683 ,J:155856 
+MGI:1891690,Syncrip,"synaptotagmin binding, cytoplasmic RNA interacting protein",9,,mRNA 5'-UTR binding,,,IBA,PTN002723149 ,J:265628 
+MGI:1891690,Syncrip,"synaptotagmin binding, cytoplasmic RNA interacting protein",9,,mRNA 5'-UTR binding,,,ISO,RGD:1305683 ,J:155856 
+MGI:1891690,Syncrip,"synaptotagmin binding, cytoplasmic RNA interacting protein",9,,mRNA binding,,,IBA,PTN002723140 ,J:265628 
+MGI:1917457,Taco1,translational activator of mitochondrially encoded cytochrome c oxidase I,11,,mRNA binding,,,IDA,,J:239883 
+MGI:1917689,Taf15,TATA-box binding protein associated factor 15,11,,mRNA 3'-UTR binding,,,IDA,,J:240782 
+MGI:2387629,Tardbp,TAR DNA binding protein,4,,mRNA 3'-UTR binding,,,ISO,Q13148 ,J:164563 
+MGI:2140279,Tdrd7,tudor domain containing 7,4,,mRNA binding,,,ISO,Q8NHU6 ,J:164563 
+MGI:2442413,Thoc2,THO complex 2,X,,mRNA binding,,,IBA,PTN000492184 ,J:265628 
+MGI:2442413,Thoc2,THO complex 2,X,,mRNA binding,,,IMP,,J:204143 
+MGI:3040669,Thoc2l,THO complex subunit 2-like,5,,mRNA binding,,,IBA,PTN000492184 ,J:265628 
+MGI:1351333,Thoc5,THO complex 5,11,,mRNA binding,,,IBA,PTN000332618 ,J:265628 
+MGI:1351333,Thoc5,THO complex 5,11,,mRNA binding,,,IMP,,J:204143 
+MGI:107914,Tia1,cytotoxic granule-associated RNA binding protein 1,6,,mRNA 3'-UTR AU-rich region binding,,,IDA,,J:88770 
+MGI:107913,Tial1,Tia1 cytotoxic granule-associated RNA binding protein-like 1,7,,mRNA 3'-UTR AU-rich region binding,,,IDA,,J:88770 
+MGI:107913,Tial1,Tia1 cytotoxic granule-associated RNA binding protein-like 1,7,,mRNA 3'-UTR binding,,,ISO,Q01085 ,J:164563 
+MGI:107913,Tial1,Tia1 cytotoxic granule-associated RNA binding protein-like 1,7,,mRNA binding involved in posttranscriptional gene silencing,,,ISO,Q01085 ,J:164563 
+MGI:1922066,Tpr,"translocated promoter region, nuclear basket protein",1,,mRNA binding,,,ISO,P12270 ,J:164563 
+MGI:106016,Tra2b,transformer 2 beta,16,,mRNA binding,,,ISO,P62995 ,J:164563 
+MGI:98834,Trp53,transformation related protein 53,11,,mRNA 3'-UTR binding,,,ISO,P04637 ,J:164563 
+MGI:109263,Tsn,translin,1,,mRNA binding,"happens in testis,happens in spermatocyte,uses Dbil5|happens in testis,happens in spermatocyte,uses Ints10|happens in testis,happens in spermatocyte,uses Arsa|happens in testis,happens in spermatocyte,uses Rnf139",,IDA,,J:115433 
+MGI:1917294,Tut1,"terminal uridylyl transferase 1, U6 snRNA-specific",19,,mRNA 3'-UTR binding,,,ISO,Q9H6E5 ,J:164563 
+MGI:98878,Tyms,thymidylate synthase,5,,mRNA binding,,,ISO,RGD:3921 ,J:155856 
+MGI:98878,Tyms,thymidylate synthase,5,,sequence-specific mRNA binding,,,ISO,P04818 ,J:164563 
+MGI:2442456,Unk,unkempt family zinc finger,11,,mRNA CDS binding,,,IBA,PTN002684023 ,J:265628 
+MGI:2442456,Unk,unkempt family zinc finger,11,,mRNA CDS binding,happens in brain,,IDA,,J:219939 
+MGI:2442456,Unk,unkempt family zinc finger,11,,mRNA CDS binding,,,ISO,Q9C0B0 ,J:164563 
+MGI:1914281,Upf3a,UPF3 regulator of nonsense transcripts homolog A (yeast),8,,mRNA binding,,,ISO,AY013249 ,J:73065 
+MGI:1915384,Upf3b,UPF3 regulator of nonsense transcripts homolog B (yeast),X,,mRNA binding,,,IBA,PTN000318879 ,J:265628 
+MGI:1915384,Upf3b,UPF3 regulator of nonsense transcripts homolog B (yeast),X,,mRNA binding,,,ISO,AY013249 ,J:73065 
+MGI:1915384,Upf3b,UPF3 regulator of nonsense transcripts homolog B (yeast),X,,mRNA binding,,,ISO,Q9BZI7 ,J:164563 
+MGI:1925831,Utp23,UTP23 small subunit processome component,15,,mRNA 3'-UTR binding,,,ISO,Q9BRU9 ,J:164563 
+MGI:1925831,Utp23,UTP23 small subunit processome component,15,,mRNA 5'-UTR binding,,,ISO,Q9BRU9 ,J:164563 
+MGI:1913789,Xpo5,exportin 5,17,,mRNA binding,,,ISO,Q9HAV4 ,J:164563 
+MGI:99146,Ybx1,Y box protein 1,4,,mRNA binding,,,IDA,,J:261926 
+MGI:99146,Ybx1,Y box protein 1,4,,mRNA binding,,,ISO,RGD:61843 ,J:155856 
+MGI:1096372,Ybx2,Y box protein 2,11,,mRNA 3'-UTR binding,,,IDA,,J:67628 
+MGI:1096372,Ybx2,Y box protein 2,11,,mRNA binding,uses Ybx3|uses Acr,,IDA,,J:117361 
+MGI:1096372,Ybx2,Y box protein 2,11,,mRNA binding,uses Prm1,,IDA,,J:82629 
+MGI:1096372,Ybx2,Y box protein 2,11,,mRNA binding,,,IDA,,J:79199 J:96105 
+MGI:2137670,Ybx3,Y box protein 3,6,,mRNA 3'-UTR binding,,,IDA,,J:67628 
+MGI:2443713,Ythdc1,YTH domain containing 1,5,,mRNA binding,,,IBA,PTN000270389 ,J:265628 
+MGI:1917431,Ythdf1,YTH N6-methyladenosine RNA binding protein 1,2,,mRNA binding,,,IBA,PTN000270389 ,J:265628 
+MGI:2444233,Ythdf2,YTH N6-methyladenosine RNA binding protein 2,4,,mRNA binding,,,IBA,PTN000270389 ,J:265628 
+MGI:1918850,Ythdf3,YTH N6-methyladenosine RNA binding protein 3,3,,mRNA binding,,,IBA,PTN000270389 ,J:265628 
+MGI:2180337,Zar1,zygote arrest 1,5,,mRNA binding involved in posttranscriptional gene silencing,,,IBA,PTN001578434 ,J:265628 
+MGI:3690051,Zar1l,zygote arrest 1-like,5,,mRNA binding involved in posttranscriptional gene silencing,,,IBA,PTN001578434 ,J:265628 
+MGI:1917829,Zc3h11a,zinc finger CCCH type containing 11A,1,,mRNA binding,,,IBA,PTN001039228 ,J:265628 
+MGI:2385891,Zc3h12a,zinc finger CCCH type containing 12A,4,,mRNA 3'-UTR AU-rich region binding,,,IDA,,J:147868 
+MGI:2385891,Zc3h12a,zinc finger CCCH type containing 12A,4,,mRNA 3'-UTR binding,,,IDA,,J:228359 J:228409 J:229326 
+MGI:2385891,Zc3h12a,zinc finger CCCH type containing 12A,4,,mRNA binding,,,IBA,PTN001767779 ,J:265628 
+MGI:2385891,Zc3h12a,zinc finger CCCH type containing 12A,4,,mRNA binding,,,ISO,Q5D1E8 ,J:164563 
+MGI:2442133,Zc3h12b,zinc finger CCCH-type containing 12B,X,,mRNA binding,,,IBA,PTN001767779 ,J:265628 
+MGI:3026959,Zc3h12c,zinc finger CCCH type containing 12C,9,,mRNA binding,,,IBA,PTN001767779 ,J:265628 
+MGI:3045313,Zc3h12d,zinc finger CCCH type containing 12D,10,,mRNA binding,,,IBA,PTN001767779 ,J:265628 
+MGI:1922314,Zcchc13,"zinc finger, CCHC domain containing 13",X,,mRNA binding,,,IBA,PTN000543537 ,J:265628 
+MGI:99180,Zfp36,zinc finger protein 36,7,,mRNA 3'-UTR AU-rich region binding,,,IDA,,J:100670 J:161121 J:161235 J:233569 J:233588 J:235259 J:235263 J:235264 
+MGI:99180,Zfp36,zinc finger protein 36,7,,mRNA 3'-UTR AU-rich region binding,,,ISO,P26651 ,J:164563 
+MGI:99180,Zfp36,zinc finger protein 36,7,,mRNA 3'-UTR binding,,,ISO,RGD:620722 ,J:155856 
+MGI:99180,Zfp36,zinc finger protein 36,7,,mRNA binding,happens in fibroblast,,IDA,,J:62757 
+MGI:99180,Zfp36,zinc finger protein 36,7,,mRNA binding,,,IDA,,J:233888 J:235264 
+MGI:99180,Zfp36,zinc finger protein 36,7,,mRNA binding,,,ISO,P26651 ,J:75335 J:164563 
+MGI:107946,Zfp36l1,"zinc finger protein 36, C3H type-like 1",12,,mRNA 3'-UTR AU-rich region binding,,,IDA,,J:162388 J:233560 J:233569 
+MGI:107946,Zfp36l1,"zinc finger protein 36, C3H type-like 1",12,,mRNA 3'-UTR AU-rich region binding,,,IMP,,J:232475 
+MGI:107946,Zfp36l1,"zinc finger protein 36, C3H type-like 1",12,,mRNA 3'-UTR AU-rich region binding,,,ISO,RGD:62009 ,J:155856 
+MGI:107946,Zfp36l1,"zinc finger protein 36, C3H type-like 1",12,,mRNA 3'-UTR AU-rich region binding,,,ISO,Q07352 ,J:164563 
+MGI:107946,Zfp36l1,"zinc finger protein 36, C3H type-like 1",12,,mRNA binding,,,IDA,,J:233561 
+MGI:107946,Zfp36l1,"zinc finger protein 36, C3H type-like 1",12,,mRNA binding,,,ISO,P17431 ,J:62757 
+MGI:107946,Zfp36l1,"zinc finger protein 36, C3H type-like 1",12,,mRNA binding,,,ISO,Q07352 ,J:94140 
+MGI:107945,Zfp36l2,"zinc finger protein 36, C3H type-like 2",17,,mRNA 3'-UTR AU-rich region binding,,,IDA,,J:162388 J:184370 J:199080 J:233569 
+MGI:107945,Zfp36l2,"zinc finger protein 36, C3H type-like 2",17,,mRNA 3'-UTR AU-rich region binding,,,ISO,P47974 ,J:164563 
+MGI:3525151,Zfp36l3,"zinc finger protein 36, C3H type-like 3",X,,mRNA 3'-UTR AU-rich region binding,,,IDA,,J:100670 
+MGI:1352495,Zfp385a,zinc finger protein 385A,15,,mRNA 3'-UTR binding,,,IBA,PTN000552432 ,J:265628 
+MGI:1352495,Zfp385a,zinc finger protein 385A,15,,mRNA 3'-UTR binding,uses Itpr1,,IDA,,J:103828 

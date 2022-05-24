@@ -1,0 +1,202 @@
+---
+title: "NC Timecourse RNA-Seq: DESeq2"
+output: html_notebook
+---
+# Step 2: Timecourse DESeq2 Design
+In addition to pairwise comparison, we want to test if we can detect things that are enriched in NC, regaurdless of time. To do this, we make the DESeq2 object as normal, but instead call results using LRT and reducing the model.
+
+### Load the libraries required
+This analysis was performed on a 16 core machine running Ubuntu 18.04 LTS. Certain parameters may need to be updated based on your operating system and available CPUs.
+```{r Loading Libraries, message=FALSE, include=TRUE}
+library(tidyr)
+library(edgeR)
+library(reshape2)
+library(ggplot2)
+library(scales)
+library(gridExtra)
+library(ggthemes)
+library(ggrepel)
+library(dplyr)
+library(Rsubread)
+library(DESeq2)
+library(dplyr)
+library(readr)
+library(ggsci)
+library(purrr)
+library(BiocParallel)
+library(org.Gg.eg.db)
+library(ashr)
+library(BiocGenerics)
+library(stringr)
+library(biomaRt)
+library(DOSE)
+library(UpSetR)
+library(org.Hs.eg.db)
+library(org.Gg.eg.db)
+library(clusterProfiler)
+library(viridis)
+library(qdapTools)
+library(pheatmap)
+register(MulticoreParam(16)) # Set this to number of CPUs.
+```
+
+### Read in the results of the featureCounts
+```{r Reading in featureCounts results}
+counts_summary <- read.delim("./Imports/featureCounts.txt.summary", row.names = 1)
+counts_summary <- rbind(counts_summary, percent_aligned = (counts_summary[1,]/colSums(counts_summary))*100)
+genes.universe <- read.csv("~/local_git/NC_Timecourse/RNA-Seq/Imports/GenesUniverse.csv")
+featureCounts <- read.delim("~/local_git/NC_Timecourse/RNA-Seq/Imports/featureCounts.txt", comment.char="#")
+
+# Remove the gene information to just get the counts matrix.
+dat <- featureCounts[,7:56]
+rownames(dat) <- featureCounts$Geneid
+
+# Clean sample names
+sample_names <- colnames(featureCounts[7:56])
+sample_names <- str_sub(sample_names, 7,-5)
+sample_names <- word(sample_names, sep = "_", 5, -3)
+sample_names <- gsub("\\.", "_", sample_names)
+sample_names <- gsub("MR[0-9]+_", "", sample_names)
+sample_names <- gsub("MR[0-9]+R_", "", sample_names)
+colnames(dat) <- sample_names
+
+# Generating metadata file
+colData <- data.frame(row.names=colnames(dat), data=colnames(dat))
+colData <- colData %>% mutate(Condition = factor(ifelse(grepl(pattern = "pos|pGFP", x = data), "NC","WE")))
+colData <- colData %>% mutate(Time = factor(x = str_extract(word(colData$data, sep = "_",1,1), pattern ="[0-9]+"), levels = c(6,8,10,12,14,16)))
+colData <- colData %>% mutate(Group = factor(paste0(Condition,"_",Time)))
+
+head(colData)
+```
+
+### Begin DESeq2 Analysis
+
+Trying to use LRT to determine differences in NC vs WE independent of the time effect.
+Additionally will try using [ImpulseDE2](https://bioconductor.org/packages/release/bioc/vignettes/ImpulseDE2/inst/doc/ImpulseDE2_Tutorial.html)
+```{r DESeq2}
+ddsTC <- DESeqDataSetFromMatrix(countData = dat,
+                              colData = colData,
+                              design= ~ Condition + Time + Condition:Time)
+
+# Filter out bad samples (from PCA analysis)
+bad_samples <- c("6_pos_lib_ATCACG", "8_pos_lib_CGATGT",
+                 "12_pos_ASH_CGTACG","10_pos_lib_TTAGGC",
+                 "HH10_mGFP_1_ATGTCA", "6_neg_lib_TGACCA",
+                 "8_neg_lib_ACAGTG", "HH12_mGFP_1_GTGAAA")
+ddsTC <- ddsTC[,!(colnames(ddsTC) %in% bad_samples)]
+                              
+# Filter out genes lowly detected.
+keep <- rowSums(counts(ddsTC)) >= 25
+ddsTC <- ddsTC[keep,]
+
+ddsTC <- DESeq(ddsTC, reduced = ~ Time, test = "LRT" ,parallel = TRUE)
+resultsNames(ddsTC)
+
+
+res <- as.data.frame(results(ddsTC, name = "Condition_WE_vs_NC"))
+res$Chick_ENSEMBL <- rownames(res)
+res2 <- merge(res, genes.universe, by = "Chick_ENSEMBL", all.x = TRUE)
+
+res2 <- res2[!duplicated(res2$Chick_ENSEMBL),]
+res2$log2FoldChange <- res2$log2FoldChange * -1
+
+Padj = 0.05
+L2fc = 1.5
+labelPadj = 1e-8
+
+res2.DE.enriched <-as.data.frame(subset(res2, padj<Padj & log2FoldChange >= L2fc))
+write.csv(res2.DE.enriched, file = "./Exports/ddsTC_Condition_WE_vc_NC_Enriched.csv", row.names = FALSE)
+write.csv(res2, file = "./Exports/ddsTC_Condition_WE_vc_NC_All.csv", row.names = FALSE)
+
+ego.res2.DE <- enrichGO(gene = as.character(res2.DE.enriched$Human_Entrezid), universe = as.character(res2$Human_Entrezid), OrgDb = org.Hs.eg.db, ont = "MF", pAdjustMethod = "BH", qvalueCutoff = Padj, pvalueCutoff = 0.05, readable = TRUE)
+ego.res2.DE.simplify <-simplify(ego.res2.DE)
+write.csv(ego.res2.DE.simplify@result, file = paste0("./Exports/ddsTC_Condition_WE_vc_NC_Enriched_GO_MF.csv"))
+dotplot(ego.res2.DE.simplify, showCategory = 10, title = paste0("Condition_WE_vs_NC", " GO MF")) +scale_color_viridis(direction=-1)
+
+ggsave(filename = paste0("./Exports/ddsTC_Condition_WE_vc_NC_Enriched_GO_MF.png"), width = 12, height = 6)
+
+ego.res2.DE <- enrichGO(gene = as.character(res2.DE.enriched$Human_Entrezid), universe = as.character(res2$Human_Entrezid), OrgDb = org.Hs.eg.db, ont = "BP", pAdjustMethod = "BH", qvalueCutoff = Padj, pvalueCutoff = 0.05, readable = TRUE)
+
+ego.res2.DE.simplify <-simplify(ego.res2.DE)
+write.csv(ego.res2.DE.simplify@result, file = paste0("./Exports/ddsTC_Condition_WE_vc_NC_Enriched_GO_BP.csv"))
+dotplot(ego.res2.DE.simplify, showCategory = 10, title = paste0("Condition_WE_vs_NC", " GO MF")) + scale_color_viridis(direction=-1)
+
+ggsave(filename = paste0("./Exports/ddsTC_Condition_WE_vc_NC_Enriched_GO_BP.png"), width = 12, height = 6)
+
+restest3 <- res2 %>% mutate(threshold = ifelse(log2FoldChange >= L2fc, "A", ifelse(log2FoldChange <= -L2fc, "B", "C")))
+g <- ggplot(data = restest3, aes(x = log2FoldChange, y = -log10(padj))) +
+        geom_point(aes(color = threshold), size = 1, alpha = 1) +
+        geom_text_repel(data=subset(res2, padj< labelPadj & abs(log2FoldChange) >=L2fc & TF_Status == "Transcription Factor"),aes(label = Symbol), box.padding = 0.2, segment.color = "#393a42", segment.size = 0.5, color = "#393a42") +
+        scale_color_manual(values = c("A" = "#e45649", "B" = "#0584bc", "C" = "#d3d2d6")) +
+        ggtitle("Condition_WE_vs_NC") +
+        geom_vline(xintercept = c(-L2fc,L2fc), linetype = "longdash", color = "black", size = 0.4) +
+        theme_classic() +
+        scale_x_continuous(limits = c(-11,11)) +
+        xlab("Log2 Fold Change") +
+        ylab(paste0("-Log10 Adj. p value, ", labelPadj," Labeled")) +
+        theme(legend.position = "none")
+        #      , axis.title = element_blank(),
+        #      axis.text = element_blank(),
+        #      axis.ticks = element_blank(),
+        #      plot.title = element_blank()) #plot.title = element_text(hjust = 0.5))
+ggsave(filename = paste0("./Exports/ddsTC_Condition_WE_vc_NC_volcano_labeled.png"), plot = g, width = 4, height = 4, device = "png")
+ggsave(filename = paste0("./Exports/ddsTC_Condition_WE_vc_NC_volcano_labeled.svg"), plot = g, width = 4, height = 4, device = "svg")
+
+g
+
+# We also can investigate the differences in each gene for different tests.
+betas <- coef(ddsTC)
+colnames(betas)
+topGenes <- head(order(res2$padj),20)
+mat <- betas[topGenes,-1]
+thr <- 2 
+mat[mat < -thr] <- -thr
+mat[mat > thr] <- thr
+pheatmap(mat, breaks=seq(from=-thr, to=thr, length=101),
+         cluster_col=FALSE)
+
+# Condition WE vs NC higher scores are enriched in WE
+# In this case, the third gene is enriched over time but isn't 
+# really enriched in Neural Crest,
+# While the first gene is strongly depeleted in NC and depeleted over time.
+
+```
+
+## Export for RNA-Seq App
+We have Rlog counts from the previous analysis, but it does not display the significance and fold difference between the two conditions. To update our RNA-Seq App, let's add the log2FC and Padj from this test.
+
+### We also could grab WGCNA results to make an explorer for that data.
+```{r}
+Annotated_Rlog_All <- read.csv("./Exports/Annotated_Rlog_All.csv", row.names=1, stringsAsFactors=FALSE)
+rownames(Annotated_Rlog_All) <- Annotated_Rlog_All$Chick_ENSEMBL
+
+summary(Annotated_Rlog_All$Chick_ENSEMBL == res2$Chick_ENSEMBL)
+Annotated_Rlog_All$NC_Enrichment_log2FC <- res2$log2FoldChange
+Annotated_Rlog_All$NC_Enrichment_padj <- res2$padj
+Annotated_Rlog_All$ENSEMBL_and_Symbol <- paste0(Annotated_Rlog_All$Chick_ENSEMBL,
+                                                              "_", Annotated_Rlog_All$Symbol)
+# Now let's format it for the App.
+
+Rlog_app <- Annotated_Rlog_All %>% dplyr::select(ENSEMBL_and_Symbol, c(2:43),48,49)
+Rlog_app <- Rlog_app %>% pivot_longer(-c(ENSEMBL_and_Symbol, NC_Enrichment_log2FC, NC_Enrichment_padj), names_to = "columnName", values_to = "Rlog")
+Rlog_app <- Rlog_app %>% separate(col = "columnName", into = c('condition', 'time','UniqueID'),
+                                  sep = "_", extra = "merge")
+Rlog_app$time <- as.numeric(Rlog_app$time)
+
+Rlog_app$condition <- factor(Rlog_app$condition, levels = c("NC","WE"))
+
+# Save as feather for fast loading!
+library(feather)
+write_feather(Rlog_app, path = "./Exports/Rlog_for_RNA-Seq-App.feather")
+```
+
+Let's look at overlap of RNA-Binding proteins.
+```{r}
+WE_vs_NC <- read_csv(file = "./Exports/ddsTC_Condition_WE_vc_NC_All.csv")
+RNA_binding <- read_csv(file = "./Imports/GO_term_summary_20210914_165412.csv")
+RNA_binding$Symbol <- toupper(RNA_binding$Symbol)
+
+RNA_binding_DEG <- WE_vs_NC[WE_vs_NC$Symbol %in% RNA_binding$Symbol,]
+```
+
+

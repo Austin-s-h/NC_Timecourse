@@ -1,0 +1,106 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Running WGCNA for clustering
+WGCNA is a powerful method to detect groups of coexpressed genes and reveal temporal patterns in our data.
+Using [this](https://www.bioconductor.org/packages/release/bioc/vignettes/CVE/inst/doc/WGCNA_from_TCGA_RNAseq.html) as a guide.
+
+```{r}
+library(WGCNA)
+Annotated_Rlog_Positive_Averages <- read.csv("~/local_git/NC_Timecourse/RNA-Seq/Exports/Annotated_Rlog_Positive_Averages.csv", row.names=1, stringsAsFactors=FALSE)
+rownames(Annotated_Rlog_Positive_Averages) <- Annotated_Rlog_Positive_Averages$Chick_ENSEMBL
+
+ddsTC_Condition_WE_vc_NC_All <- read.csv("./Exports/ddsTC_Condition_WE_vc_NC_All.csv", stringsAsFactors=FALSE)
+Conition_Enriched <- subset(ddsTC_Condition_WE_vc_NC_All, padj < 0.05, log2FoldChange > 0.5)
+
+WGCNA_matrix <- t(Annotated_Rlog_Positive_Averages[Conition_Enriched$Chick_ENSEMBL,2:7])
+s = abs(bicor(WGCNA_matrix))
+
+powers = c(c(1:10), seq(from = 12, to=30, by=2))
+sft = pickSoftThreshold(WGCNA_matrix, powerVector = powers, verbose = 5)
+plot(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
+     xlab='Soft Threshold (power)',ylab='Scale Free Topology Model Fit,signed R^2',
+     type='n', main = paste('Scale independence'));
+text(sft$fitIndices[,1], -sign(sft$fitIndices[,3])*sft$fitIndices[,2],
+     labels=powers,cex=1,col='red'); abline(h=0.90,col='red')
+
+#calculation of adjacency matrix
+beta = 5
+a = s^beta
+#dissimilarity measure
+w = 1-a
+
+#create gene tree by average linkage hierarchical clustering 
+geneTree = hclust(as.dist(w), method = 'average')
+
+#module identification using dynamic tree cut algorithm
+modules = cutreeDynamic(dendro = geneTree, distM = w, deepSplit = 4, pamRespectsDendro = FALSE,
+                            minClusterSize = 50)
+#assign module colours
+module.colours = labels2colors(modules)
+
+#plot the dendrogram and corresponding colour bars underneath
+plotDendroAndColors(geneTree, module.colours, 'Module colours', dendroLabels = FALSE, hang = 0.03,
+                    addGuide = TRUE, guideHang = 0.05, main='')
+
+#set a threhold for merging modules. In this example we are not merging so MEDissThres=0.0
+MEDissThres = 0.25
+merge = mergeCloseModules(WGCNA_matrix, module.colours, cutHeight= MEDissThres, verbose =3)
+mergedColors = merge$colors
+mergedMEs = merge$newMEs
+
+plotDendroAndColors(geneTree, cbind(module.colours, mergedColors), c("Dynamic Tree Cut", "Merged dynamic"), dendroLabels= FALSE, hang=0.03, addGuide= TRUE, guideHang=0.05)
+
+moduleColors = mergedColors
+colorOrder = c("grey", standardColors(50))
+moduleLabels = match(moduleColors, colorOrder)-1
+MEs = mergedMEs
+colors <- colorRampPalette(c("#0584bc","#FFFFFF", "#e45649"))(250)
+
+pheatmap::pheatmap(MEs, cluster_rows = F, color = colors,
+                   filename = "./Exports/WGCNA_Sample_Color_Heatmap.pdf")
+
+# So we get a good idea of which modules are active in each stage.
+names(mergedColors) <- Annotated_Rlog_Positive_Averages[Conition_Enriched$Chick_ENSEMBL,1]
+
+```
+
+We can also check out how these clusters look in a line graph. Might be better.
+
+```{r}
+MEs
+```
+
+
+## Looking at GO In these different modules.
+
+```{r}
+library(clusterProfiler)
+library(org.Hs.eg.db)
+library(viridis)
+library(ggplot2)
+data <- Annotated_Rlog_Positive_Averages[names(mergedColors),c(1,8:11)]
+data$Group <- mergedColors
+summary(as.factor(data$Group))
+write.csv(data, file = "Exports/WGCNA_Gene_Modules.csv")
+
+GO_Results <- compareCluster(Human_Entrezid~Group, fun = "enrichGO", data = data, ont = "BP", qvalueCutoff = 0.05, readable = T,
+                             OrgDb = org.Hs.eg.db)
+
+GO_Results.simplify <-simplify(GO_Results)
+
+dotplot(GO_Results.simplify, title = "WGCNA BP Enrichment") + scale_color_viridis(direction=-1)
+ggsave(file = "./Exports/WGCNA_BP_Enrichment.pdf", width = 12, height = 8)
+
+```
+
+This has the power to identify new genes involved in different aspects of NC development.
+For example, let's look at the genes in the 'greenyellow' module, which seem to be related to muscle development.
+
+```{r}
+greenyellow <- data[data$Group == "greenyellow",]
+greenyellow[greenyellow$TF_Status == "Transcription Factor", 2]
+```
+In this case, we see well-known NC transcription factors like TFAP2B, MSX1, and FOXD3 having similar signatures to muscle transcription factors like NKX2-6 and TBX20. This may indicate that these other transcription factors act in NC destined for muscle development.

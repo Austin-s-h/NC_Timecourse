@@ -1,0 +1,61 @@
+---
+title: "NC Timecourse RNA-Seq: ImpulseDE2"
+output: html_notebook
+---
+
+# Step 3: ImpulseDE2 Analaysis
+While DESeq2 is a powerful way to analyze both pairwise and timecourse experiments, we wanted to explore the possibility of using alternative methods to analyze our data. ImpulseDE2 uses a negative binomial model as the backbone of it's differential testing for count-based data. It uses an impulse model to create a smoothed expression trajectory for each gene, and tests these trajectories to identify enriched genes.
+
+## Loading libraries
+```{r Loading Libraries, message=FALSE, include=TRUE}
+library(ImpulseDE2)
+library(DESeq2)
+```
+
+## Loading data
+```{r}
+dds <- readRDS(file = "Exports/dds.RDS")
+
+#The annotation data has to be modified for this tool.
+anno <- as.data.frame(colData(dds))
+colnames(anno) <- c("Sample", "Condition","Time","Batch")
+anno$Batch <- "B_NULL"
+anno$Time <- as.numeric(anno$Time)
+anno$Condition <- ifelse(anno$Condition == "NC", "case","control")
+
+impulse_obj <- runImpulseDE2(
+  matCountData = assay(dds),
+  dfAnnotation = anno,
+  boolCaseCtrl = T,
+  vecConfounders = NULL,
+  scaNProc = 16)
+
+impulse_obj$dfImpulseDE2Results
+
+head(impulse_obj$dfImpulseDE2Results)
+res <- impulse_obj$dfImpulseDE2Results
+
+saveRDS(impulse_obj, file = "Exports/impulse_obj.RDS")
+write.csv(res, file = "Exports/Impulse_Results.csv", row.names = F)
+
+# So this is useful to find differentially expressed gene over time, but
+# It does not annotate them with any enrichment score.
+# We could use this to plot our favorite genes OR
+# Investigate the identified genes in other visualizations.
+
+library(ggplot2)
+lsgplotsGenes <- plotGenes(
+  vecGeneIDs       = NULL,
+  scaNTopIDs       = 10,
+  objectImpulseDE2 = impulse_obj,
+  boolCaseCtrl     = T,
+  boolSimplePlot   = T,
+  dirOut           = NULL,
+  strFileName      = NULL,
+  vecRefPval       = NULL, 
+  strNameRefMethod = NULL)
+
+lsgplotsGenes[[1]]
+
+```
+

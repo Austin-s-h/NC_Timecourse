@@ -1,0 +1,323 @@
+---
+title: "NC Timecourse RNA-Seq: DESeq2"
+output: html_notebook
+---
+# Step 1: Quality Control
+
+The First RMD notebook for the NC Timecourse RNA-Seq analysis. This document is the first of the series.
+In this document, we will start from the output of 'process_RNASeq.sh', with BAMs aligned to the ENSEMBL
+galGal6 genome.
+
+
+
+Check out the MultiQC report that was generated to identify any outliers in sequence or alignment quality.
+
+
+### Load the libraries required
+
+This analysis was performed on a 16 core machine running Ubuntu 18.04 LTS. Certain parameters may need to be updated based on your operating system and available CPUs.
+
+```{r Loading Libraries, message=FALSE, include=TRUE}
+library(tidyr)
+library(edgeR)
+library(reshape2)
+library(ggplot2)
+library(scales)
+library(gridExtra)
+library(ggthemes)
+library(ggrepel)
+library(dplyr)
+library(Rsubread)
+library(DESeq2)
+library(dplyr)
+library(readr)
+library(ggsci)
+library(purrr)
+library(BiocParallel)
+library(org.Gg.eg.db)
+library(ashr)
+library(BiocGenerics)
+library(stringr)
+library(biomaRt)
+library(DOSE)
+library(UpSetR)
+library(org.Hs.eg.db)
+library(org.Gg.eg.db)
+library(clusterProfiler)
+library(viridis)
+library(qdapTools)
+register(MulticoreParam(32)) # Set this to number of CPUs.
+```
+
+### Read in the results of the featureCounts
+```{r Reading in featureCounts results}
+counts_summary <- read.delim("./Imports/featureCounts.txt.summary", row.names = 1)
+counts_summary <- rbind(counts_summary, percent_aligned = (counts_summary[1,]/colSums(counts_summary))*100)
+genes.universe <- read_csv(file = "./Imports/GenesUniverse.csv")
+featureCounts <- read.delim("~/local_git/NC_Timecourse/RNA-Seq/Imports/featureCounts.txt", comment.char="#")
+
+#Remove the gene information to just get the counts matrix.
+dat <- featureCounts[,7:56]
+rownames(dat) <- featureCounts$Geneid
+
+#Clean sample names
+sample_names <- colnames(featureCounts[7:56])
+sample_names <- str_sub(sample_names, 7,-5)
+sample_names <- word(sample_names, sep = "_", 5, -3)
+sample_names <- gsub("\\.", "_", sample_names)
+sample_names <- gsub("MR[0-9]+_", "", sample_names)
+sample_names <- gsub("MR[0-9]+R_", "", sample_names)
+colnames(dat) <- sample_names
+
+# Generating metadata file
+colData <- data.frame(row.names=colnames(dat), data=colnames(dat))
+colData <- colData %>% mutate(Condition = factor(ifelse(grepl(pattern = "pos|pGFP", x = data), "NC","WE")))
+colData <- colData %>% mutate(Time = factor(x = str_extract(word(colData$data, sep = "_",1,1), pattern ="[0-9]+"), levels = c(6,8,10,12,14,16)))
+colData <- colData %>% mutate(Group = factor(paste0(Condition,"_",Time)))
+
+write.csv(colData, file = "./Exports/colData.csv")
+head(colData)
+
+```
+
+### Begin DESeq2 Analysis
+Note, this is pairwise comparison between NC and WE cells at each timepoint, additional analysis will be done for detecting genes varying through time. [ImpulseDE2](https://bioconductor.org/packages/release/bioc/vignettes/ImpulseDE2/inst/doc/ImpulseDE2_Tutorial.html)
+```{r DESeq2}
+dds <- DESeqDataSetFromMatrix(countData = dat,
+                              colData = colData,
+                              design= ~0 + Group)
+
+#Filter out bad samples (from PCA analysis)
+bad_samples <- c("6_pos_lib_ATCACG", "8_pos_lib_CGATGT",
+                 "12_pos_ASH_CGTACG","10_pos_lib_TTAGGC",
+                 "HH10_mGFP_1_ATGTCA", "6_neg_lib_TGACCA",
+                 "8_neg_lib_ACAGTG", "HH12_mGFP_1_GTGAAA")
+dds <- dds[,!(colnames(dds) %in% bad_samples)]
+    
+# Export filtered FeatureCounts
+filt_counts <- as.data.frame(dds@assays@data$counts)
+colnames(filt_counts) <- dds$Group
+
+
+filt_counts <- filt_counts %>% tibble::rownames_to_column()
+colnames(filt_counts)[1] <- "ENSEMBL"
+
+write.table(filt_counts, file = "Imports/featureCountsFiltered.txt", quote = F,
+            sep = "\t", row.names = F, col.names = T)
+
+
+#Filter out genes lowly detected.
+keep <- rowSums(counts(dds)) >= 25
+dds <- dds[keep,]
+
+#save this object for use in other tools
+saveRDS(dds, file = "Exports/dds.RDS")
+
+dds <- DESeq(dds, parallel = TRUE)
+
+#Check out the counts
+bp1 <-boxplot(log10(counts(dds,normalized=TRUE)+1))
+
+write.csv(counts(dds,normalized=F), file = "~/local_git/NC_Timecourse/RNA-Seq/Exports/Raw_RNA-Seq_Counts.csv", row.names = T)
+
+#What does the dispersion look like?
+disp_est <- plotDispEsts(dds)
+```
+
+## Check sample quality via PCA.
+```{r}
+# Variance stabilize DESeq data set
+vstDds <- varianceStabilizingTransformation(dds)
+
+# Subset the transformed DDS to only plus and minus conditions
+vstDdsPlus <- vstDds[ , vstDds$Condition %in% c("NC") ]
+vstDdsMinus <- vstDds[ , vstDds$Condition %in% c("WE") ]
+
+# Generate PCA data for entire set and subsets
+pcaAll <- plotPCA(vstDds, intgroup = c("Condition", "Time"), returnData=TRUE)
+pcaPlus <- plotPCA(vstDdsPlus, intgroup = c("Time"), returnData=TRUE)
+pcaMinus <- plotPCA(vstDdsMinus, intgroup = c("Time"), returnData=TRUE)
+
+pcaAllVar <- attr(pcaAll, "percentVar")
+pcaPlusVar <- attr(pcaPlus, "percentVar")
+pcaMinusVar <- attr(pcaMinus, "percentVar")
+
+# Plot PCAs
+g <- ggplot(pcaAll, aes(x=PC1, y=PC2, color=Time, shape = Condition)) + 
+  geom_point(size = 4, alpha = .75) + 
+  scale_color_npg() +
+  ggtitle("pcaALL") +
+  labs(x = paste(c("PC1","%"),round(pcaAllVar[1]*100)) ,y = paste(c("PC2","%"), round(pcaAllVar[2]*100))) +
+  theme(text=element_text(color="black", size = 10, face = "bold"),
+        line=element_line(color="black", size = 2),
+        axis.ticks = element_line(color = "black", size = 1),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill=NA, color = "black", size = 2),
+        axis.text = element_text(color="black", size = 10, face = "bold")
+        #legend.key = element_blank()
+  )
+g
+ggsave(filename = "./Exports/pcaAll_1.pdf", units = 'in', height = 4, width = 6)
+
+g2 <- ggplot(pcaPlus, aes(x=PC1, y=PC2, color=Time)) + 
+  geom_point(size = 4, alpha = .75, shape = 19) + 
+  scale_color_npg() +
+  ggtitle("pcaPlus") +
+  labs(x = paste(c("PC1 "),round(pcaPlusVar[1]*100), c("%")) ,y = paste(c("PC2 "), round(pcaPlusVar[2]*100), c("%"))) +
+  theme(text=element_text(color="black", size = 10, face = "bold"),
+        line=element_line(color="black", size = 2),
+        axis.ticks = element_line(color = "black", size = 1),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill=NA, color = "black", size = 2),
+        axis.text = element_text(color="black", size = 10, face = "bold"),
+        legend.key = element_blank()
+  )
+g2
+ggsave('./Exports/pcaPlus_1.pdf', units = 'in', height = 4, width = 6)
+
+g3 <- ggplot(pcaMinus, aes(x=PC1, y=PC2, color=Time)) + 
+  geom_point(size = 4, alpha = .75, shape = 17) + 
+  scale_color_npg() +
+  ggtitle("pcaMinus") +
+  labs(x = paste(c("PC1 "),round(pcaMinusVar[1]*100), c("%")) ,y = paste(c("PC2 "), round(pcaMinusVar[2]*100), c("%"))) +
+  theme(text=element_text(color="black", size = 10, face = "bold"),
+        line=element_line(color="black", size = 2),
+        axis.ticks = element_line(color = "black", size = 1),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill=NA, color = "black", size = 2),
+        axis.text = element_text(color="black", size = 10, face = "bold"),
+        legend.key = element_blank()
+  )
+g3
+ggsave('./Exports/pcaMinus_1.pdf', units = 'in', height = 4, width = 6)
+```
+
+```{r echo=FALSE}
+DESeq2_Analyze <- function(timepoint = "", dds, genes.universe = genes.universe, versusWE = TRUE, second_timepoint = "", Padj = 0.1, L2fc = 1, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.001) {
+  if (versusWE){
+    testcontrast <- c("Group",paste0("NC_",timepoint),paste0("WE_", timepoint))
+    restest_title <- c(paste0(timepoint, "Positive vs Negative DESeq2"))
+  }
+  
+  if (!versusWE){
+    testcontrast <- c("Group",paste0("NC_",timepoint),paste0("NC_", second_timepoint))
+    restest_title <- c(paste0(timepoint, " vs ", second_timepoint," DESeq2"))
+  }
+  restest <- as.data.frame(results(dds, contrast = testcontrast, parallel = TRUE))
+  restest$Chick_ENSEMBL <- rownames(restest)
+  restest2 <- merge(restest, genes.universe, by = "Chick_ENSEMBL", all.x = TRUE)
+  restest2 <- restest2[!duplicated(restest2$Chick_ENSEMBL),]
+  restest2.DE.enriched <-as.data.frame(subset(restest2, padj<Padj & log2FoldChange >= L2fc))
+  write.csv(restest2.DE.enriched, file = paste0("./Exports/",timepoint,"_Enriched.csv"), row.names = FALSE)
+  write.csv(restest2, file = paste0("./Exports/",timepoint, "_AllGenes.csv"), row.names = FALSE)
+  if (testMF == TRUE) {
+    ego.restest2.DE <- enrichGO(gene = as.character(restest2.DE.enriched$Human_Entrezid), universe = as.character(restest2$Human_Entrezid), OrgDb = org.Hs.eg.db, ont = "MF", pAdjustMethod = "BH", qvalueCutoff = Padj, pvalueCutoff = 0.05, readable = TRUE)
+    ego.restest2.DE.simplify <-simplify(ego.restest2.DE)
+    write.csv(ego.restest2.DE.simplify@result, file = paste0("./Exports/",timepoint,"_Enriched_GO_MF.csv"))
+    dotplot(ego.restest2.DE.simplify, showCategory = 10, title = paste0(timepoint, " Enriched GO MF")) +scale_color_viridis(direction=-1)
+    ggsave(filename = paste0("./Exports/",timepoint, "_Enriched_GO_MF.png"), width = 12, height = 6)
+  }
+  if (testBP == TRUE) {
+    ego.restest2.DE <- enrichGO(gene = as.character(restest2.DE.enriched$Human_Entrezid), universe = as.character(restest2$Human_Entrezid), OrgDb = org.Hs.eg.db, ont = "BP", pAdjustMethod = "BH", qvalueCutoff = Padj, pvalueCutoff = 0.05, readable = TRUE)
+    ego.restest2.DE.simplify <-simplify(ego.restest2.DE)
+    write.csv(ego.restest2.DE.simplify@result, file = paste0("./Exports/",timepoint, "_Enriched_GO_BP.csv"))
+    dotplot(ego.restest2.DE.simplify, showCategory = 10, title = paste0(timepoint, " Enriched GO BP")) +scale_color_viridis(direction=-1)
+    ggsave(filename = paste0("./Exports/",timepoint, "_Enriched_GO_BP.png"), width = 12, height = 6) }
+  if (plotVolc == TRUE){
+      restest3 <- restest2 %>% mutate(threshold = ifelse(log2FoldChange >= L2fc & padj < Padj, "A", ifelse(log2FoldChange <= -L2fc & padj < Padj, "B", "C")))
+      g <- ggplot(data = restest3, aes(x = log2FoldChange, y = -log10(padj))) +
+        geom_point(aes(color = threshold), size = 1, alpha = 1) +
+        scale_color_manual(values = c("A" = "#e45649", "B" = "#0584bc", "C" = "#d3d2d6")) +
+        geom_text_repel(data=subset(restest2, padj<labelPadj & TF_Status=="Transcription Factor"),
+                        aes(label = Symbol), box.padding = 0.2, segment.color = "#393a42", segment.size = 0.5, color = "#393a42") +
+        ggtitle(restest_title) +
+        #scale_x_continuous(limits = c(-6,6)) +
+        geom_vline(xintercept = c(-L2fc,L2fc), linetype = "longdash", color = "black", size = 0.4) +
+        theme_classic() +
+        xlab("Log2 Fold Change") +
+        ylab(paste0("-Log10 Adj. p value, ", labelPadj," Labeled")) +
+        theme(legend.position = "none")
+        # , axis.title = element_blank(),
+        #      axis.text = element_blank(),
+        #      axis.ticks = element_blank(),
+        #      plot.title = element_blank()) #plot.title = element_text(hjust = 0.5))
+      ggsave(filename = paste0("./Exports/",restest_title,"_labeled.png"), plot = g, width = 4, height = 4, device = "png")
+      ggsave(filename = paste0("./Exports/",restest_title,"_labeled.svg"), plot = g, width = 4, height = 4, device = "svg")
+      return(list(g, restest3))
+    }
+}
+```
+
+## Retrieve Specific comparisons using this function
+```{r Retrieve Pairwise Comparisons}
+# HH10_res <- DESeq2_Analyze("10", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1, testMF = F, testBP = F, plotVolc = TRUE, labelPadj = 0.1)
+# write_csv(HH10_res[[2]], file = "HH10_DE.csv")
+
+NC6_NC16 <- DESeq2_Analyze(timepoint = "16", second_timepoint = "6", versusWE = F, dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = F, testBP = F, plotVolc = TRUE, labelPadj = 1e-8)
+
+NC6_NC16[[2]]
+ggsave()
+DESeq2_Analyze("8", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.00001)
+DESeq2_Analyze("10", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.001)
+DESeq2_Analyze("12", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.0001)
+DESeq2_Analyze("14", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.0005)
+DESeq2_Analyze("16", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.001)
+```
+
+```{r Export Rlog Counts}
+#log transform and normalize the data so it is comparable between samples.
+genes.universe <- read_csv(file = "./Imports/GenesUniverse.csv")
+rld <- assay(rlog(dds, blind = F))
+rld <- as.data.frame(rld)
+
+colnames(rld) <- paste0(colData(dds)$Group, "_", colData(dds)$data)
+
+rld$Chick_ENSEMBL <- rownames(rld)
+
+rld <- merge(rld, genes.universe, by = "Chick_ENSEMBL", all.x = TRUE)
+rld <- rld[!duplicated(rld$Chick_ENSEMBL),]
+write.csv(rld, file = "./Exports/Annotated_Rlog_All.csv")
+
+rld_positives <- rld[,(word(colnames(rld),sep = "_",1,1)=="NC")]
+rownames(rld_positives) <- rld$Chick_ENSEMBL
+write.csv(rld_positives, file = "./Exports/Annotated_Rlog_Positives.csv")
+
+HH6 <- rld_positives[,(word(colnames(rld_positives),sep = "_",2,2)=="6")]
+HH6$mean6 <- rowMeans(HH6[1:3])
+
+HH8 <- rld_positives[,(word(colnames(rld_positives),sep = "_",2,2)=="8")]
+HH8$mean8 <- rowMeans(HH8[1:3])
+
+HH10 <- rld_positives[,(word(colnames(rld_positives),sep = "_",2,2)=="10")]
+HH10$mean10 <- rowMeans(HH10[1:3])
+
+HH12 <- rld_positives[,(word(colnames(rld_positives),sep = "_",2,2)=="12")]
+HH12$mean12 <- rowMeans(HH12[1:4])
+
+HH14 <- rld_positives[,(word(colnames(rld_positives),sep = "_",2,2)=="14")]
+HH14$mean14 <- rowMeans(HH14[1:3])
+
+HH16 <- rld_positives[,(word(colnames(rld_positives),sep = "_",2,2)=="16")]
+HH16$mean16 <- rowMeans(HH16[1:5])
+
+rlog_positive_averages <-data.frame(Chick_ENSEMBL = rld$Chick_ENSEMBL,
+                                       HH6 = HH6$mean6, HH8 = HH8$mean8,
+                                       HH10 = HH10$mean10, HH12 = HH12$mean12,
+                                       HH14 = HH14$mean14, HH16 = HH16$mean16,
+                                       Symbol = rld$Symbol,
+                                       Chick_Entrezid = rld$Chick_Entrezid,
+                                       Human_Entrezid = rld$Human_Entrezid,
+                                       TF_Status = rld$TF_Status)
+
+write.csv(rlog_positive_averages, file = "./Exports/Annotated_Rlog_Positive_Averages.csv")
+head(rlog_positive_averages)
+
+rlog_positive_averages <- read.csv("./Exports/Annotated_Rlog_Positive_Averages.csv", row.names = 1)
+
+z_score_pos_averages <- as.data.frame(scale(rlog_positive_averages[,2:7]))
+
+z_score_pos_averages <- cbind(z_score_pos_averages, rlog_positive_averages$Chick_ENSEMBL, rlog_positive_averages$Symbol, rlog_positive_averages$Chick_Entrezid, rlog_positive_averages$Human_Entrezid, rlog_positive_averages$TF_Status)
+write.csv(z_score_pos_averages, file = "./Exports/Annotated_Z-score_Positive_Averages.csv")
+```
+
+

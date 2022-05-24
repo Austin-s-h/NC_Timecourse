@@ -1,0 +1,117 @@
+---
+title: "NC Timecourse RNA-Seq: Visualizations"
+output: html_notebook
+---
+
+# Step 4: Visualizations
+
+From our analysis, we want to highlight dynamic transcription factors.
+Let's first start with reading in the data from prev. analysis. Beginning with factors that were identified from pairwise comparisons.
+
+```{r}
+library(dplyr)
+library(pheatmap)
+
+DESeq_1_files = list.files(path="./Exports/", pattern="*_AllGenes.csv", full.names=TRUE)
+Annotated_Rlog_Positive_Averages <- read.csv("~/local_git/NC_Timecourse/RNA-Seq/Exports/Annotated_Rlog_Positive_Averages2.csv", row.names=1, stringsAsFactors=FALSE)
+rownames(Annotated_Rlog_Positive_Averages) <- Annotated_Rlog_Positive_Averages$Chick_ENSEMBL
+
+HH6 <- read.csv(DESeq_1_files[5], row.names = 1)
+HH6$Chick_ENSEMBL = rownames(HH6)
+HH8 <- read.csv(DESeq_1_files[6], row.names = 1)
+HH8$Chick_ENSEMBL = rownames(HH8)
+HH10 <- read.csv(DESeq_1_files[1], row.names = 1)
+HH10$Chick_ENSEMBL = rownames(HH10)
+HH12 <- read.csv(DESeq_1_files[2], row.names = 1)
+HH12$Chick_ENSEMBL = rownames(HH12)
+HH14 <- read.csv(DESeq_1_files[3], row.names = 1)
+HH14$Chick_ENSEMBL = rownames(HH14)
+HH16 <- read.csv(DESeq_1_files[4], row.names = 1)
+HH16$Chick_ENSEMBL = rownames(HH16)
+
+TF_HH6 <- HH6 %>% dplyr::filter(log2FoldChange > 2 & padj < 0.05 & TF_Status == "Transcription Factor") %>%
+  dplyr::select(Chick_ENSEMBL, log2FoldChange, padj)
+
+TF_HH8 <- HH8 %>% dplyr::filter(log2FoldChange > 1 & padj < 0.05 & TF_Status == "Transcription Factor") %>%
+  dplyr::select(Chick_ENSEMBL, log2FoldChange, padj)
+
+TF_HH10 <- HH10 %>% dplyr::filter(log2FoldChange > 1 & padj < 0.05 & TF_Status == "Transcription Factor") %>%
+  dplyr::select(Chick_ENSEMBL, log2FoldChange, padj)
+
+TF_HH12 <- HH12 %>% dplyr::filter(log2FoldChange > 1 & padj < 0.05 & TF_Status == "Transcription Factor") %>%
+  dplyr::select(Chick_ENSEMBL, log2FoldChange, padj)
+
+TF_HH14 <- HH14 %>% dplyr::filter(log2FoldChange > 1 & padj < 0.05 & TF_Status == "Transcription Factor") %>%
+  dplyr::select(Chick_ENSEMBL, log2FoldChange, padj)
+
+TF_HH16 <- HH16 %>% dplyr::filter(log2FoldChange > 1 & padj < 0.05 & TF_Status == "Transcription Factor") %>%
+  dplyr::select(Chick_ENSEMBL, log2FoldChange, padj)
+
+All_Enriched_TFs <- c(as.character(TF_HH6$Chick_ENSEMBL), as.character(TF_HH8$Chick_ENSEMBL),
+                           as.character(TF_HH10$Chick_ENSEMBL), as.character(TF_HH12$Chick_ENSEMBL),
+                           as.character(TF_HH14$Chick_ENSEMBL), as.character(TF_HH16$Chick_ENSEMBL))
+
+All_Enriched_TFs <- unique(All_Enriched_TFs)
+
+
+ddsTC_Condition_WE_vc_NC_All <- read.csv("./Exports/ddsTC_Condition_WE_vc_NC_All.csv", stringsAsFactors=FALSE)
+
+TF_Condition_Enriched <- ddsTC_Condition_WE_vc_NC_All %>% dplyr::filter(log2FoldChange > 0.5 & padj < 0.05 & TF_Status == "Transcription Factor") %>%  dplyr::select(Chick_ENSEMBL, log2FoldChange, padj)
+
+```
+
+## Enriched Genes Overall
+We find that a Z-score of Rlog normalized counts from DESeq2 looks best. Using the ddsTC results, we find 513 genes differentially expressed in neural crest.
+```{r}
+colors <- colorRampPalette(c("#0584bc","#ffffff","#e45649"))(250)
+
+
+# TF's
+# Names 
+levels(as.factor(Annotated_Rlog_Positive_Averages[All_Enriched_TFs,"Symbol"]))
+enriched_1 <- Annotated_Rlog_Positive_Averages[All_Enriched_TFs,2:7]
+rownames(enriched_1) <- ifelse(is.na(Annotated_Rlog_Positive_Averages[All_Enriched_TFs,"Symbol"]), 
+                               Annotated_Rlog_Positive_Averages[All_Enriched_TFs,"Chick_ENSEMBL"],
+                               Annotated_Rlog_Positive_Averages[All_Enriched_TFs,"Symbol"])
+enriched <- pheatmap(enriched_1, scale = "row", cluster_cols = F,
+                     show_rownames = F, cellwidth = 20, color = colors,
+                     cutree_rows = 6, border_color = NA, 
+                     filename = "./Exports/DeSeq2_Enriched_TFs_p05_nonames.pdf", width = 5, height = 6)
+
+# Gene's
+All_Enriched_Genes <- ddsTC_Condition_WE_vc_NC_All %>% dplyr::filter(log2FoldChange > 0.5 & padj < 0.05)
+
+enriched_3 <- Annotated_Rlog_Positive_Averages[All_Enriched_Genes$Chick_ENSEMBL,2:7]
+
+enriched3 <- pheatmap(enriched_3, scale = "row", cluster_cols = F,
+                     show_rownames = F, cellwidth = 20, color = colors,
+                     filename = "./Exports/DeSeq2_All_Enriched_Genes.pdf", width = 6, height = 8)
+enriched3
+```
+
+
+## Enriched TF Heatmaps
+p1 is from pairwise comparisons and p2 is from the 2_DESeq2TC results.
+```{r}
+#looking at normalized counts
+mat <- Annotated_Rlog_Positive_Averages[All_Enriched_TFs,2:7]
+rownames(mat) <- paste0(as.character(Annotated_Rlog_Positive_Averages[All_Enriched_TFs,8]), "_"
+                        ,rownames(mat))
+mat <- mat[!grepl("HOX", rownames(mat)),]
+p1 <- pheatmap(mat, cluster_cols = F, scale = "row", show_rownames = T, cellwidth = 15,
+               color = colors, border_color = NA, cutree_rows = 6,
+               filename = "./Exports/TF_Heatmap_Rlog_Counts.pdf",
+               width = 5, height = 14)
+
+mat2 <- Annotated_Rlog_Positive_Averages[TF_Condition_Enriched$Chick_ENSEMBL,2:7]
+rownames(mat2) <- paste0(as.character(Annotated_Rlog_Positive_Averages[TF_Condition_Enriched$Chick_ENSEMBL,8]), "_"
+                        ,rownames(mat2))
+p2 <- pheatmap(mat2, cluster_cols = F, scale = "row", show_rownames = T, cellwidth = 15,
+               color = colors,
+               filename = "./Exports/TF_Heatmap_Condition_Rlog_Counts.pdf",width = 6, height = 8)
+
+All_Enriched_TFs[!(All_Enriched_TFs %in% TF_Condition_Enriched$Chick_ENSEMBL)]
+# Notably Gained CSRNP1, POU4F1, MAFB, LMO4, and LMX1A
+
+```
+

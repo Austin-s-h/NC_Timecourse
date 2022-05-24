@@ -1,0 +1,28 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Quantification of Sox2/OCT4 OE SOX2 expression
+
+```{r}
+SoxOct_OE_qPCR <- read_csv(file = "Imports/raw_SoxOct_OE_qPCR.csv")
+
+# ctrl is 1
+avg_enrichment <- mean(as.numeric(SoxOct_OE_qPCR[1,2:6]))
+avg_se <- mean(as.numeric(SoxOct_OE_qPCR[3,2:6]))
+upper_se <- avg_enrichment + avg_se
+lower_se <- avg_enrichment - avg_se
+
+formatted_qpcr <- data.frame(Sample = c("Control","Sox2+Oct4 OE"),
+           Average_Enrichment = c(1,avg_enrichment),
+           SE_upper= c(1, upper_se),
+           SE_lower = c(1, lower_se))
+
+ggplot(formatted_qpcr, aes(x = Sample, y = Average_Enrichment)) +
+geom_bar(stat="identity") +
+geom_errorbar(data=formatted_qpcr, mapping=aes(x=Sample, ymin=SE_lower, ymax=SE_upper), width=0.2, size=1, color="black") + 
+theme_classic()
+
+ggsave(filename = "Exports/SOX2_qPCR_Overexpression_Quantification.pdf", width = 6, height = 4)
+```
