@@ -639,7 +639,7 @@ Let's visualize the delta in Log2FC for all GRN genes for each comparison.
 ```{r}
 # Boxplot of genes directly from Ana's paper
 
-Ana_Connectome_GRN <- read_delim("~/local_git/NC_Timecourse/RNA-Seq/Imports/Ana_Connectome_GRN.txt", 
+Ana_Connectome_GRN <- read_delim("./Imports/Ana_Connectome_GRN.txt", 
     delim = "\t", escape_double = FALSE, 
     trim_ws = TRUE)
 
