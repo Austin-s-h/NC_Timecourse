@@ -1,0 +1,16 @@
+.Rproj.user
+.Rhistory
+.RData
+.RDS
+.Ruserdata
+/knownResults/*
+*/Exports/
+*.log
+*.fa
+*.bed
+*.gz
+*.bam
+*.eps
+*.pdf
+*.png
+*.bai
