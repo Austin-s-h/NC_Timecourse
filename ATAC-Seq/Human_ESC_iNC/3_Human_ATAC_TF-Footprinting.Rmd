@@ -1,0 +1,36 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+# Footprinting Analysis
+We are going to do a footprinting analysis to complement our motif enrichment from chromVAR and HOMER. We are using RGT HINT-ATAC for this purpose.
+
+## Running HINT-ATAC
+
+```{bash}
+cd /data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/
+
+rgt-hint footprinting --atac-seq --paired-end --organism=hg38 --output-location=./HINT  --output-prefix=ES_D0_1_HINT ./BAM/ATAC_ES_D0_1_toGRCh38_sorted_nodups.bam ./Peaks/ATAC_ES_D0_1_toGRCh38_sorted_nodups.bam_peaks.narrowPeak
+
+rgt-hint footprinting --atac-seq --paired-end --organism=hg38 --output-location=./HINT  --output-prefix=ES_D0_2_HINT ./BAM/ATAC_ES_D0_2_toGRCh38_sorted_nodups.bam ./Peaks/ATAC_ES_D0_2_toGRCh38_sorted_nodups.bam_peaks.narrowPeak
+
+rgt-hint footprinting --atac-seq --paired-end --organism=hg38 --output-location=./HINT  --output-prefix=NC_D3_1_HINT ./BAM/ATAC_NC_D3_1_toGRCh38_sorted_nodups.bam ./Peaks/ATAC_NC_D3_1_toGRCh38_sorted_nodups.bam_peaks.narrowPeak
+
+rgt-hint footprinting --atac-seq --paired-end --organism=hg38 --output-location=./HINT  --output-prefix=NC_D3_2_HINT ./BAM/ATAC_NC_D3_2_toGRCh38_sorted_nodups.bam ./Peaks/ATAC_NC_D3_2_toGRCh38_sorted_nodups.bam_peaks.narrowPeak
+
+rgt-hint footprinting --atac-seq --paired-end --organism=hg38 --output-location=./HINT  --output-prefix=NC_D5_1_HINT ./BAM/ATAC_NC_D5_1_toGRCh38_sorted_nodups.bam ./Peaks/ATAC_NC_D5_1_toGRCh38_sorted_nodups.bam_peaks.narrowPeak
+
+rgt-hint footprinting --atac-seq --paired-end --organism=hg38 --output-location=./HINT  --output-prefix=NC_D5_2_HINT ./BAM/ATAC_NC_D5_2_toGRCh38_sorted_nodups.bam ./Peaks/ATAC_NC_D5_2_toGRCh38_sorted_nodups.bam_peaks.narrowPeak
+
+```
+
+Now we need to compare these hint outputs.
+```{bash}
+rgt-motifanalysis matching --organism=hg38 --motif-dbs ~/rgtdata/motifs/JASPAR2020-Vert-NonRedundant --rmdup --input-files ./HINT/ES_D0_1_HINT.bed ./HINT/ES_D0_2_HINT.bed ./HINT/NC_D3_1_HINT.bed ./HINT/NC_D3_2_HINT.bed ./HINT/NC_D5_1_HINT.bed ./HINT/NC_D5_2_HINT.bed
+```
+
+Test ESC against D3 NC
+
+```{bash}
+rgt-hint differential --organism=hg38 --bc --nc 62 --mpbs-files=./match/Time1_HINT_mpbs.bed,./match/Time7_HINT_mpbs.bed --reads-files=Time1.bam,Time7.bam --conditions=Time1,Time7 --output-location=Time1_vs_Time7
+```

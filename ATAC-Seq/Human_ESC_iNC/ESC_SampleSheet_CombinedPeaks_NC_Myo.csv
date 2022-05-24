@@ -1,0 +1,9 @@
+SampleID,Tissue,Factor,Condition,Treatment,Replicate,bamReads,Peaks,PeakCaller
+ATAC_ES_D0_1,ES,One,D0,Two,1,/data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/BAM/ATAC_ES_D0_1_toGRCh38_sorted_nodups.bam    ,/home/ash274/local_git/NC_Timecourse/ATAC-Seq/Human_ESC_iNC/400bp_centered_all_peaks.bed    ,bed
+ATAC_ES_D0_2,ES,One,D0,Two,2,/data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/BAM/ATAC_ES_D0_2_toGRCh38_sorted_nodups.bam    ,/home/ash274/local_git/NC_Timecourse/ATAC-Seq/Human_ESC_iNC/400bp_centered_all_peaks.bed    ,bed
+ATAC_Myo_D14_1,Myo,One,Diff-14,Two,1,/data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/BAM/ATAC_Myo_D14_1_toGRCh38_sorted_nodups.bam  ,/home/ash274/local_git/NC_Timecourse/ATAC-Seq/Human_ESC_iNC/400bp_centered_all_peaks.bed  ,bed
+ATAC_Myo_D14_2,Myo,One,Diff-14,Two,2,/data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/BAM/ATAC_Myo_D14_2_toGRCh38_sorted_nodups.bam  ,/home/ash274/local_git/NC_Timecourse/ATAC-Seq/Human_ESC_iNC/400bp_centered_all_peaks.bed ,bed
+ATAC_NC_D3_1,NC,One,D3,Two,1,/data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/BAM/ATAC_NC_D3_1_toGRCh38_sorted_nodups.bam    ,/home/ash274/local_git/NC_Timecourse/ATAC-Seq/Human_ESC_iNC/400bp_centered_all_peaks.bed    ,bed
+ATAC_NC_D3_2,NC,One,D3,Two,2,/data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/BAM/ATAC_NC_D3_2_toGRCh38_sorted_nodups.bam    ,/home/ash274/local_git/NC_Timecourse/ATAC-Seq/Human_ESC_iNC/400bp_centered_all_peaks.bed   ,bed
+ATAC_NC_D5_1,NC,One,D5,Two,1,/data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/BAM/ATAC_NC_D5_1_toGRCh38_sorted_nodups.bam    ,/home/ash274/local_git/NC_Timecourse/ATAC-Seq/Human_ESC_iNC/400bp_centered_all_peaks.bed    ,bed
+ATAC_NC_D5_2,NC,One,D5,Two,2,/data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/BAM/ATAC_NC_D5_2_toGRCh38_sorted_nodups.bam    ,/home/ash274/local_git/NC_Timecourse/ATAC-Seq/Human_ESC_iNC/400bp_centered_all_peaks.bed    ,bed

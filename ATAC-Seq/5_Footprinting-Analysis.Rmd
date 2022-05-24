@@ -1,0 +1,42 @@
+---
+title: "Footprinting Analysis"
+output: html_notebook
+---
+
+
+```{bash}
+#differential footprint HH6vs HH18
+#rgt with HH6 replicates combined and HH18 repliacates
+samtools merge HH6_combined.bam HH6_1.bam HH6_2.bam 
+samtools index -@ 24 HH6_combined.bam 
+samtools merge HH18_combined.bam  HH18_1.bam HH18_2.bam
+samtools index -@ 24 HH18_combined.bam 
+rgt-hint footprinting --atac-seq --paired-end --organism=gg6 --output-location=./ --output-prefix=HH6_combined HH6_combined.bam all_ATAC_400bp_fixed.bed 
+rgt-hint footprinting --atac-seq --paired-end --organism=gg6 --output-location=./ --output-prefix=HH18_combined HH18_combined.bam all_ATAC_400bp_fixed.bed 
+rgt-motifanalysis matching --organism=gg6 --input-files HH6_combined.bed HH18_combined.bed
+rgt-hint differential --organism=gg6 --bc --nc 30 --mpbs-files=./match/HH6_combined_mpbs.bed,./match/HH18_combined_mpbs.bed --reads-files=HH6_combined.bam,HH18_combined.bam --conditions=HH6_combined,HH18_combined --output-location=HH6_vs_HH18
+
+#HH8 vs HH18
+samtools merge HH8_combined.bam  HH8_1.bam HH8_2.bam
+samtools index -@ 24 HH8_combined.bam
+rgt-hint footprinting --atac-seq --paired-end --organism=gg6 --output-location=./ --output-prefix=HH8_footprint HH8_combined.bam all_ATAC_400bp_fixed.bed 
+rgt-motifanalysis matching --organism=gg6 --input-files HH8_footprint.bed HH18_combined.bed
+rgt-hint differential --organism=gg6 --bc --nc 30 --mpbs-files=./match/HH8_footprint_mpbs.bed,./match/HH18_combined_mpbs.bed --reads-files=HH8_combined.bam,HH18_combined.bam --conditions=HH8_combined,HH18_combined --output-location=HH8_vs_HH18
+
+```
+
+```{r}
+#making differential motif volcano plot
+library(readr)
+setwd("/data/Austin/workdir/NC_Timecourse_Data/Debbie_exports/Fig1/HH6_vs_HH18")
+differential_statistics_6vs18 <- read_delim("differential_statistics_6vs18.csv", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+
+Differential_motif = data.frame(differential_statistics_6vs18$Motif, differential_statistics_6vs18$TF_Activity, differential_statistics_6vs18$Z_score,differential_statistics_6vs18$P_values)
+colnames(Differential_motif) = c("Motif","TF_activity","Zscore","Pvalue")
+ggplot(Differential_motif, aes(y =-log(Pvalue), x =-(Zscore))) + geom_point() + ylim(0,15) +xlim(-5,5) +  geom_text(aes(label=ifelse(-Zscore>= 2.5,as.character(Motif),'')),hjust=0,vjust=0) + geom_text(aes(label=ifelse(Zscore>=2,as.character(Motif),'')),hjust=0,vjust=0) +theme_classic()
+
+```
+
+
+

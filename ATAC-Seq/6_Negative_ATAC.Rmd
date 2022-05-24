@@ -1,0 +1,83 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+Adding analysis of negative ATAC samples, along with LRT of positive samples or chromVAR.
+
+```{r}
+library(GenomicRanges)
+library(DiffBind)
+library(BiocParallel)
+library(rtracklayer)
+library(tibble)
+library(dplyr)
+library(GenomicFeatures)
+library(ChIPseeker)
+BiocParallel::multicoreWorkers()
+library(ggplot2)
+library(ggrepel)
+library(pheatmap)
+library(ggsci)
+library(Rsamtools)
+library(GenomicAlignments)
+library(ChIPQC)
+samples_ATAC <- readRDS(file = "./Exports/samples_ATAC_400bp_2.RDS")
+TxDb_galGal6 <- makeTxDbFromEnsembl(organism = "Gallus gallus", release = 99)
+```
+
+```{r}
+setwd("/data/Austin/workdir/NC_Timecourse_Data/Negative_ATAC/BAM/")
+
+
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="/home/ash274/local_git/NC_Timecourse/ATAC-Seq/Imports/all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH6_m_1",tissue="WE",
+                            factor="ATAC",condition="early",replicate=1, bamReads="10869_10099_100378_HGHMCBGXB_A_HH6_AP2aE_ATAC_GFPneg_1_TCCTCTAC_togalGal6_noPG_sorted_nodups.bam")
+
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="/home/ash274/local_git/NC_Timecourse/ATAC-Seq/Imports/all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH6_m_2",tissue="WE",
+                            factor="ATAC",condition="early",replicate=2, bamReads="10869_10099_100378_HGHMCBGXB_A_HH6_AP2aE_ATAC_GFPneg_2_CTAGTACG_togalGal6_noPG_sorted_nodups.bam")
+
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="/home/ash274/local_git/NC_Timecourse/ATAC-Seq/Imports/all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH8_m_2",tissue="WE",
+                            factor="ATAC",condition="early",replicate=2, bamReads="HH8m_2_R1_t_noPG_sorted_nodups.bam")
+
+```
+
+```{r}
+samples_ATAC
+```
+
+```{r}
+meta_dataframe <- as.data.frame(samples_ATAC$class)
+pca <- dba.plotPCA(samples_ATAC)
+x <- pca$panel.args[[1]]$x
+y <- pca$panel.args[[1]]$y
+pca_mat <- as.data.frame(matrix(c(x,y), nrow = 14, ncol = 2, byrow = F))
+colnames(pca_mat) <- c("PC1","PC2")
+rownames(pca_mat) <- colnames(meta_dataframe)
+
+pca_mat$timepoint <- factor(c("HH6","HH6","HH8","HH8",
+                       "HH10","HH10","HH12","HH12",
+                       "HH14","HH14","HH16","HH16","HH18","HH18"),
+                       levels = c("HH6","HH8","HH10","HH12","HH14","HH16","HH18"))
+g <- ggplot(pca_mat, aes(x=PC1, y=PC2, color=timepoint)) + 
+  geom_point(size = 4, alpha = 1) + 
+  scale_color_npg() +
+  labs(x = "PC1 51%" ,y = "PC2 17%") +
+  theme(text=element_text(color="black", size = 10, face = "bold"),
+        line=element_line(color="black", size = 2),
+        axis.ticks = element_line(color = "black", size = 1),
+        panel.background = element_blank(),
+        panel.border = element_rect(fill=NA, color = "black", size = 2),
+        axis.text = element_text(color="black", size = 10, face = "bold"),
+        legend.key = element_blank()
+  )
+
+g
+```
+
+```{r}
+
+```
+

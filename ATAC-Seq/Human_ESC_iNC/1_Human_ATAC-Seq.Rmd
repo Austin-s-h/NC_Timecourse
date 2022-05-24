@@ -1,0 +1,274 @@
+---
+title: "Generating initial ATAC_counts"
+output: html_notebook
+---
+## ATAC-Seq Step 1: QC
+Our first step in evaluating ATAC-Seq data is by running a variety of QC measures. We will operate on the dba object from diffbind to store the reads (bams) from our samples. For simplicity of github, we will just be working with the final object, but the bams for our Human data can be found at CREST2 `/data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/BAM`
+```{r Libraries-1, echo=FALSE, message=FALSE, warning=FALSE}
+library(GenomicRanges)
+library(DiffBind)
+library(BiocParallel)
+library(rtracklayer)
+library(tibble)
+library(dplyr)
+library(GenomicFeatures)
+library(ChIPseeker)
+BiocParallel::multicoreWorkers()
+library(ggplot2)
+library(ggrepel)
+library(pheatmap)
+library(ggsci)
+library(Rsamtools)
+library(GenomicAlignments)
+library(ChIPQC)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
+TxDb_hg38 <- TxDb.Hsapiens.UCSC.hg38.knownGene
+library(AnnotationHub)
+ah <- AnnotationHub()
+qr <- query(ah, c("EnsDb", "Homo sapiens"))
+ensembl_human_annotation <- qr[[14]]
+```
+Let's generate some QC metrics for these BAMs.
+We will show one of the results as a demonstration, but this has been done for all libraries.
+```{r, message=FALSE, collapse=TRUE}
+#create a list of files that end with .noDupsSort.bam ($ specifies that the file ends there.)
+bamFiles <- list.files(path = "/data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/BAM",
+                       pattern = "_sorted_nodups.bam$", full.names = T)
+peakFiles <- list.files(path = "/data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/Peaks",
+                        pattern = "_sorted_nodups.bam_peaks.narrowPeak$", full.names = T) 
+
+
+Perform_ATAC_QC <- function(bam = "", peaks = "") {
+  reads1 <-
+    readGAlignmentPairs(bam, param = ScanBamParam(
+      mapqFilter = 1,
+      flag = scanBamFlag(isPaired = TRUE, isProperPair = TRUE),
+      what = c("qname", "mapq", "isize")
+    ))
+  idx_tb <- idxstatsBam(bam)
+  idx_tb_filt <- idx_tb[0:25,]
+  read_dist <- idx_tb_filt %>% ggplot(aes(seqnames, mapped, fill = seqnames)) +
+    geom_bar(stat = "identity") + coord_flip()
+  percent.mito <-(idx_tb_filt$mapped[25] / sum(idx_tb_filt$mapped)) * 100
+  #getting insert sizes
+  atacReads_read1 <- GenomicAlignments::first(reads1)
+  insertSizes <- abs(elementMetadata(atacReads_read1)$isize)
+  fragLenPlot <- table(insertSizes) %>%
+    data.frame %>%
+    rename(InsertSize = insertSizes,Count = Freq) %>%
+    mutate(InsertSize = as.numeric(as.vector(InsertSize)),
+           Count =as.numeric(as.vector(Count))) %>% ggplot(aes(x = InsertSize, y = Count)) +
+    geom_line() + xlim(c(0, 800)) + scale_y_continuous(trans='log2', name = "Count Log2") + theme_bw()
+  openRegionPeaks <- import(peaks, format = "narrowPeak")
+  qcRes <-ChIPQCsample(bam, peaks = openRegionPeaks, chromosomes = "chr2",
+       blacklist ="/data/Austin/workdir/genome/hg38/blacklist/UCSC_hg38_blacklist.bed")
+  MacsCalls_1_filteredAnno <- annotatePeak(qcRes, TxDb = TxDb_hg38)
+  output <-list(idx_tb,
+                read_dist,
+                percent.mito,
+                fragLenPlot,
+                MacsCalls_1_filteredAnno)
+  return(output)
+}
+
+#Perform QC on all bam files. Easiest is to run one per bam, but could do for file in bamFiles and return those results in one big list.
+res_list <- list()
+for (i in seq(length(bamFiles))){
+  name <- list.files(path = "/data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/BAM",
+                       pattern = "_sorted_nodups.bam$")[i]
+  name <- strsplit(x = name, split = ".bam")[[1]]
+  res_list[[name]] <- Perform_ATAC_QC(bam = bamFiles[i], peaks = peakFiles[i])
+}
+
+# They look like they have very low mito and decent signal.
+# Let's check the bigwigs
+# They all looks prety great!
+```
+
+# ESC vs D5 NC Analysis
+```{r creating db object, echo=TRUE, eval=FALSE}
+NC_dba <- dba(sampleSheet="ESC_SampleSheet_CombinedPeaks_NC_Myo.csv")
+NC_dba <- dba.count(NC_dba, bParallel = T)
+# All ESC vs NC
+#NC_dba <- dba.contrast(NC_dba, NC_dba$masks$ES, NC_dba$masks$NC)
+# ESC vs D3
+NC_dba <- dba.contrast(NC_dba, NC_dba$masks$ES, NC_dba$masks$D3)
+# ESC vs D5 
+NC_dba <- dba.contrast(NC_dba, NC_dba$masks$ES, NC_dba$masks$D5)
+# D3 vs D5
+NC_dba <- dba.contrast(NC_dba, NC_dba$masks$D3, NC_dba$masks$D5)
+# ESC vs Myo
+NC_dba <- dba.contrast(NC_dba, NC_dba$masks$ES, NC_dba$masks$Myo)
+# Myo vs D3
+NC_dba <- dba.contrast(NC_dba, NC_dba$masks$D3, NC_dba$masks$Myo)
+# Myo vs D5
+NC_dba <- dba.contrast(NC_dba, NC_dba$masks$Myo, NC_dba$masks$D5)
+
+NC_dba <- dba.analyze(NC_dba, bParallel = F)
+
+ESC_vs_D3 <- as.data.frame(dba.report(NC_dba, contrast = 1, th = 1e-6))
+ESC_vs_D5 <- as.data.frame(dba.report(NC_dba, contrast = 2, th = 1e-6))
+D3_vs_D5 <- as.data.frame(dba.report(NC_dba, contrast = 3, th = 1e-6))
+ESC_vs_Myo <- as.data.frame(dba.report(NC_dba, contrast = 4, th = 1e-6))
+Myo_vs_D3 <- as.data.frame(dba.report(NC_dba, contrast = 5, th = 1e-6))
+Myo_vs_D5 <- as.data.frame(dba.report(NC_dba, contrast = 6, th = 1e-6))
+
+ESC_vs_D3$PeakID <- paste0(ESC_vs_D3$seqnames, "_", ESC_vs_D3$start, "_", ESC_vs_D3$end)
+ESC_vs_D5$PeakID <- paste0(ESC_vs_D5$seqnames, "_", ESC_vs_D5$start, "_", ESC_vs_D5$end)
+D3_vs_D5$PeakID <- paste0(D3_vs_D5$seqnames, "_", D3_vs_D5$start, "_", D3_vs_D5$end)
+ESC_vs_Myo$PeakID <- paste0(ESC_vs_Myo$seqnames, "_", ESC_vs_Myo$start, "_", ESC_vs_Myo$end)
+Myo_vs_D3$PeakID <- paste0(Myo_vs_D3$seqnames, "_", Myo_vs_D3$start, "_", Myo_vs_D3$end)
+Myo_vs_D5$PeakID <- paste0(Myo_vs_D5$seqnames, "_", Myo_vs_D5$start, "_", Myo_vs_D5$end)
+
+write.csv(ESC_vs_D3, file = "Exports/ESC_vs_D3.csv", row.names = F)
+write.csv(ESC_vs_D5, file = "Exports/ESC_vs_D5.csv", row.names = F)
+write.csv(D3_vs_D5, file = "Exports/D3_vs_D5.csv", row.names = F)
+write.csv(ESC_vs_Myo, file = "Exports/ESC_vs_Myo.csv", row.names = F)
+write.csv(Myo_vs_D3, file = "Exports/Myo_vs_D3.csv", row.names = F)
+write.csv(Myo_vs_D5, file = "Exports/Myo_vs_D5.csv", row.names = F)
+
+All_Unique_PeakIDs <- unique(c(ESC_vs_D3$PeakID, ESC_vs_D5$PeakID,
+                        D3_vs_D5$PeakID, ESC_vs_Myo$PeakID,
+                        Myo_vs_D3$PeakID, Myo_vs_D5$PeakID))
+
+All_Unique_PeakIDs.df <- data.frame(chr = stringr::str_split(All_Unique_PeakIDs, pattern = "_", simplify = T)[,1], start = stringr::str_split(All_Unique_PeakIDs, pattern = "_", simplify = T)[,2], end = stringr::str_split(All_Unique_PeakIDs, pattern = "_", simplify = T)[,3])
+
+write.table(All_Unique_PeakIDs.df, file = "Exports/Human_ESC_to_Myo_Differential_Peaks.bed",
+            sep = "\t",row.names = F, col.names = F, quote = F)
+
+All_Unique_PeakIDs.df <- read.delim("Exports/Human_ESC_to_Myo_Differential_Peaks.bed", header = F)
+All_Unique_PeakIDs <- paste0(All_Unique_PeakIDs.df$V1, "_", 
+                             All_Unique_PeakIDs.df$V2, "_",
+                             All_Unique_PeakIDs.df$V3)
+```
+
+## Normalized counts via DESeq2
+While we have used diffbind to generate peaksets, we do not have an easy way to generate normalized counts directly from the diffbind object. Therefore, we must transform it into a DESeq2 object to generate a set of normalized counts for additional analysis.
+
+```{r DESeq2, echo=TRUE}
+# Running DeSeq to get Rlog counts
+library(DESeq2)
+library(pheatmap)
+summarized_experiment2 <- dba(NC_dba, bSummarizedExperiment = T)
+summarized_experiment2@assays@data$scores <- summarized_experiment2@assays@data$Reads
+#order of counts not correct.
+dds_experiment2 <- DESeqDataSet(summarized_experiment2, design = ~ Condition)
+dds_experiment2 <- DESeq(dds_experiment2)
+
+rlog_human_ATAC <- rlog(dds_experiment2, blind = F)
+rlog_human_ATAC.df <- as.data.frame(assay(rlog_human_ATAC))
+
+rownames(rlog_human_ATAC.df) <- paste0(NC_dba$peaks[[1]]$Chr,"_",NC_dba$peaks[[1]]$Start,"_",NC_dba$peaks[[1]]$End)
+
+write.table(rlog_human_ATAC.df, file = "./Exports/Rlog_counts_All_Human_ESC-NC_Myo_ATAC_Peaks.txt", quote = F, sep = "\t", row.names = T)
+
+rlog_human_ATAC.df <- read.delim("./Exports/Rlog_counts_All_Human_ESC-NC_Myo_ATAC_Peaks.txt")
+
+human_ATAC_avg <- data.frame(ES_D0 = rowMeans(rlog_human_ATAC.df[c('ATAC_ES_D0_1', 'ATAC_ES_D0_2')], na.rm=TRUE),
+                         NC_D3 = rowMeans(rlog_human_ATAC.df[c('ATAC_NC_D3_1', 'ATAC_NC_D3_2')], na.rm=TRUE),
+                         NC_D5 = rowMeans(rlog_human_ATAC.df[c('ATAC_NC_D5_1', 'ATAC_NC_D5_2')], na.rm=TRUE),
+                         NC_D14 = rowMeans(rlog_human_ATAC.df[c('ATAC_Myo_D14_1', 'ATAC_Myo_D14_2')], na.rm=TRUE)) 
+
+write.table(human_ATAC_avg, file = "./Exports/Rlog_counts_Avg_All_Human_ESC-NC_Myo_ATAC_Peaks.txt", quote = F, sep = "\t", row.names = T)
+
+
+human_ATAC_subset <- rlog_human_ATAC.df[rownames(rlog_human_ATAC.df) %in% All_Unique_PeakIDs,]
+
+human_ATAC_subset <- human_ATAC_subset[,c("ATAC_ES_D0_1","ATAC_ES_D0_2","ATAC_NC_D3_1","ATAC_NC_D3_2","ATAC_NC_D5_1","ATAC_NC_D5_2","ATAC_Myo_D14_1","ATAC_Myo_D14_2")]
+
+ATAC_clusters = pheatmap(human_ATAC_subset,
+                         cluster_cols = F,
+                         scale = "row",
+                         show_rownames = F,
+                         show_colnames = T,
+                         cluster_rows = T,
+                         cutree_rows = 6, color=colorRampPalette(colors=c("#0584BC","#FFFFFF","#E45649"))(250))
+
+#Re-order original data (genes) to match ordering in heatmap (top-to-bottom)
+rownames(human_ATAC_subset[ATAC_clusters$tree_row[["order"]],])
+#6 groups
+clusters_6 <- data.frame(
+  peak = names(sort(cutree(ATAC_clusters$tree_row, k=6))),
+  cluster = as.character(sort(cutree(ATAC_clusters$tree_row, k=6))))
+
+
+row_annotation <- data.frame(cluster = clusters_6$cluster, row.names = clusters_6$peak)
+
+pheatmap(human_ATAC_subset, annotation_row = row_annotation, 
+                         cluster_cols = F, scale = "row",
+                         show_rownames = F,show_colnames = T, cluster_rows = T, cutree_rows = 6,
+                         color=colorRampPalette(colors=c("#0584BC","#FFFFFF","#E45649"))(250),
+         filename = "./Exports/Rlog_Counts_Human_DeSeq2_ATAC_peaks.pdf", width = 8, height = 6)
+
+```
+
+# Properties of ATAC clusters?
+I want to demonstrate enrichment of the pluripotency program in Cluster 2/3, neural crest identity in Cluster 5/6/4, and myo identity in Cluster 1.
+
+```{r}
+row_annotation2 <- row_annotation %>% rownames_to_column() %>% mutate(chr = stringr::str_split(rowname, pattern = "_", simplify = T)[,1],
+                                                    start = stringr::str_split(rowname, pattern = "_", simplify = T)[,2],
+                                                    end = stringr::str_split(rowname, pattern = "_", simplify = T)[,3]) 
+
+
+
+(row_annotation2 %>% dplyr::filter(cluster == 1) %>% dplyr::select(-rowname, -cluster))
+
+write.table((row_annotation2 %>% dplyr::filter(cluster == 1) %>% dplyr::select(-rowname, -cluster)),
+            file = "Exports/Cluster1_Myo.bed", row.names = F, col.names = F, sep = "\t", quote = F)
+write.table((row_annotation2 %>% dplyr::filter(cluster %in% c(2,3)) %>% dplyr::select(-rowname, -cluster)),
+            file = "Exports/Clusters-2-3_ESC.bed", row.names = F, col.names = F, sep = "\t", quote = F)
+write.table((row_annotation2 %>% dplyr::filter(cluster %in% c(4,5,6)) %>% dplyr::select(-rowname, -cluster)),
+            file = "Exports/Clusters-4-5-6_NC.bed", row.names = F, col.names = F, sep = "\t", quote = F)
+
+```
+
+
+```{bash, EVAL=FALSE}
+findMotifsGenome.pl Cluster1_Myo.bed /data/Austin/workdir/genome/hg38.fa Cluster1_Myo_MYO_HOMER -nomotif -p 15
+findMotifsGenome.pl Clusters-2-3_ESC.bed /data/Austin/workdir/genome/hg38.fa Clusters-2-3_Myo_ESC_HOMER -nomotif -p 15
+findMotifsGenome.pl Clusters-4-5-6_NC.bed /data/Austin/workdir/genome/hg38.fa Clusters-4-5-6_Myo_NC_HOMER -nomotif -p 15
+
+```
+
+Running NucleoATAC to determine occupancy around Sox2/Oct4 shared regions and things.
+It recommends broad peaks (maybe a 1-2kb?) to call occupancy around.
+
+First combine all of the stage-specific nodupes BAMs All Sox2 peaks extend.
+```{bash}
+conda activate py37
+samtools merge -@ 16 ATAC_ES_D0_merged.bam ATAC_ES_D0_1_toGRCh38_sorted_nodups.bam ATAC_ES_D0_2_toGRCh38_sorted_nodups.bam
+samtools merge -@ 16 ATAC_NC_D3_merged.bam ATAC_NC_D3_1_toGRCh38_sorted_nodups.bam  ATAC_NC_D3_2_toGRCh38_sorted_nodups.bam
+samtools merge -@ 16 ATAC_NC_D5_merged.bam ATAC_NC_D5_1_toGRCh38_sorted_nodups.bam  ATAC_NC_D5_2_toGRCh38_sorted_nodups.bam
+samtools merge -@ 16 ATAC_Myo_D14_merged.bam ATAC_Myo_D14_1_toGRCh38_sorted_nodups.bam  ATAC_Myo_D14_2_toGRCh38_sorted_nodups.bam
+
+samtools index -@ 16 ATAC_ES_D0_merged.bam
+samtools index -@ 16 ATAC_NC_D3_merged.bam
+samtools index -@ 16 ATAC_NC_D5_merged.bam
+samtools index -@ 16 ATAC_Myo_D14_merged.bam
+```
+
+Then get peaks of interest
+1. All Human ESC to iNC Sox2 Peaks
+2. ESC enriched Sox2 Peaks
+3. NC enriched Sox2 Peaks
+
+Then widen them to 2kb
+```{bash}
+awk -F '\t' '{X=1000; mid=(int($2)+int($3))/2;printf("%s\t%d\t%d\n",$1,(mid-X<0?0:mid-X),mid+X);}' All_Sox2_Peaks.bed > All_Sox2_Peaks_2kwide.bed
+```
+
+Then call nucleo atac
+
+```{bash}
+conda activate nucleo
+cd /data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/NucleoATAC
+
+nucleoatac run --cores 14 \
+--bed /home/ash274/local_git/NC_Timecourse/CR/Human_ESC_iNC/Exports/All_Sox2_Peaks_2kwide.bed \
+--bam /data/Austin/workdir/NC_Timecourse_Data/Human_ESC_ATAC/BAM/ATAC_ES_D0_merged.bam \
+--fasta /data/Austin/workdir/genome/hg38.fa \
+--out ATAC_ES_D0_All_Sox2_Peaks_NucleoATAC
+```
+
+

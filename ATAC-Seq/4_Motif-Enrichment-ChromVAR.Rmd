@@ -1,0 +1,108 @@
+---
+title: "ATAC-Seq Chromvar"
+output: html_notebook
+---
+
+```{r}
+#ChromVar(Used for generating PCA of motifs)
+library(chromVAR)
+library(motifmatchr)
+library(Matrix)
+library(SummarizedExperiment)
+library(BiocParallel)
+library(TFBSTools)
+register(BPPARAM = MulticoreParam(workers = 16, progressbar = TRUE))
+library(BSgenome.Ggallus.ENSEMBL.galGal6)
+library(JASPAR2020)
+library(ggsci)
+library(DiffBind)
+library(ggplot2)
+library(DESeq2)
+
+
+samples_ATAC <- readRDS(file = "./Exports/samples_ATAC_filt.RDS")
+
+var_obj <- dba(samples_ATAC_filt, bSummarizedExperiment = T)
+
+names(var_obj@assays) <- c("scores", "RPKM", "counts","cRPKM","cReads")
+var_obj <- addGCBias(var_obj, genome = BSgenome.Ggallus.ENSEMBL.galGal6)
+head(rowData(var_obj))
+opts <- list()
+opts["tax_group"] <- "vertebrates"
+opts["collection"] <- "CORE"
+motifs <- getMatrixSet(JASPAR2020, opts = opts)
+
+motif_ix <- matchMotifs(motifs, var_obj, genome = BSgenome.Ggallus.ENSEMBL.galGal6)
+dev <- computeDeviations(var_obj, motif_ix)
+dev@NAMES <- paste0(dev@NAMES,"_",TFBSTools::name(motifs))
+variability <- computeVariability(dev)
+plotVariability(variability, n = 5, use_plotly = F)
+ggsave(filename = "Exports/Chick_NC_ATAC_chromVAR_Variability_filt.eps", width = 8, height = 6)
+tsne_dev <- deviationsTsne(dev, shiny = F, threshold = 1.5, perplexity = 4)
+pca <- dba.plotPCA(samples_ATAC, attributes = DBA_CONDITION)
+x <- pca$panel.args[[1]]$x
+y <- pca$panel.args[[1]]$y
+pca_mat <- matrix(c(x,y), nrow = 14, ncol = 2, byrow = F)
+rownames(pca_mat) <- rownames(var_obj@colData)
+pca_mat
+
+# Use the ATAC PCA for downstream plotting.
+pca_mat <- as.data.frame(pca_mat)
+colnames(pca_mat) <- c("PC1","PC2")
+pca_mat$timepoint <- factor(stringr::str_split(rownames(pca_mat), pattern = "_", simplify = T)[,1], levels = c("HH6","HH8","HH10","HH12","HH14","HH16","HH18")) 
+
+# Plot PCAs
+g <- ggplot(pca_mat, aes(x=PC1, y=PC2, color=timepoint, group = timepoint)) + 
+  geom_point(size = 2, alpha = 1) + 
+  scale_color_npg() +
+  labs(x = "PC1, 51%",y = "PC2, 17%") + chromVAR_theme()
+g
+
+tsne_dev <- as.matrix(pca_mat[,1:2])
+
+custom_theme <- theme(legend.position = "none", axis.title = element_blank())
+
+RXRB <- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "RXRB", shiny=F, var_df = variability)
+oct4_sox2 <- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "Pou5f1::Sox2", shiny=F, var_df = variability)
+TWIST1 <- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "TWIST1", shiny=F, var_df = variability)
+NR2F1 <- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "NR2F1(var.2)", shiny=F, var_df = variability)
+OTX2 <- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "OTX2", shiny=F, var_df = variability)
+
+
+cowplot::plot_grid(RXRB$RXRB + custom_theme,
+                   NR2F1$`NR2F1(var.2)` + custom_theme,
+                   OTX2$OTX2 + custom_theme,
+                   oct4_sox2$`Pou5f1::Sox2`+ custom_theme)
+ggsave("Exports/Chick_NC_ATAC_chromVAR_RXRB-NR2F1-OTX2-OCT4SOX2.eps", width = 7, height = 5)
+
+sox2 <- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "SOX2", shiny=F, var_df = variability)
+POU5F1 <- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "POU5F1", shiny=F, var_df = variability)
+MITF<- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "MITF", shiny=F, var_df = variability) 
+
+
+MITF<- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "MITF", shiny=F, var_df = variability) 
+TWIST1 <- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "TWIST1", shiny=F, var_df = variability)
+NR2F2 <- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "NR2F2", shiny=F, var_df = variability)
+
+
+cowplot::plot_grid(g + theme(legend.position = "none"), sox2$SOX2 + theme(legend.position = "none"), oct4_sox2$`Pou5f1::Sox2`+ theme(legend.position = "none"), POU5F1$POU5F1+ theme(legend.position = "none")) 
+ggsave(file = "./Exports/Sox2_Oct4_chromVAR_noLegend_filt.eps", device = "eps", width = 6, height = 4)
+
+
+```
+
+# Working with raw chromVAR scores
+
+```{r}
+dev$timepoint <- factor(stringr::str_split(rownames(pca_mat), pattern = "_", simplify = T)[,1], levels = c("HH6","HH8","HH10","HH12","HH14","HH16","HH18")) 
+diff_acc <- differentialDeviations(dev, "timepoint")
+
+plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "MA0142.1_Pou5f1::Sox2", shiny=F, var_df = variability)
+
+names(dev)
+
+chromvar_zscore <- as.data.frame(dev@assays@data$z)
+rownames(chromvar_zscore) <- names(dev)
+
+write.csv(chromvar_zscore, file = "Exports/chromVAR_Z-Score.csv", row.names = T)
+```

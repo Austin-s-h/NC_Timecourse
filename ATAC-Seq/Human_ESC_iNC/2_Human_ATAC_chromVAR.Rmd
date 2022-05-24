@@ -1,0 +1,147 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+# Running chromVAR
+Add in the other ATAC of differentiated things and run chromVAR to see the maintenance of Oct4:Sox2 in NC compared to differentiated cells.
+
+```{r message=FALSE}
+library(GenomicRanges)
+library(BiocParallel)
+library(tibble)
+library(dplyr)
+library(GenomicFeatures)
+library(chromVAR)
+library(DiffBind)
+library(JASPAR2020)
+library(TFBSTools)
+library(motifmatchr)
+library(BSgenome.Hsapiens.UCSC.hg38)
+library(ggplot2)
+library(cowplot)
+register(BPPARAM = MulticoreParam(workers = 12, progressbar = TRUE))
+```
+
+# Creating chromVAR dev's and plotting PCA.
+I want to re-run this with resized 400bp peaks and see how muhc of a difference it makes.
+```{r message=FALSE}
+#All_dba <- dba(sampleSheet="ESC_SampleSheet_Master.csv")
+All_dba <- dba(sampleSheet="ESC_SampleSheet_CombinedPeaks_NC_Myo.csv")
+All_dba <- dba.count(All_dba)
+summarized_experiment2 <- dba(All_dba, bSummarizedExperiment = T)
+summarized_experiment2@assays@data$scores <- summarized_experiment2@assays@data$Reads
+
+names(summarized_experiment2@assays) <- c("scores", "RPKM", "counts","cRPKM","cReads")
+summarized_experiment2 <- addGCBias(summarized_experiment2, genome = BSgenome.Hsapiens.UCSC.hg38)
+head(rowData(summarized_experiment2))
+opts <- list()
+opts["tax_group"] <- "vertebrates"
+opts["collection"] <- "CORE"
+motifs <- getMatrixSet(JASPAR2020, opts = opts)
+
+motif_ix <- matchMotifs(motifs, summarized_experiment2, genome = BSgenome.Hsapiens.UCSC.hg38)
+dev <- computeDeviations(summarized_experiment2, motif_ix)
+dev@NAMES <- paste0(dev@NAMES,"_",TFBSTools::name(motifs))
+variability <- computeVariability(dev)
+variability$motif <- rownames(variability)
+colnames(variability) <- c("name","variability","bootstrap_lower_bound","bootstrap_upper_bound","var_p_value","var_p_value_adj","motif")
+variability <- variability %>% arrange(desc(variability)) %>% mutate(var_rank = seq_len(length(variability)))
+#To find the point where variability deviates significantly.
+cutoff <- KneeArrower::findCutoff(x = variability[,c("var_rank")], y = variability[,c("variability")], method = "curvature")
+
+
+plotVariability(variability, use_plotly = F)
+
+#ggsave("Exports/ESC_to_iNC_chromVAR_Variability.eps", width = 8, height = 6)
+
+# Let's look at the directionality of chromVAR scores?
+diff_acc <- differentialDeviations(dev, "Condition")
+colnames(diff_acc) <- c("diff_dev_p_value","diff_dev_p_value_adjusted")
+
+diff_acc$highest_enriched <- colnames(dev@assays@data$z)[apply(dev@assays@data$z,1,which.max)]
+diff_acc$highest_enriched <- ifelse(grepl(diff_acc$highest_enriched, pattern = "D0"), "D0", ifelse(grepl(diff_acc$highest_enriched, pattern = "D3"), "D3",
+                                    ifelse(grepl(diff_acc$highest_enriched, pattern = "D5"), "D5", ifelse(
+                                    grepl(diff_acc$highest_enriched, pattern = "D14"),"D14",NA))))
+
+diff_acc$motif <- rownames(diff_acc)
+
+Human_chromVAR_Results <- merge(variability, diff_acc, by = "motif")
+Human_chromVAR_Results$var_cutoff_passed <- ifelse(Human_chromVAR_Results$variability > cutoff$y, "Passed","Not Passed")
+
+write.csv(Human_chromVAR_Results, file = "Exports/Supplemental_Human_ESC_to_iNC_to_Myo_chromVAR_results.csv")
+
+# Plot the top 3 variable factors highest in each day.
+
+plotVariability(variability[variability$motif %in% Human_chromVAR_Results[Human_chromVAR_Results$highest_enriched == "D0","motif"],], use_plotly = F) + geom_hline(yintercept = cutoff$y)
+ggsave(filename = "Exports/D0_chromVAR_variability.eps", width = 5, height = 5)
+plotVariability(variability[variability$motif %in% Human_chromVAR_Results[Human_chromVAR_Results$highest_enriched == "D3","motif"],], use_plotly = F) + geom_hline(yintercept = cutoff$y)
+ggsave(filename = "Exports/D3_chromVAR_variability.eps", width = 5, height = 5)
+plotVariability(variability[variability$motif %in% Human_chromVAR_Results[Human_chromVAR_Results$highest_enriched == "D5","motif"],], use_plotly = F) + geom_hline(yintercept = cutoff$y)
+ggsave(filename = "Exports/D5_chromVAR_variability.eps", width = 5, height = 5)
+plotVariability(variability[variability$motif %in% Human_chromVAR_Results[Human_chromVAR_Results$highest_enriched == "D14","motif"],], use_plotly = F) + geom_hline(yintercept = cutoff$y)
+ggsave(filename = "Exports/D14_chromVAR_variability.eps", width = 5, height = 5)
+
+
+tsne_dev <- readRDS(file = "Exports/Human_ATAC_chromVAR_tsne_dev.RDS")
+#tsne_dev <- deviationsTsne(dev, shiny = T) #1.5 var cutoff
+g <- plotDeviationsTsne(dev, tsne = tsne_dev, sample_column = "Condition", shiny = F)
+
+
+saveRDS(dev, file = "Exports/Human_ATAC_chromVAR_dev.RDS")
+saveRDS(tsne_dev, file = "Exports/Human_ATAC_chromVAR_tsne_dev.RDS")
+```
+
+```{r}
+sox2 <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "SOX2", shiny=F, var_df = variability)
+oct4_sox2 <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "Pou5f1::Sox2", shiny=F, var_df = variability)
+POU5F1 <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "POU5F1", shiny=F, var_df = variability)
+MITF<- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "MITF", shiny=F, var_df = variability) 
+TWIST1 <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "TWIST1", shiny=F, var_df = variability)
+NR2F2 <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "NR2F2", shiny=F, var_df = variability)
+
+NKX2_2 <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "NKX2-2", shiny=F, var_df = variability)
+GATA2 <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "GATA2", shiny=F, var_df = variability)
+KLF4 <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "KLF4", shiny=F, var_df = variability)
+Klf1 <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "Klf1", shiny=F, var_df = variability)
+MYC <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "MYC", shiny=F, var_df = variability)
+Rbpjl <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "Rbpjl", shiny=F, var_df = variability)
+TCF7L2 <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "TCF7L2", shiny=F, var_df = variability)
+TCF3 <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "TCF3", shiny=F, var_df = variability)
+TFAP2a <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "TFAP2A", shiny=F, var_df = variability)
+
+cowplot::plot_grid(sox2$SOX2, oct4_sox2$`Pou5f1::Sox2`, POU5F1$POU5F1, NR2F2$NR2F2, MITF$MITF, TWIST1$TWIST1)
+
+SMAD5 <- plotDeviationsTsne(dev, tsne = tsne_dev, annotation_name = "SMAD5", shiny=F, var_df = variability)
+
+cowplot::plot_grid(g$Condition + theme(legend.position = "none") + ggtitle("Condition"), oct4_sox2$`Pou5f1::Sox2`+ theme(legend.position = "none")+ ggtitle("Oct4:Sox2"), TFAP2a$TFAP2A + theme(legend.position = "none")+ggtitle("TFAP2a"), sox2$SOX2 + theme(legend.position = "none")+ggtitle("Sox2"))
+ggsave("Exports/chromVAR_ES_to_Myo_3.eps", width = 7, height = 5)
+```
+
+Now, let's do the ESC vs NC chromVAR.
+
+```{r}
+All_dba <- dba(sampleSheet="ESC_SampleSheet_CombinedPeaks_NC_Myo.csv")
+All_dba <- dba.count(All_dba)
+summarized_experiment2 <- dba(All_dba, bSummarizedExperiment = T)
+summarized_experiment2@assays@data$scores <- summarized_experiment2@assays@data$Reads
+
+names(summarized_experiment2@assays) <- c("scores", "RPKM", "counts","cRPKM","cReads")
+summarized_experiment2 <- addGCBias(summarized_experiment2, genome = BSgenome.Hsapiens.UCSC.hg38)
+head(rowData(summarized_experiment2))
+opts <- list()
+opts["tax_group"] <- "vertebrates"
+opts["collection"] <- "CORE"
+motifs <- getMatrixSet(JASPAR2020, opts = opts)
+
+motif_ix <- matchMotifs(motifs, summarized_experiment2, genome = BSgenome.Hsapiens.UCSC.hg38)
+dev <- computeDeviations(summarized_experiment2, motif_ix)
+dev@NAMES <- paste0(dev@NAMES,"_",TFBSTools::name(motifs))
+variability <- computeVariability(dev)
+plotVariability(variability, n = 5)
+tsne_dev <- deviationsTsne(dev, shiny = T) #1.5 var cutoff
+g <- plotDeviationsTsne(dev, tsne = tsne_dev, sample_column = "Condition", shiny = F)
+
+diff_acc <- differentialDeviations(dev, "Condition")
+```
+

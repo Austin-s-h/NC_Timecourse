@@ -1,0 +1,438 @@
+---
+title: Generating initial ATAC_counts
+```{r}
+library(GenomicRanges)
+library(DiffBind)
+library(BiocParallel)
+library(rtracklayer)
+library(tibble)
+library(dplyr)
+library(GenomicFeatures)
+library(ChIPseeker)
+BiocParallel::multicoreWorkers()
+library(ggplot2)
+library(ggprepel)
+library(pheatmap)
+
+samples_ATAC <- dba.peakset(NULL,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH6_1",tissue="NC",
+                            factor="ATAC",condition="early",replicate=1, bamReads="HH6_1.bam")
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH6_2",tissue="NC",
+                            factor="ATAC",condition="early",replicate=2, bamReads="HH6_2.bam")
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH8_1",tissue="NC",
+                            factor="ATAC",condition="early",replicate=1, bamReads="HH8_1.bam")
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH8_2",tissue="NC",
+                            factor="ATAC",condition="early",replicate=2, bamReads="HH8_2.bam")
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH10_1",tissue="NC",
+                            factor="ATAC",condition="mid",replicate=1, bamReads="HH10_1.bam")
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH10_2",tissue="NC",
+                            factor="ATAC",condition="mid",replicate=2, bamReads="HH10_2.bam")
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH12_1",tissue="NC",
+                            factor="ATAC",condition="mid",replicate=1, bamReads="HH12_1.bam")
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH12_2",tissue="NC",
+                            factor="ATAC",condition="mid",replicate=2, bamReads="HH12_2.bam")
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH14_1",tissue="NC",
+                            factor="ATAC",condition="mid",replicate=1, bamReads="HH14_1.bam")
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH14_2",tissue="NC",
+                            factor="ATAC",condition="mid",replicate=1, bamReads="HH14_2.bam")
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH16_1",tissue="NC",
+                            factor="ATAC",condition="late",replicate=1, bamReads="HH16_1.bam")
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH16_2",tissue="NC",
+                            factor="ATAC",condition="late",replicate=2, bamReads="HH16_2.bam")
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH18_1",tissue="NC",
+                            factor="ATAC",condition="late",replicate=1, bamReads="HH18_1.bam")
+samples_ATAC <- dba.peakset(samples_ATAC,peaks="all_ATAC_400bp_fixed.bed",
+                            peak.caller="macs", peak.format= "macs",sampID="HH18_2",tissue="NC",
+                            factor="ATAC",condition="late",replicate=2, bamReads="HH18_2.bam")
+samples_ATAC <- dba.count(samples_ATAC, filter = 50, filterFun = mean)
+samples_ATAC <- dba.contrast(samples_ATAC, categories = DBA_CONDITION, minMembers = 2)
+samples_ATAC <- dba.analyze(samples_ATAC)
+dba.plotPCA(samples_ATAC, attributes = DBA_CONDITION)
+saveRDS(samples_ATAC, file = "/data/Debbie/Organized_NC_ATAC_and_Sox2-Oct4//ATAC/Diffbind_data/samples_ATAC_400bp.RDS")
+samples_ATAC <- readRDS(file = "/data/Debbie/Organized_NC_ATAC_and_Sox2-Oct4//ATAC/Diffbind_data/samples_ATAC_400bp.RDS")
+
+```
+
+---
+```{r}
+#exporting filesets
+early_vs_late <- dba.report(samples_ATAC, contrast = 2, bUsePval = F)
+#enriched_peaks
+early_enriched <- as.data.frame(subset(early_vs_late, Fold > 0))
+early_enriched$peakID <- paste0(early_enriched$seqnames,"_",early_enriched$start,"_", early_enriched$end)
+late_enriched <- as.data.frame(subset(early_vs_late, Fold < 0))
+late_enriched$peakID <- paste0(late_enriched$seqnames,"_",late_enriched$start,"_", late_enriched$end)
+
+early_enriched_3k <- top_n(early_enriched, n = 3000, desc(Fold)) %>% dplyr::select(peakID, seqnames, start, end) %>% mutate(strand = rep("*"))
+early_enriched_5k <- top_n(early_enriched, n = 5000, desc(Fold)) 
+
+late_enriched_3k <- top_n(late_enriched, n = 3000, Fold) %>% dplyr::select(peakID, seqnames, start, end) %>% mutate(strand = rep("*"))
+late_enriched_5k <- top_n(late_enriched, n = 5000, Fold)
+
+
+export(late_enriched, con = "late_enriched_all.bed", format= "BED")
+export(early_enriched, con = "early_enriched_all.bed", format= "BED")
+
+############ early vs mid ----------------------------
+early_vs_mid <- dba.report(samples_ATAC, contrast = 1, bUsePval = F)
+early_vs_mid_enriched <- as.data.frame(subset(early_vs_mid, Fold > 0))
+early_vs_mid_enriched$peakID <- paste0(early_vs_mid_enriched$seqnames,"_",early_vs_mid_enriched$start,"_", early_vs_mid_enriched$end)
+early_vs_mid_enriched_3k <- top_n(early_vs_mid_enriched, n = 3000, desc(Fold)) %>% dplyr::select(peakID, seqnames, start, end) %>% mutate(strand = rep("*"))
+early_vs_mid_enriched_5k <- top_n(early_vs_mid_enriched, n = 5000, desc(Fold))
+early_vs_mid_depleted <- as.data.frame(subset(early_vs_mid, Fold < 0))
+early_vs_mid_depleted$peakID <- paste0(early_vs_mid_depleted$seqnames,"_",early_vs_mid_depleted$start,"_", early_vs_mid_depleted$end)
+early_vs_mid_depleted_3k <- top_n(early_vs_mid_depleted, n = 3000, Fold) %>% dplyr::select(peakID, seqnames, start, end) %>% mutate(strand = rep("*"))
+early_vs_mid_depleted_5k <- top_n(early_vs_mid_depleted, n = 5000, Fold)
+
+
+########### mid vs late ------------------------------
+late_vs_mid <- dba.report(samples_ATAC, contrast = 3, bUsePval = F)
+late_vs_mid_enriched <- as.data.frame(subset(late_vs_mid, Fold < 0))
+late_vs_mid_enriched$peakID <- paste0(late_vs_mid_enriched$seqnames,"_",late_vs_mid_enriched$start,"_", late_vs_mid_enriched$end)
+late_vs_mid_enriched_3k <- top_n(late_vs_mid_enriched, n = 3000, desc(Fold)) %>% dplyr::select(peakID, seqnames, start, end) %>% mutate(strand = rep("*"))
+late_vs_mid_enriched_5k <- top_n(late_vs_mid_enriched, n = 5000, desc(Fold))
+late_vs_mid_depleted <- as.data.frame(subset(late_vs_mid, Fold > 0))
+late_vs_mid_depleted$peakID <- paste0(late_vs_mid_depleted$seqnames,"_",late_vs_mid_depleted$start,"_", late_vs_mid_depleted$end)
+late_vs_mid_depleted_3k <- top_n(late_vs_mid_depleted, n = 3000, Fold) %>% dplyr::select(peakID, seqnames, start, end) %>% mutate(strand = rep("*"))
+late_vs_mid_depleted_5k <- top_n(late_vs_mid_depleted, n = 5000, Fold)
+
+top_18k_differential <- rbind(early_enriched_3k, late_enriched_3k, early_vs_mid_depleted_3k, early_vs_mid_enriched_3k, late_vs_mid_depleted_3k, late_vs_mid_enriched_3k)
+
+```
+
+```{r}
+peaks_list <- as.data.frame(samples_ATAC$peaks)
+peaks_list$peakID <- paste0(peaks_list$Chr, "_", peaks_list$Start, "_", peaks_list$End)
+
+  
+early_peaks <- unique(c(early_enriched_3k$peakID, early_vs_mid_enriched_3k$peakID))
+
+early_peaks_bed <- subset(peaks_list, peaks_list$peakID %in% early_peaks)  %>% dplyr::select(peakID, Chr, Start, End) %>% mutate(strand = rep("*"))
+
+mid_peaks <- unique(c(early_vs_mid_depleted_3k$peakID, late_vs_mid_depleted_3k$peakID))
+mid_peaks_bed <- subset(peaks_list, peaks_list$peakID %in% mid_peaks)  %>% dplyr::select(peakID, Chr, Start, End) %>% mutate(strand = rep("*"))
+
+late_peaks <- unique(c(late_enriched_3k$peakID, late_vs_mid_enriched_3k$peakID))
+late_peaks_bed <- subset(peaks_list, peaks_list$peakID %in% late_peaks)  %>% dplyr::select(peakID, Chr, Start, End) %>% mutate(strand = rep("*"))
+
+export(early_peaks_bed, con = "early_peaks.bed", format= "BED")
+export(mid_peaks_bed, con = "mid_peaks.bed", format= "BED")
+export(late_peaks_bed, con = "late_peaks.bed", format= "BED")
+
+```
+
+```{r}
+# Running DeSeq to get Rlog counts
+library(DESeq2)
+summarized_experiment2 <- dba(samples_ATAC, bSummarizedExperiment = T)
+summarized_experiment2@assays@data$scores <- summarized_experiment2@assays@data$Reads
+#order of counts not correct.
+dds_experiment2 <- DESeqDataSet(summarized_experiment2, design = ~ Condition)
+dds_experiment2 <- DESeq(dds_experiment2)
+dds_results <- results(dds_experiment2)
+rld <- rlog(dds_experiment2, blind = FALSE)
+rownames(assay(rld)) <- paste0(samples_ATAC$peaks[[1]]$Chr,"_",samples_ATAC$peaks[[1]]$Start,"_",samples_ATAC$peaks[[1]]$End)
+rld_df <- data.frame(row.names = paste0(samples_ATAC$peaks[[1]]$Chr,"_",samples_ATAC$peaks[[1]]$Start,"_",samples_ATAC$peaks[[1]]$End),
+           assay(rld))
+
+write.table(rld_df, file = "Rlog_counts_All_ATAC_Peaks", quote = F, sep = "\t", row.names = T)
+
+library(pheatmap)
+
+rld_df_avg <- data.frame(HH6 = rowMeans(rld_df[c('HH6_1', 'HH6_2')], na.rm=TRUE),
+                         HH8 = rowMeans(rld_df[c('HH8_1', 'HH8_2')], na.rm=TRUE),
+                         HH10 = rowMeans(rld_df[c('HH10_1', 'HH10_2')], na.rm=TRUE),
+                         HH12 = rowMeans(rld_df[c('HH12_1', 'HH12_2')], na.rm=TRUE),
+                         HH14 = rowMeans(rld_df[c('HH14_1', 'HH14_2')], na.rm=TRUE),
+                         HH16 = rowMeans(rld_df[c('HH16_2', 'HH16_2')], na.rm=TRUE),
+                         HH18 = rowMeans(rld_df[c('HH18_1', 'HH18_2')], na.rm=TRUE))
+
+write.table(rld_df_avg, file = "Rlog_counts_avergae_All_ATAC_Peaks", quote = F, sep = "\t", row.names = T)
+
+ATAC_clusters = pheatmap(subset(rld_df_avg, rownames(rld_df_avg) %in% top_18k_differential$peakID), cluster_cols = F, scale = "row",
+        show_rownames = F, show_colnames = T)
+
+library(pheatmap)
+```
+```{bash}
+# making unique peaksets
+bedtools intersect -wa -a early_peaks.bed -b mid_peaks.bed late_peaks.bed -v | uniq > early_peaks_uniq.bed |4836
+bedtools intersect -wa -a mid_peaks.bed -b early_peaks.bed late_peaks.bed -v | uniq > mid_peaks_uniq.bed | 4334
+bedtools intersect -wa -a late_peaks.bed -b early_peaks.bed mid_peaks.bed -v | uniq > late_peaks_uniq.bed | 4641
+
+#making heatmaps
+#RPKM normalized bw files
+computeMatrix reference-point -S HH6_1.bw HH10_1.bw HH14_1.bw HH18_1.bw -R early_peaks_uniq.bed -b 1000 -a 1000 -bs 5 -o early_peaks_alt_timepoints.mat.gz  --missingDataAsZero --referencePoint center
+plotHeatmap -m early_peaks_alt_timepoints.mat.gz -out early_peaks_alt_timepoints_2.png --colorMap Blues --dpi 600 --heatmapHeight 5
+
+computeMatrix reference-point -S HH6_1.bw HH10_1.bw HH14_1.bw HH18_1.bw -R late_peaks_uniq.bed -b 1000 -a 1000 -bs 5 -o late_peaks_alt_timepoints.mat.gz  --missingDataAsZero --referencePoint center
+plotHeatmap -m late_peaks_alt_timepoints.mat.gz -out late_peaks_alt_timepoints.png --colorMap Blues --dpi 600 --heatmapHeight 5
+
+computeMatrix reference-point -S HH6_1.bw HH10_1.bw HH14_1.bw HH18_1.bw -R mid_peaks_uniq.bed -b 1000 -a 1000 -bs 5 -o mid_peaks_alt_timepoints.mat.gz  --missingDataAsZero --referencePoint center
+plotHeatmap -m mid_peaks_alt_timepoints.mat.gz -out mid_peaks_alt_timepoints_2.png --colorMap Blues --dpi 600 --heatmapHeight 5 --yMax 450
+```
+
+```{r}
+
+library(ChIPseeker)
+library(RMariaDB)
+library(org.Gg.eg.db)
+library(clusterProfiler)
+library(ReactomePA)
+library(tidyr)
+library(rtracklayer)
+library(clusterProfiler)
+library(GenomicFeatures)
+
+#Annotating all ATAC peaks
+ATAC_all_peaks = readPeakFile("all_ATAC_400bp_fixed.bed")
+TxDb_galGal6 <- makeTxDbFromEnsembl(organism = "Gallus gallus", release = 99)
+ATAC_all_peaks_anno =annotatePeak(ATAC_all_peaks, tssRegion = c(-1000,1000), TxDb = TxDb_galGal6, annoDb = "org.Gg.eg.db")
+ATAC_all_peaks_anno.df = data.frame(ATAC_all_peaks_anno)
+#combining with counts peaks
+#rerun dba.peakset for all ATAC bam files as done previously
+samples_ATAC_2 = dba.count(samples_ATAC, score = DBA_SCORE_RPKM)
+counts_ATAC_RPKM.mat =dba.peakset(samples_ATAC_2,bRetrieve = T,DataType = DBA_DATA_FRAME)
+counts_ATAC_RPKM.mat$START = counts_ATAC_RPKM.mat$START + 1
+colnames(counts_ATAC_RPKM.mat) = c("seqnames", "start", "end", "HH6_1", "HH6_2", "HH8_1", "HH8_2", "HH10_1", "HH10_2", "HH12_1", "HH12_2", "HH14_1", "HH14_2", "HH16_1","HH16_2", "HH18_1", "HH18_2")
+ATAC_all_score_anno = merge(counts_ATAC_RPKM.mat, ATAC_all_peaks_anno.df, by = c("seqnames", "start", "end"))
+#Determining ATAC peaks around NC genes
+NC_peaks = subset(ATAC_all_score_anno, ATAC_all_score_anno$geneId %in% GRN_Genes$X2)
+NC_peaks$number = c(1:1239)
+NC_peaks_score = data.frame(NC_peaks[,4:17], NC_peaks$SYMBOL, NC_peaks$number, NC_peaks$distanceToTSS/1000)
+rownames(NC_peaks_score) <- paste0(NC_peaks_score$NC_peaks.SYMBOL,"_",NC_peaks_score$NC_peaks.number,"_",NC_peaks_score$NC_peaks.distanceToTSS)
+
+NC_peaks_avg <- data.frame(HH6 = rowMeans(NC_peaks_score[c('HH6_1', 'HH6_2')], na.rm=TRUE),
+                         HH8 = rowMeans(NC_peaks_score[c('HH8_1', 'HH8_2')], na.rm=TRUE),
+                         HH10 = rowMeans(NC_peaks_score[c('HH10_1', 'HH10_2')], na.rm=TRUE),
+                         HH12 = rowMeans(NC_peaks_score[c('HH12_1', 'HH12_2')], na.rm=TRUE),
+                         HH14 = rowMeans(NC_peaks_score[c('HH14_1', 'HH14_2')], na.rm=TRUE),
+                         HH16 = rowMeans(NC_peaks_score[c('HH16_2', 'HH16_1')], na.rm=TRUE),
+                         HH18 = rowMeans(NC_peaks_score[c('HH18_1', 'HH18_2')], na.rm=TRUE))
+rownames(NC_peaks_avg) = NC_peaks_avg$Gene
+library(pheatmap)
+pheatmap(NC_peaks_avg, cluster_cols = F, scale = "row",
+       show_rownames = T, fontsize_row = 7, cellheight = 10)
+early_module = c("MSX1_985","PAX7_690","SALL1_251","PAX7_695","OTX2_1021","LIN28A_715","SALL1_238","NANOG_122","POU4F3_925","SP5_1055","DMBX1_1118","GATA3_42","HAND2_933","TFAP2C_672","PAX7_709","MSX2_390","ZIC3_952", "ZIC1_1168","GBX2_1080","PAX3_1210","PRDM1_838","LHX5_479", "Pou5f3_490")
+early_module_avg = subset(NC_peaks_avg, rownames(NC_peaks_avg) %in% early_module)
+
+pheatmap(early_module_avg, cluster_cols = F, scale = "row", show_rownames = T, fontsize_row = 10, cellheight = 10)
+ middle_module = c("SNAI2_559", "SNAI2_560","FOXD3_1141","FOXD3_1142","CSRNP1_659","SOX1O_64","RXRG_1159","SOX10_62","MYC_570","MYC_571","ZEB2_1065","MYCN_898","ETS1_749","MEF2C_1236","SOX5_86","TFAP2B_780","LMO4_1112","COL2A1_910","SOX9_540", "TWIST2_1093","TFAP2A_665","SLIT3_403","SLIT3_410","SNAI2_550")
+ middle_module_avg = subset(NC_peaks_avg, rownames(NC_peaks_avg) %in% middle_module)        
+ pheatmap(middle_module_avg, cluster_cols = F, scale = "row",
+         show_rownames = T, fontsize_row = 8, cellheight = 10)
+Late_module = c("MITF_270","TYR_20","TYR_19","TH_1009","TWIST2_1101","PHOX2B_973","MEF2C_1235","DCT_1","EBF1_328")
+
+Late_module_avg = subset(NC_peaks_avg, rownames(NC_peaks_avg) %in% Late_module) 
+pheatmap(Late_module_avg, cluster_cols = F, scale = "row",
+         show_rownames = T, fontsize_row = 8, cellheight = 10)
+```
+
+
+```{bash}
+#Differential motif :Homer
+
+findMotifsGenome.pl early_peaks_uniq.bed/data/Debbie/Organized_NC_ATAC_and_Sox2-Oct4/ATAC/Diffbind_data/Gallus_gallus.GRCg6a.dna.toplevel.fa /data/Debbie/Organized_NC_ATAC_and_Sox2-Oct4/ATAC/Diffbind_data/ATAC_earlyvslate_uniq_homer_200 -size 200 -bg late_peaks_uniq.bed -p 16
+
+findMotifsGenome.pl late_peaks_uniq.bed/data/Debbie/Organized_NC_ATAC_and_Sox2-Oct4/ATAC/Diffbind_data/Gallus_gallus.GRCg6a.dna.toplevel.fa /data/Debbie/final_analysis_files/ATAC_latevsearly_uniq_homer_200 -size 200 -bg early_peaks_uniq.bed -p 16
+
+findMotifsGenome.pl mid_peaks_uniq.bed/data/Debbie/Organized_NC_ATAC_and_Sox2-Oct4/ATAC/Diffbind_data/Gallus_gallus.GRCg6a.dna.toplevel.fa /data/Debbie/final_analysis_files/ATAC_midvsearly_uniq_homer_200 -size 200 -bg early_peaks_uniq.bed -p 16
+```
+
+```{r}
+RNAseq_TF = subset(Annotated_Rlog_Positive_Averages, Annotated_Rlog_Positive_Averages$TF_Status == "Transcription Factor")
+RNAseq_TF =subset(RNAseq_TF, RNAseq_TF$HH6 >=2)
+
+#early_motifs
+setwd("/exports/Fig1/ATAC_earlyvslate_uniq_homer_200")
+knownResults <- read_delim("ATAC_earlyvslate_uniq_homer_200/knownResults.csv", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+View(knownResults)
+early_motifs_homer = knownResults
+early_motifs_homer_top30 = top_n(early_motifs_homer, n=30, desc(early_motifs_homer$`P-value`))
+early_motifs_homer_top30 = data.frame(early_motifs_homer_top30$`Motif Name`, -(early_motifs_homer_top30$`Log P-value`))
+early_motifs_homer_top30 = early_motifs_homer_top30[-c(3,6,15,23,26,27,29),]
+View(early_motifs_homer_top30)
+colnames(early_motifs_homer_top30) = c("Motif", "-log(p-val)")
+
+early_depleted_late = subset(early_motifs_homer, early_motifs_homer$`Motif Name` %in% late_motifs_homer_top30$Motif)
+early_depleted_late = data.frame(early_depleted_late$`Motif Name`, -(early_depleted_late$`Log P-value`))
+colnames(early_depleted_late) = c("Motif", "-log(p-val)")
+
+early_depleted_mid = subset(early_motifs_homer, early_motifs_homer$`Motif Name` %in% mid_motifs_homer_top30$Motif)
+early_depleted_mid = data.frame(early_depleted_mid$`Motif Name`, -(early_depleted_mid$`Log P-value`))
+colnames(early_depleted_mid) = c("Motif", "-log(p-val)")
+
+early_motifs_all = rbind(early_motifs_homer_top30, early_depleted_mid, early_depleted_late)
+
+#late_motifs_all
+setwd("/exports/Fig1/ATAC_latevsearly_uniq_homer_200")
+latevsearly_homer <- read_delim("ATAC_latevsearly_uniq_homer_200/latevsearly_homer.csv", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+View(latevsearly_homer)
+late_motifs_homer = latevsearly_homer
+late_motifs_homer_top30 = top_n(late_motifs_homer, n=30, desc(late_motifs_homer$`P-value`))
+late_motifs_homer_top30 = data.frame(late_motifs_homer_top30$`Motif Name`, -(late_motifs_homer_top30$`Log P-value`))
+late_motifs_homer_top30 = late_motifs_homer_top30[-c(2,3,4,8,9,14,18,19,20,23,24),]
+View(late_motifs_homer_top30)
+colnames(late_motifs_homer_top30) = c("Motif", "-log(p-val)")
+
+late_depleted_mid = subset(late_motifs_homer, late_motifs_homer$`Motif Name` %in% mid_motifs_homer_top30$Motif)
+late_depleted_mid = data.frame(late_depleted_mid$`Motif Name`, -(late_depleted_mid$`Log P-value`))
+colnames(late_depleted_mid) = c("Motif", "-log(p-val)")
+
+late_depleted_early = subset(late_motifs_homer, late_motifs_homer$`Motif Name` %in% early_motifs_homer_top30$Motif)
+late_depleted_early = data.frame(late_depleted_early$`Motif Name`, -(late_depleted_early$`Log P-value`))
+colnames(late_depleted_early) = c("Motif", "-log(p-val)")
+
+late_motifs_all = rbind(late_depleted_early, late_depleted_mid, late_motifs_homer_top30)
+
+#mid_motifs
+setwd("/exports/Fig1/ATAC_midvsearly_uniq_homer_200")
+midvsearly_knownResults <- read_delim("ATAC_midvsearly_uniq_homer_200/midvsearly_knownResults.csv", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+View(midvsearly_knownResults)
+mid_motifs_homer = midvsearly_knownResults
+mid_motifs_homer_top30 = top_n(mid_motifs_homer, n=30, desc(mid_motifs_homer$`P-value`))
+mid_motifs_homer_top30 = data.frame(mid_motifs_homer_top30$`Motif Name`, -(mid_motifs_homer_top30$`Log P-value`))
+mid_motifs_homer_top30 = mid_motifs_homer_top30[-c(2,9,12,17,18,19,21,25,28,30,31),]
+View(mid_motifs_homer_top30)
+colnames(mid_motifs_homer_top30) = c("Motif", "-log(p-val)")
+
+mid_depleted_early = subset(mid_motifs_homer, mid_motifs_homer$`Motif Name` %in% early_motifs_homer_top30$Motif)
+mid_depleted_early = data.frame(mid_depleted_early$`Motif Name`, -(mid_depleted_early$`Log P-value`))
+colnames(mid_depleted_early) = c("Motif", "-log(p-val)")
+
+mid_depleted_late = subset(mid_motifs_homer, mid_motifs_homer$`Motif Name` %in% late_motifs_homer_top30$Motif)
+mid_depleted_late = data.frame(mid_depleted_late$`Motif Name`, -(mid_depleted_late$`Log P-value`))
+colnames(mid_depleted_late) = c("Motif", "-log(p-val)")
+
+mid_motifs_all = rbind(mid_depleted_early, mid_motifs_homer_top30,mid_depleted_late)
+
+motif_all = merge(early_motifs_all, mid_motifs_all, by ="Motif")
+motif_all_2 = merge(motif_all, late_motifs_all, by ="Motif")
+View(motif_all_2)
+motif_all_2 = unique(motif_all_2)
+colnames(motif_all_2) = c("Motif", "Early_peaks", "Mid_peaks", "Late_peaks")
+motif_all_2 = separate(motif_all_2,Motif, into = c("Motif", "info"), sep = "/")
+rownames(motif_all_2) = motif_all_2$Motif
+enriched_motifs = motif_all_2[3:5]
+
+
+TF_enrichment = pheatmap(enriched_motifs, color = viridis(6), cluster_cols = F, scale = "row",
+        show_rownames = T, show_colnames = T, cellheight = 8, fontsize_row = 6, cellwidth = 20, cutree_rows = 3)
+
+```
+```{r}
+#ChromVar(Used for generating PCA of motifs)
+BiocManager::install("chromVAR")
+BiocManager::install("motifmatchr")
+BiocManager::install("JASPAR2018")
+install.packages("remotes")
+remotes::install_github("da-bar/JASPAR2020")
+library(chromVAR)
+library(motifmatchr)
+library(Matrix)
+library(SummarizedExperiment)
+library(BiocParallel)
+library(TFBSTools)
+register(BPPARAM = MulticoreParam( workers = 1, progressbar = TRUE))
+library(BSgenome.Ggallus.ENSEMBL.galGal6)
+library(JASPAR2020)
+library(ggsci)
+
+#Using dba.oject Samples_ATAC
+var_obj <- dba(samples_ATAC, bSummarizedExperiment = T)
+names(var_obj@assays) <- c("scores", "RPKM", "counts","cRPKM","cReads")
+var_obj <- addGCBias(var_obj, genome = BSgenome.Ggallus.ENSEMBL.galGal6)
+head(rowData(var_obj))
+opts <- list()
+opts["tax_group"] <- "vertebrates"
+opts["collection"] <- "CORE"
+motifs <- getMatrixSet(JASPAR2020, opts = opts)
+
+motif_ix <- matchMotifs(motifs, var_obj, genome = BSgenome.Ggallus.ENSEMBL.galGal6)
+dev <- computeDeviations(var_obj, motif_ix)
+dev@NAMES <- paste0(dev@NAMES,"_",TFBSTools::name(motifs))
+variability <- computeVariability(dev)
+plotVariability(variability, n = 5)
+tsne_dev <- deviationsTsne(dev, shiny = T)
+pca <- dba.plotPCA(samples_ATAC, attributes = DBA_CONDITION)
+x <- pca$panel.args[[1]]$x
+y <- pca$panel.args[[1]]$y
+pca_mat <- matrix(c(x,y), nrow = 14, ncol = 2, byrow = F)
+rownames(pca_mat) <- rownames(var_obj@colData)
+pca_mat
+
+# Generate PCA data for entire set and subsets
+dst <- DESeq2::DESeqTransform(var_obj)
+pcaAll <- plotPCA(dst, intgroup = c("Condition"), returnData=TRUE)
+pcaAllVar <- attr(pcaAll, "percentVar")
+# Plot PCAs
+g <- ggplot(pcaAll, aes(x=PC1, y=PC2, color=group)) + 
+  geom_point(size = 2, alpha = 1) + 
+  scale_color_npg() +
+  labs(x = paste(c("PC1","%"),round(pcaAllVar[1]*100)) ,y = paste(c("PC2","%"), round(pcaAllVar[2]*100))) + chromVAR_theme()
+g$data <- data.frame(row.names = rownames(g$data), PC1 = pca_mat[,1], PC2 = pca_mat[,2], color = g$data$group, Factor = g$data, name = g$data$name)
+#relevel for ordering.
+g$data$Condition <- factor(g$data$Condition, levels = c("early","mid","late"))
+g$labels$x <- "PC1 47%"
+g$labels$y <- "PC2 11%"
+
+sox2 <- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "SOX2", shiny=F, var_df = variability)
+oct4_sox2 <- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "Pou5f1::Sox2", shiny=F, var_df = variability)
+POU5F1 <- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "POU5F1", shiny=F, var_df = variability)
+MITF<- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "MITF", shiny=F, var_df = variability) 
+TWIST1 <- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "TWIST1", shiny=F, var_df = variability)
+NR2F2 <- plotDeviationsTsne(dev, tsne = pca_mat, annotation_name = "NR2F2", shiny=F, var_df = variability)
+cowplot::plot_grid(sox2$SOX2, oct4_sox2$`Pou5f1::Sox2`, POU5F1$POU5F1, NR2F2$NR2F2, MITF$MITF, TWIST1$TWIST1)
+
+
+
+
+```
+
+```{bash}
+#differential footprint HH6vs HH18
+#rgt with HH6 replicates combined and HH18 repliacates
+samtools merge HH6_combined.bam HH6_1.bam HH6_2.bam 
+samtools index -@ 24 HH6_combined.bam 
+samtools merge HH18_combined.bam  HH18_1.bam HH18_2.bam
+samtools index -@ 24 HH18_combined.bam 
+rgt-hint footprinting --atac-seq --paired-end --organism=gg6 --output-location=./ --output-prefix=HH6_combined HH6_combined.bam all_ATAC_400bp_fixed.bed 
+rgt-hint footprinting --atac-seq --paired-end --organism=gg6 --output-location=./ --output-prefix=HH18_combined HH18_combined.bam all_ATAC_400bp_fixed.bed 
+rgt-motifanalysis matching --organism=gg6 --input-files HH6_combined.bed HH18_combined.bed
+rgt-hint differential --organism=gg6 --bc --nc 30 --mpbs-files=./match/HH6_combined_mpbs.bed,./match/HH18_combined_mpbs.bed --reads-files=HH6_combined.bam,HH18_combined.bam --conditions=HH6_combined,HH18_combined --output-location=HH6_vs_HH18
+
+#HH8 vs HH18
+samtools merge HH8_combined.bam  HH8_1.bam HH8_2.bam
+samtools index -@ 24 HH8_combined.bam
+rgt-hint footprinting --atac-seq --paired-end --organism=gg6 --output-location=./ --output-prefix=HH8_footprint HH8_combined.bam all_ATAC_400bp_fixed.bed 
+rgt-motifanalysis matching --organism=gg6 --input-files HH8_footprint.bed HH18_combined.bed
+rgt-hint differential --organism=gg6 --bc --nc 30 --mpbs-files=./match/HH8_footprint_mpbs.bed,./match/HH18_combined_mpbs.bed --reads-files=HH8_combined.bam,HH18_combined.bam --conditions=HH8_combined,HH18_combined --output-location=HH8_vs_HH18
+
+```
+```{r}
+#making differential motif volcano plot
+setwd("/exports/Fig1/HH6_vs_HH18")
+differential_statistics_6vs18 <- read_delim("HH6_vs_HH18/differential_statistics_6vs18.csv", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+View(differential_statistics_6vs18)
+Differential_motif = data.frame(differential_statistics_6vs18$Motif, differential_statistics_6vs18$TF_Activity, differential_statistics_6vs18$Z_score,differential_statistics_6vs18$P_values)
+colnames(Differential_motif) = c("Motif","TF_activity","Zscore","Pvalue")
+ggplot(Differential_motif, aes(y =-log(Pvalue), x =-(Zscore))) + geom_point() + ylim(0,15) +xlim(-5,5) +  geom_text(aes(label=ifelse(-Zscore>= 2.5,as.character(Motif),'')),hjust=0,vjust=0) + geom_text(aes(label=ifelse(Zscore>=2,as.character(Motif),'')),hjust=0,vjust=0) +theme_classic()
+
+```
+

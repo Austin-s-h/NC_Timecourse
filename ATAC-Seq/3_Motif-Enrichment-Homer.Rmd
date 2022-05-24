@@ -1,0 +1,127 @@
+---
+title: "ATAC-Seq Homer"
+output: html_notebook
+---
+
+## Motif Enrichment: Homer
+
+Pairwise comparison
+```{bash}
+#Differential motif :Homer
+findMotifsGenome.pl early_peaks_filt_uniq.bed /data/Austin/workdir/genome/Gallus_gallus.GRCg6a.dna.toplevel.fa ~/local_git/NC_Timecourse/ATAC-Seq/Exports/Early_vs_Late_Peaks_Filt_HOMER -size 200 -bg late_peaks_filt_uniq.bed -p 16
+
+findMotifsGenome.pl late_peaks_uniq.bed /data/Austin/workdir/genome/Gallus_gallus.GRCg6a.dna.toplevel.fa ~/local_git/NC_Timecourse/ATAC-Seq/Exports/Late_vs_Early_Peaks_Filt_HOMER -size 200 -bg early_peaks_filt_uniq.bed -p 16
+
+findMotifsGenome.pl mid_peaks_filt_uniq.bed /data/Austin/workdir/genome/Gallus_gallus.GRCg6a.dna.toplevel.fa ~/local_git/NC_Timecourse/ATAC-Seq/Exports/Mid_vs_Early_Peaks_Filt_HOMER -size 200 -bg early_peaks_filt_uniq.bed -p 16
+```
+
+
+LRT + Clustering
+```{bash}
+#Differential motif :Homer
+findMotifsGenome.pl LRT_Early.bed /data/Austin/workdir/genome/Gallus_gallus.GRCg6a.dna.toplevel.fa ~/local_git/NC_Timecourse/ATAC-Seq/Exports/LRT_Early_vs_Late_Peaks_HOMER -size 200 -bg LRT_Late.bed -p 16
+```
+Now, let's see how our less wonderful whole-embryo specific peaks look compared to the early peakset of neural crest. (run in ./Exports)
+
+Let's find out what peaks are specific to WE early.
+```{r}
+HH6_m_1 <- import(con ="/data/Austin/workdir/NC_Timecourse_Data/Negative_ATAC/Peaks/10869_10099_100378_HGHMCBGXB_A_HH6_AP2aE_ATAC_GFPneg_1_TCCTCTAC_togalGal6_noPG_nodups.bam_peaks.narrowPeak")
+
+HH6_m_2 <- import(con ="/data/Austin/workdir/NC_Timecourse_Data/Negative_ATAC/Peaks/10869_10099_100378_HGHMCBGXB_A_HH6_AP2aE_ATAC_GFPneg_2_CTAGTACG_togalGal6_noPG_nodups.bam_peaks.narrowPeak")
+
+HH8_m_1 <- import(con ="/data/Austin/workdir/NC_Timecourse_Data/Negative_ATAC/Peaks/HH8m_2_R1_t_noPG_nodups.bam_peaks.narrowPeak")
+
+combined_minus_peaks <- reduce(c(HH6_m_1,HH6_m_2,HH8_m_1))
+
+pie <- ChIPpeakAnno::makeVennDiagram(Peaks = list(HH6_m_1, HH6_m_2,HH8_m_1),
+                                     NameOfPeaks = c("HH6_1","HH6_2","HH6_1"))
+```
+
+```{bash}
+findMotifsGenome.pl early_peaks_uniq.bed ENSEMBL_galGal6_99 early_NC_vs_WE -bg WE_early_peaks_uniq.bed -p 62
+
+findMotifsGenome.pl early_peaks_uniq.bed ENSEMBL_galGal6_99 early_NC_general -p 62
+```
+
+
+```{r}
+RNAseq_TF = subset(Annotated_Rlog_Positive_Averages, Annotated_Rlog_Positive_Averages$TF_Status == "Transcription Factor")
+RNAseq_TF =subset(RNAseq_TF, RNAseq_TF$HH6 >=2)
+
+#early_motifs
+setwd("/exports/Fig1/ATAC_earlyvslate_uniq_homer_200")
+knownResults <- read_delim("ATAC_earlyvslate_uniq_homer_200/knownResults.csv", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+View(knownResults)
+early_motifs_homer = knownResults
+early_motifs_homer_top30 = top_n(early_motifs_homer, n=30, desc(early_motifs_homer$`P-value`))
+early_motifs_homer_top30 = data.frame(early_motifs_homer_top30$`Motif Name`, -(early_motifs_homer_top30$`Log P-value`))
+early_motifs_homer_top30 = early_motifs_homer_top30[-c(3,6,15,23,26,27,29),]
+View(early_motifs_homer_top30)
+colnames(early_motifs_homer_top30) = c("Motif", "-log(p-val)")
+
+early_depleted_late = subset(early_motifs_homer, early_motifs_homer$`Motif Name` %in% late_motifs_homer_top30$Motif)
+early_depleted_late = data.frame(early_depleted_late$`Motif Name`, -(early_depleted_late$`Log P-value`))
+colnames(early_depleted_late) = c("Motif", "-log(p-val)")
+
+early_depleted_mid = subset(early_motifs_homer, early_motifs_homer$`Motif Name` %in% mid_motifs_homer_top30$Motif)
+early_depleted_mid = data.frame(early_depleted_mid$`Motif Name`, -(early_depleted_mid$`Log P-value`))
+colnames(early_depleted_mid) = c("Motif", "-log(p-val)")
+
+early_motifs_all = rbind(early_motifs_homer_top30, early_depleted_mid, early_depleted_late)
+
+#late_motifs_all
+setwd("/exports/Fig1/ATAC_latevsearly_uniq_homer_200")
+latevsearly_homer <- read_delim("ATAC_latevsearly_uniq_homer_200/latevsearly_homer.csv", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+View(latevsearly_homer)
+late_motifs_homer = latevsearly_homer
+late_motifs_homer_top30 = top_n(late_motifs_homer, n=30, desc(late_motifs_homer$`P-value`))
+late_motifs_homer_top30 = data.frame(late_motifs_homer_top30$`Motif Name`, -(late_motifs_homer_top30$`Log P-value`))
+late_motifs_homer_top30 = late_motifs_homer_top30[-c(2,3,4,8,9,14,18,19,20,23,24),]
+View(late_motifs_homer_top30)
+colnames(late_motifs_homer_top30) = c("Motif", "-log(p-val)")
+
+late_depleted_mid = subset(late_motifs_homer, late_motifs_homer$`Motif Name` %in% mid_motifs_homer_top30$Motif)
+late_depleted_mid = data.frame(late_depleted_mid$`Motif Name`, -(late_depleted_mid$`Log P-value`))
+colnames(late_depleted_mid) = c("Motif", "-log(p-val)")
+
+late_depleted_early = subset(late_motifs_homer, late_motifs_homer$`Motif Name` %in% early_motifs_homer_top30$Motif)
+late_depleted_early = data.frame(late_depleted_early$`Motif Name`, -(late_depleted_early$`Log P-value`))
+colnames(late_depleted_early) = c("Motif", "-log(p-val)")
+
+late_motifs_all = rbind(late_depleted_early, late_depleted_mid, late_motifs_homer_top30)
+
+#mid_motifs
+setwd("/exports/Fig1/ATAC_midvsearly_uniq_homer_200")
+midvsearly_knownResults <- read_delim("ATAC_midvsearly_uniq_homer_200/midvsearly_knownResults.csv", 
+    "\t", escape_double = FALSE, trim_ws = TRUE)
+View(midvsearly_knownResults)
+mid_motifs_homer = midvsearly_knownResults
+mid_motifs_homer_top30 = top_n(mid_motifs_homer, n=30, desc(mid_motifs_homer$`P-value`))
+mid_motifs_homer_top30 = data.frame(mid_motifs_homer_top30$`Motif Name`, -(mid_motifs_homer_top30$`Log P-value`))
+mid_motifs_homer_top30 = mid_motifs_homer_top30[-c(2,9,12,17,18,19,21,25,28,30,31),]
+View(mid_motifs_homer_top30)
+colnames(mid_motifs_homer_top30) = c("Motif", "-log(p-val)")
+
+mid_depleted_early = subset(mid_motifs_homer, mid_motifs_homer$`Motif Name` %in% early_motifs_homer_top30$Motif)
+mid_depleted_early = data.frame(mid_depleted_early$`Motif Name`, -(mid_depleted_early$`Log P-value`))
+colnames(mid_depleted_early) = c("Motif", "-log(p-val)")
+
+mid_depleted_late = subset(mid_motifs_homer, mid_motifs_homer$`Motif Name` %in% late_motifs_homer_top30$Motif)
+mid_depleted_late = data.frame(mid_depleted_late$`Motif Name`, -(mid_depleted_late$`Log P-value`))
+colnames(mid_depleted_late) = c("Motif", "-log(p-val)")
+
+mid_motifs_all = rbind(mid_depleted_early, mid_motifs_homer_top30,mid_depleted_late)
+
+motif_all = merge(early_motifs_all, mid_motifs_all, by ="Motif")
+motif_all_2 = merge(motif_all, late_motifs_all, by ="Motif")
+View(motif_all_2)
+motif_all_2 = unique(motif_all_2)
+colnames(motif_all_2) = c("Motif", "Early_peaks", "Mid_peaks", "Late_peaks")
+motif_all_2 = separate(motif_all_2,Motif, into = c("Motif", "info"), sep = "/")
+rownames(motif_all_2) = motif_all_2$Motif
+enriched_motifs = motif_all_2[3:5]
+
+```
+

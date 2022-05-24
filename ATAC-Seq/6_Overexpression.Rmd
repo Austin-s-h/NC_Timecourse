@@ -1,0 +1,436 @@
+---
+title: "OCT4+SOX2 Overexpression Experiment"
+output: html_notebook
+---
+
+
+```{r}
+knitr::opts_knit$set(root.dir = "/data/Austin/workdir/NC_Timecourse_Data/final_analysis_files/")
+
+library(DiffBind)
+library(rtracklayer)
+library(pheatmap)
+library(ggpubr)
+library(DESeq2)
+library(RColorBrewer)
+ATAC_all_peaks = readRDS("./Exports/ATAC_Filtered_Peaks.gr.RDS")
+
+
+
+ATAC_OE <-
+  dba.peakset(
+    NULL,
+    peaks = ATAC_all_peaks ,
+    sampID = "Control1",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "Control",
+    treatment = "A",
+    replicate = 1,
+    bamReads = "Control1.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE <-
+  dba.peakset(
+    ATAC_OE,
+    peaks = ATAC_all_peaks  ,
+    sampID = "OE1",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "OE",
+    treatment = "A",
+    replicate = 1,
+    bamReads = "OE1.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE <-
+  dba.peakset(
+    ATAC_OE,
+    peaks = ATAC_all_peaks,
+    sampID = "Control2",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "Control",
+    treatment = "A",
+    replicate = 2,
+    bamReads = "Control2.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE <-
+  dba.peakset(
+    ATAC_OE,
+    peaks = ATAC_all_peaks,
+    sampID = "OE2",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "OE",
+    treatment = "A",
+    replicate = 2,
+    bamReads = "OE2.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE <- dba.count(ATAC_OE, filter = 1, score = DBA_SCORE_RPKM)
+```
+
+
+```{r}
+knitr::opts_knit$set(root.dir = "/data/Austin/workdir/NC_Timecourse_Data/final_analysis_files/")
+
+ATAC_OE.mat <- dba.peakset(ATAC_OE, bRetrieve = T, DataType = DBA_DATA_FRAME)
+
+rownames(ATAC_OE.mat) <- paste0(ATAC_OE.mat$CHR, "_", ATAC_OE.mat$START, "_", ATAC_OE.mat$END)
+ATAC_OE <- dba.contrast(ATAC_OE, categories = DBA_CONDITION, minMembers = 2)
+ATAC_OE <- dba.analyze(ATAC_OE, design = 4)
+Control_vs_OE_diff <- dba.report(ATAC_OE, bUsePval = T)
+Differential_regions = data.frame(Control_vs_OE_diff)
+rownames(Differential_regions) = paste0(Differential_regions$seqnames,"_",
+                                        Differential_regions$start,"_",Differential_regions$end)
+
+Differential_regions = Differential_regions[!(Differential_regions$seqnames == "MT"), ]
+Differential_regions_up = subset(Differential_regions, Differential_regions$Fold <
+                                   0)
+Differential_matrix_up = subset(ATAC_OE.mat,
+                                rownames(ATAC_OE.mat) %in% rownames(Differential_regions_up))
+OE_regions_up = data.frame(Differential_matrix_up[1:3])
+
+export(OE_regions_up, con = "OE_regions_up.bed", format = "BED")
+
+summarized_experiment_OE <- dba(ATAC_OE, bSummarizedExperiment = T)
+summarized_experiment_OE@assays@data$scores <- summarized_experiment_OE@assays@data$Reads
+#order of counts not correct.
+dds_experiment2 <- DESeqDataSet(summarized_experiment_OE, design = ~ Condition)
+dds_experiment2 <- DESeq(dds_experiment2)
+dds_results <- results(dds_experiment2)
+
+rld <- rlog(dds_experiment2, blind = FALSE)
+Rlog_OE_Matrix <- assay(rld)
+
+ATAC_OE.df <- as.data.frame(ATAC_OE$peaks)
+ATAC_OE.df$PeakID <- paste0(ATAC_OE.df$Chr, "_", ATAC_OE.df$Start, "_", ATAC_OE.df$End)
+
+rownames(Rlog_OE_Matrix) <- ATAC_OE.df$PeakID
+
+Rlog_OE_Matrix_sub <- Rlog_OE_Matrix[rownames(Rlog_OE_Matrix) %in% rownames(Differential_regions),]
+
+pheatmap(
+  Rlog_OE_Matrix_sub,
+  color = colorRampPalette(rev(brewer.pal(
+    n = 5, name = "RdBu"
+  )))(100),
+  cluster_cols = T,
+  scale = "row",
+  show_rownames = F,
+  show_colnames = T,
+  width = 10
+)
+
+
+CR_OE_up <-
+  dba.peakset(
+    NULL,
+    peaks = "OE_regions_up.bed" ,
+    sampID = "Sox2_CR",
+    tissue = "NC",
+    factor = "HH8",
+    condition = "Sox2",
+    treatment = "A",
+    replicate = 1,
+    bamReads = "Sox2_Rep1.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+CR_OE_up <-
+  dba.peakset(
+    CR_OE_up,
+    peaks = "OE_regions_up.bed"  ,
+    sampID = "OE1",
+    tissue = "NC",
+    factor = "HH8",
+    condition = "OE",
+    treatment = "A",
+    replicate = 1,
+    bamReads = "Oct4_CR_RD.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+CR_OE_up <- dba.count(CR_OE_up, DBA_SCORE_RPKM)
+CR_OE_up.mat <-
+  dba.peakset(CR_OE_up, bRetrieve = T, DataType = DBA_DATA_FRAME)
+CR_OE_up_scores = data.frame(CR_OE_up.mat[4:5])
+CR_OE_up_scores$group = c("Upregulated")
+
+
+CR_OE_all <-
+  dba.peakset(
+    NULL,
+    peaks = "all_ATAC_400bp_fixed.bed" ,
+    sampID = "Sox2_CR",
+    tissue = "NC",
+    factor = "HH8",
+    condition = "Sox2",
+    treatment = "A",
+    replicate = 1,
+    bamReads = "Sox2_Rep1.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+CR_OE_all <-
+  dba.peakset(
+    CR_OE_all,
+    peaks = "all_ATAC_400bp_fixed.bed"  ,
+    sampID = "OE1",
+    tissue = "NC",
+    factor = "HH8",
+    condition = "OE",
+    treatment = "A",
+    replicate = 1,
+    bamReads = "Oct4_CR_RD.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+CR_OE_all <- dba.count(CR_OE_all, score = DBA_SCORE_RPKM)
+CR_OE_all.mat <-
+  dba.peakset(CR_OE_all, bRetrieve = T, DataType = DBA_DATA_FRAME)
+CR_OE_all_scores = data.frame(CR_OE_all.mat[4:5])
+CR_OE_all_scores$group = c("All")
+
+CR_OE_bp = rbind(CR_OE_all_scores, CR_OE_up_scores)
+ggplot(CR_OE_bp, aes(x = log(OE1), y = log(Sox2_CR))) + geom_point(aes(color = group)) + ylim(0, 6) + xlim(0, 6) + scale_alpha_manual(values = c(0.5, 0.8)) + scale_color_manual(values = c("grey", "red")) + theme_classic() + geom_abline(linetype = "dashed")
+
+
+
+
+ATAC_OE_combined <-
+  dba.peakset(
+    NULL,
+    peaks = "Sox2_Oct4_CR_peaks.bed" ,
+    sampID = "Control1",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "Control",
+    treatment = "A",
+    replicate = 1,
+    bamReads = "Control1.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE_combined <-
+  dba.peakset(
+    ATAC_OE_combined,
+    peaks = "Sox2_Oct4_CR_peaks.bed"  ,
+    sampID = "OE1",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "OE",
+    treatment = "A",
+    replicate = 1,
+    bamReads = "OE1.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE_combined <-
+  dba.peakset(
+    ATAC_OE_combined,
+    peaks = "Sox2_Oct4_CR_peaks.bed",
+    sampID = "Control2",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "Control",
+    treatment = "A",
+    replicate = 2,
+    bamReads = "Control2.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE_combined <-
+  dba.peakset(
+    ATAC_OE_combined,
+    peaks = "Sox2_Oct4_CR_peaks.bed",
+    sampID = "OE2",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "OE",
+    treatment = "A",
+    replicate = 2,
+    bamReads = "OE2.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE_combined <-
+  dba.count(ATAC_OE_combined, filter = 1, score = DBA_SCORE_TMM_READS_FULL_CPM)
+ATAC_OE_combined.mat = dba.peakset(ATAC_OE_combined, bRetrieve = T, DataType =
+                                     DBA_DATA_FRAME)
+ATAC_OE_combined_avg = data.frame (Control = rowMeans(ATAC_OE_combined.mat[c("Control1", "Control2")]),
+                                   OE = rowMeans(ATAC_OE_combined.mat[c("OE1", "OE2")]))
+ATAC_OE_combined_avg$group = c("shared")
+heatmap_combined = data.frame(
+  ATAC_OE_combined.mat$Control1,
+  ATAC_OE_combined.mat$Control2,
+  ATAC_OE_combined.mat$OE1,
+  ATAC_OE_combined.mat$OE2
+)
+colnames(heatmap_combined) = c("Control1", "Control2", "OE1", "OE2")
+pheatmap(
+  ATAC_OE_combined_avg,
+  color = colorRampPalette(rev(brewer.pal(
+    n = 5, name = "RdBu"
+  )))(100),
+  cluster_cols = F,
+  scale = "row",
+  show_rownames = F,
+  show_colnames = T,
+  width = 10
+)
+
+
+ATAC_OE_Oct4 <-
+  dba.peakset(
+    NULL,
+    peaks = "Oct4_only_CR_peaks.bed" ,
+    sampID = "Control1",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "Control",
+    treatment = "A",
+    replicate = 1,
+    bamReads = "Control1.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE_Oct4 <-
+  dba.peakset(
+    ATAC_OE_Oct4,
+    peaks = "Oct4_only_CR_peaks.bed"  ,
+    sampID = "OE1",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "OE",
+    treatment = "A",
+    replicate = 1,
+    bamReads = "OE1.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE_Oct4 <-
+  dba.peakset(
+    ATAC_OE_Oct4,
+    peaks = "Oct4_only_CR_peaks.bed",
+    sampID = "Control2",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "Control",
+    treatment = "A",
+    replicate = 2,
+    bamReads = "Control2.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE_Oct4 <-
+  dba.peakset(
+    ATAC_OE_Oct4,
+    peaks = "Oct4_only_CR_peaks.bed",
+    sampID = "OE2",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "OE",
+    treatment = "A",
+    replicate = 2,
+    bamReads = "OE2.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE_Oct4 <-
+  dba.count(ATAC_OE_Oct4, filter = 1, score = DBA_SCORE_TMM_READS_FULL_CPM)
+ATAC_OE_Oct4.mat <-
+  dba.peakset(ATAC_OE_Oct4, bRetrieve = T, DataType = DBA_DATA_FRAME)
+ATAC_OE_Oct4_avg = data.frame (Control = rowMeans(ATAC_OE_Oct4.mat[c("Control1", "Control2")]),
+                               OE = rowMeans(ATAC_OE_Oct4.mat[c("OE1", "OE2")]))
+ATAC_OE_Oct4_avg$group = c("Oct4_only")
+
+ATAC_OE_Sox2 <-
+  dba.peakset(
+    NULL,
+    peaks = "Sox2_only_CR_peaks.bed" ,
+    sampID = "Control1",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "Control",
+    treatment = "A",
+    replicate = 1,
+    bamReads = "Control1.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE_Sox2 <-
+  dba.peakset(
+    ATAC_OE_Sox2,
+    peaks = "Sox2_only_CR_peaks.bed"  ,
+    sampID = "OE1",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "OE",
+    treatment = "A",
+    replicate = 1,
+    bamReads = "OE1.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE_Sox2 <-
+  dba.peakset(
+    ATAC_OE_Sox2,
+    peaks = "Sox2_only_CR_peaks.bed",
+    sampID = "Control2",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "Control",
+    treatment = "A",
+    replicate = 2,
+    bamReads = "Control2.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+ATAC_OE_Sox2 <-
+  dba.peakset(
+    ATAC_OE_Sox2,
+    peaks = "Sox2_only_CR_peaks.bed",
+    sampID = "OE2",
+    tissue = "NC",
+    factor = "HH14",
+    condition = "OE",
+    treatment = "A",
+    replicate = 2,
+    bamReads = "OE2.bam"
+    ,
+    peak.caller = "narrowpeak"
+  )
+
+ATAC_OE_Sox2 <-
+  dba.count(ATAC_OE_Sox2, filter = 1, score = DBA_SCORE_TMM_READS_FULL_CPM)
+ATAC_OE_Sox2.mat <-
+  dba.peakset(ATAC_OE_Sox2, bRetrieve = T, DataType = DBA_DATA_FRAME)
+ATAC_OE_Sox2_avg = data.frame (Control = rowMeans(ATAC_OE_Sox2.mat[c("Control1", "Control2")]),
+                               OE = rowMeans(ATAC_OE_Sox2.mat[c("OE1", "OE2")]))
+ATAC_OE_Sox2_avg$group = c("Sox2_only")
+
+
+ATAC_OE_all = rbind(ATAC_OE_combined_avg, ATAC_OE_Oct4_avg, ATAC_OE_Sox2_avg)
+ATAC_OE_all = melt(ATAC_OE_all)
+ATAC_OE_all$group = factor(
+  ATAC_OE_all$group,
+  levels = c("shared", "Sox2_only", "Oct4_only"),
+  ordered = TRUE
+)
+ggplot(ATAC_OE_all, aes(x = group, y = value)) + geom_boxplot(aes(color = variable),
+                                                              outlier.shape = NA,
+                                                              notch = TRUE) + ylim(0, 15) + theme_classic() + xlab("") + ylab("Normalized counts") + scale_color_manual(values = c("blue", "red"))
+
+
+
+compare_means(value ~ group, data = ATAC_OE_all, method = "t.test")
+
+```
+
