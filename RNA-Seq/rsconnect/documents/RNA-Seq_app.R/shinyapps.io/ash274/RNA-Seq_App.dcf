@@ -1,0 +1,13 @@
+name: RNA-Seq_App
+title: RNA-Seq_App
+username:
+account: ash274
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3244089
+bundleId: 4381038
+url: https://ash274.shinyapps.io/RNA-Seq_App/
+when: 1616434118.73223
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData|1_DESeq2.nb.html|1_DESeq2.Rmd|2_DESeq2TC.nb.html|2_DESeq2TC.Rmd|3_ImpulseDE2.nb.html|3_ImpulseDE2.Rmd|4_Visualizations.nb.html|4_Visualizations.Rmd|5_WGCNA_Clustering.nb.html|5_WGCNA_Clustering.Rmd|plot.pdf|process_RNASeq.sh|Exports|Imports
