@@ -5,7 +5,6 @@
 .RDS
 .Ruserdata
 /knownResults/**
-/Exports/**
 *.log
 *.fa
 *.bed
@@ -15,4 +14,3 @@
 *.pdf
 *.png
 *.bai
-NC_Timecourse.Rproj

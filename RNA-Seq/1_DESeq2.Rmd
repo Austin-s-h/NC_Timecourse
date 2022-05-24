@@ -75,7 +75,7 @@ colData <- colData %>% mutate(Condition = factor(ifelse(grepl(pattern = "pos|pGF
 colData <- colData %>% mutate(Time = factor(x = str_extract(word(colData$data, sep = "_",1,1), pattern ="[0-9]+"), levels = c(6,8,10,12,14,16)))
 colData <- colData %>% mutate(Group = factor(paste0(Condition,"_",Time)))
 
-write.csv(colData, file = "./Exports/colData.csv")
+write.csv(colData, file = "./Imports/colData.csv")
 head(colData)
 
 ```

@@ -1,4 +1,4 @@
 *.html
-Exports
+Exports/**
 *.Rproj
 *.RDS

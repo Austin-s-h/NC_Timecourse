@@ -2,4 +2,4 @@ plot.pdf
 *.eps
 *.png
 *.bed
-Exports
+Exports/**
