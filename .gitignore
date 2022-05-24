@@ -3,8 +3,8 @@
 .RData
 .RDS
 .Ruserdata
-/knownResults/*
-*/Exports/
+/knownResults/**
+/Exports/**
 *.log
 *.fa
 *.bed
