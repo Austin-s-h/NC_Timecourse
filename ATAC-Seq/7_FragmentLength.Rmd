@@ -1,0 +1,45 @@
+---
+title: "R Notebook"
+---
+
+# Fragment Size Plots
+```{bash}
+cd /data/Austin/workdir/NC_Timecourse_Data/Chicken_NC_ATAC_BAMs/
+
+bamPEFragmentSize --bamfiles *.bam \
+ --numberOfProcessors 62 \
+ --binSize 1000 \
+ -n 100000 \
+ --outRawFragmentLengths Chicken_ATAC_FragmentLengths.txt
+ 
+# Copy this to Imports
+```
+
+# Plotting in R
+
+```{r}
+library(ggplot2)
+library(readr)
+library(dplyr)
+
+Chicken_fraglen <- read_delim(file = "./Imports/Chicken_ATAC_FragmentLengths.txt",
+                              delim = "\t", comment = "#")
+
+total_occ <- as.data.frame(Chicken_fraglen %>% group_by(Sample) %>% summarize(Total_Occurences = sum(Occurrences)))
+
+rownames(total_occ) <- total_occ$Sample
+total_occ$Sample <- NULL
+
+Chicken_fraglen$Percent <- Chicken_fraglen$Occurrences/total_occ[Chicken_fraglen$Sample,1]
+
+ggplot(Chicken_fraglen, aes(x = Size, y = Percent, color = Sample)) +
+  geom_line() +
+  xlim(c(0,300)) +
+  ylim(c(0,0.05)) +
+  xlab("Fragment Size") +
+  ylab("Percent of Reads") +
+  theme_bw()
+
+ggsave(filename = "./Exports/Chicken_ATAC_Fragmentlength.pdf", width = 5, height = 5)
+```
+
