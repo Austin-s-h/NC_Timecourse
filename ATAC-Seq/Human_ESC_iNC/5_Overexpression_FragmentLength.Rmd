@@ -1,0 +1,50 @@
+---
+title: "R Notebook"
+---
+
+# Fragment Size Plots
+```{bash}
+cd /data/Austin/workdir/NC_Timecourse_Data/H1_TFAP2A_OE2_ATAC/BAM/
+
+bamPEFragmentSize --bamfiles *_sorted_nodups.bam \
+ --numberOfProcessors 62 \
+ --binSize 1000 \
+ -n 100000 \
+ --outRawFragmentLengths TFAP2AOE_Human_ATAC_Fragsize.txt
+ 
+# Copy this to Imports
+```
+
+# Plotting in R
+
+```{r}
+library(ggplot2)
+library(readr)
+library(dplyr)
+
+Human_OE_fraglen <- read_delim(file = "./Imports/TFAP2AOE_Human_ATAC_Fragsize.txt",
+                              delim = "\t", comment = "#")
+
+sample_rename <- data.frame(row.names = as.character(levels(as.factor(Human_OE_fraglen$Sample))),
+                            Simplfied = c("GFP_1","GFP_2","TFAP2A_1","TFAP2A_2"))
+
+Human_OE_fraglen$Sample <- sample_rename[Human_OE_fraglen$Sample,1]
+
+total_occ <- as.data.frame(Human_OE_fraglen %>% group_by(Sample) %>% summarize(Total_Occurences = sum(Occurrences)))
+
+rownames(total_occ) <- total_occ$Sample
+total_occ$Sample <- NULL
+
+Human_OE_fraglen$Percent <- Human_OE_fraglen$Occurrences/total_occ[Human_OE_fraglen$Sample,1]
+
+ggplot(Human_OE_fraglen, aes(x = Size, y = Percent, color = Sample)) +
+  geom_line() +
+  xlim(c(0,500)) +
+  ylim(c(0,0.015)) +
+  xlab("Fragment Size") +
+  ylab("Percent of Reads") +
+  theme_bw()
+
+ggsave(filename = "./Exports/Human_TFAP2AOE_ATAC_Fragmentlength.pdf", width = 5, height = 5)
+```
+
