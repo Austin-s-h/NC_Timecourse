@@ -5,7 +5,7 @@ output: html_notebook
 
 
 ```{r}
-knitr::opts_knit$set(root.dir = "/data/Austin/workdir/NC_Timecourse_Data/final_analysis_files/")
+data_dir <- "/data/Austin/workdir/NC_Timecourse_Data/Oct4-Sox2-OE-ATAC/BAM/"
 
 library(DiffBind)
 library(rtracklayer)
@@ -27,7 +27,7 @@ ATAC_OE <-
     condition = "Control",
     treatment = "A",
     replicate = 1,
-    bamReads = "Control1.bam"
+    bamReads = paste0(data_dir,"ATAC_Oct4-Sox2-Control_1_togalGal6.bam")
     ,
     peak.caller = "narrowpeak"
   )
@@ -41,7 +41,7 @@ ATAC_OE <-
     condition = "OE",
     treatment = "A",
     replicate = 1,
-    bamReads = "OE1.bam"
+    bamReads = paste0(data_dir,"ATAC_Oct4-Sox2-OE_1_togalGal6.bam")
     ,
     peak.caller = "narrowpeak"
   )
@@ -55,7 +55,7 @@ ATAC_OE <-
     condition = "Control",
     treatment = "A",
     replicate = 2,
-    bamReads = "Control2.bam"
+    bamReads = paste0(data_dir,"ATAC_Oct4-Sox2-Control_2_togalGal6.bam")
     ,
     peak.caller = "narrowpeak"
   )
@@ -69,10 +69,11 @@ ATAC_OE <-
     condition = "OE",
     treatment = "A",
     replicate = 2,
-    bamReads = "OE2.bam"
+    bamReads = paste0(data_dir,"ATAC_Oct4-Sox2-OE_2_togalGal6.bam")
     ,
     peak.caller = "narrowpeak"
   )
+
 ATAC_OE <- dba.count(ATAC_OE, filter = 1, score = DBA_SCORE_RPKM)
 ```
 
@@ -84,20 +85,20 @@ ATAC_OE.mat <- dba.peakset(ATAC_OE, bRetrieve = T, DataType = DBA_DATA_FRAME)
 
 rownames(ATAC_OE.mat) <- paste0(ATAC_OE.mat$CHR, "_", ATAC_OE.mat$START, "_", ATAC_OE.mat$END)
 ATAC_OE <- dba.contrast(ATAC_OE, categories = DBA_CONDITION, minMembers = 2)
-ATAC_OE <- dba.analyze(ATAC_OE, design = 4)
+ATAC_OE <- dba.analyze(ATAC_OE)
 Control_vs_OE_diff <- dba.report(ATAC_OE, bUsePval = T)
 Differential_regions = data.frame(Control_vs_OE_diff)
+
 rownames(Differential_regions) = paste0(Differential_regions$seqnames,"_",
                                         Differential_regions$start,"_",Differential_regions$end)
 
 Differential_regions = Differential_regions[!(Differential_regions$seqnames == "MT"), ]
-Differential_regions_up = subset(Differential_regions, Differential_regions$Fold <
-                                   0)
+Differential_regions_up = subset(Differential_regions, Differential_regions$Fold > 0)
 Differential_matrix_up = subset(ATAC_OE.mat,
                                 rownames(ATAC_OE.mat) %in% rownames(Differential_regions_up))
 OE_regions_up = data.frame(Differential_matrix_up[1:3])
 
-export(OE_regions_up, con = "OE_regions_up.bed", format = "BED")
+export(OE_regions_up, con = "Exports/SOX2-OCT4_OE_regions_up.bed", format = "BED")
 
 summarized_experiment_OE <- dba(ATAC_OE, bSummarizedExperiment = T)
 summarized_experiment_OE@assays@data$scores <- summarized_experiment_OE@assays@data$Reads
@@ -105,6 +106,8 @@ summarized_experiment_OE@assays@data$scores <- summarized_experiment_OE@assays@d
 dds_experiment2 <- DESeqDataSet(summarized_experiment_OE, design = ~ Condition)
 dds_experiment2 <- DESeq(dds_experiment2)
 dds_results <- results(dds_experiment2)
+dds_results.df <- as.data.frame(dds_results)
+
 
 rld <- rlog(dds_experiment2, blind = FALSE)
 Rlog_OE_Matrix <- assay(rld)
@@ -433,4 +436,39 @@ ggplot(ATAC_OE_all, aes(x = group, y = value)) + geom_boxplot(aes(color = variab
 compare_means(value ~ group, data = ATAC_OE_all, method = "t.test")
 
 ```
+
+Scan peaks identified as enriched in OCT4/SOX2 overexpression for dimer motifs
+```{bash}
+# Running FIMO for TFAP2A on the ESC vs NC Specific dual-motif locations
+# First get FASTA for motif locations.
+bedtools getfasta -fi /data/Austin/workdir/genome/galGal6/dna/Gallus_gallus.GRCg6a.dna.toplevel.fa -bed ./Exports/SOX2-OCT4_OE_regions_up.bed > ./Exports/SOX2-OCT4_OE_regions_up.fa
+
+# Now FIMO.
+fimo --thresh 1e-3 -o ./Exports/SOX2-OCT4_OE_regions_up_dimer ./Imports/MA0142.1.meme ./Exports/SOX2-OCT4_OE_regions_up.fa
+```
+
+
+```{r}
+library(readr)
+library(stringr)
+OE_Fimo_Results <- read_delim(file = "Exports/SOX2-OCT4_OE_regions_up_dimer/fimo.tsv", delim = "\t")
+
+OE_Fimo_Results$sequence_name <- gsub(x = OE_Fimo_Results$sequence_name, pattern = ":", replacement = "_")
+OE_Fimo_Results$sequence_name <- gsub(x = OE_Fimo_Results$sequence_name, pattern = "-", replacement = "_")
+
+OE_Fimo_Results_df <- (data.frame(chr = str_split(OE_Fimo_Results$sequence_name, pattern = "_", simplify = T)[,1],
+                                    start = as.numeric(str_split(OE_Fimo_Results$sequence_name, pattern = "_", simplify = T)[,2]),
+                                    stop = as.numeric(str_split(OE_Fimo_Results$sequence_name, pattern = "_", simplify = T)[,3])))
+
+OE_Fimo_Results_df <- OE_Fimo_Results_df[!is.na(OE_Fimo_Results_df$chr),]
+
+OE_Fimo_Results_gr <- makeGRangesFromDataFrame(OE_Fimo_Results_df)
+
+OE_Increased_Regions_gr <- makeGRangesFromDataFrame(Differential_regions_up)
+
+summary(OE_Fimo_Results_gr %over% OE_Increased_Regions_gr)
+
+
+```
+
 
