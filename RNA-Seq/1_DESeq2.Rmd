@@ -1,6 +1,5 @@
 ---
 title: "NC Timecourse RNA-Seq: DESeq2"
-output: html_notebook
 ---
 # Step 1: Quality Control
 
@@ -75,7 +74,7 @@ colData <- colData %>% mutate(Condition = factor(ifelse(grepl(pattern = "pos|pGF
 colData <- colData %>% mutate(Time = factor(x = str_extract(word(colData$data, sep = "_",1,1), pattern ="[0-9]+"), levels = c(6,8,10,12,14,16)))
 colData <- colData %>% mutate(Group = factor(paste0(Condition,"_",Time)))
 
-write.csv(colData, file = "./Exports/colData.csv")
+write.csv(colData, file = "./Imports/colData.csv")
 head(colData)
 
 ```
@@ -255,13 +254,12 @@ DESeq2_Analyze <- function(timepoint = "", dds, genes.universe = genes.universe,
 
 NC6_NC16 <- DESeq2_Analyze(timepoint = "16", second_timepoint = "6", versusWE = F, dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = F, testBP = F, plotVolc = TRUE, labelPadj = 1e-8)
 
-NC6_NC16[[2]]
-ggsave()
-DESeq2_Analyze("8", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.00001)
-DESeq2_Analyze("10", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.001)
-DESeq2_Analyze("12", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.0001)
-DESeq2_Analyze("14", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.0005)
-DESeq2_Analyze("16", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = TRUE, testBP = TRUE, plotVolc = TRUE, labelPadj = 0.001)
+DESeq2_Analyze("6", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = FALSE, testBP = FALSE, plotVolc = TRUE, labelPadj = 0.001)
+DESeq2_Analyze("8", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = FALSE, testBP = FALSE, plotVolc = TRUE, labelPadj = 0.00001)
+DESeq2_Analyze("10", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = FALSE, testBP = FALSE, plotVolc = TRUE, labelPadj = 0.001)
+DESeq2_Analyze("12", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = FALSE, testBP = FALSE, plotVolc = TRUE, labelPadj = 0.0001)
+DESeq2_Analyze("14", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = FALSE, testBP = FALSE, plotVolc = TRUE, labelPadj = 0.0005)
+DESeq2_Analyze("16", dds, genes.universe = genes.universe, Padj = 0.05, L2fc = 1.5, testMF = FALSE, testBP = FALSE, plotVolc = TRUE, labelPadj = 0.001)
 ```
 
 ```{r Export Rlog Counts}

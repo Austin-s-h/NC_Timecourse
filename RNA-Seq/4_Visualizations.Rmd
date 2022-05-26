@@ -1,6 +1,5 @@
 ---
 title: "NC Timecourse RNA-Seq: Visualizations"
-output: html_notebook
 ---
 
 # Step 4: Visualizations
@@ -12,8 +11,8 @@ Let's first start with reading in the data from prev. analysis. Beginning with f
 library(dplyr)
 library(pheatmap)
 
-DESeq_1_files = list.files(path="./Exports/", pattern="*_AllGenes.csv", full.names=TRUE)
-Annotated_Rlog_Positive_Averages <- read.csv("~/local_git/NC_Timecourse/RNA-Seq/Exports/Annotated_Rlog_Positive_Averages2.csv", row.names=1, stringsAsFactors=FALSE)
+DESeq_1_files = list.files(path="./Exports", pattern="*_AllGenes.csv", full.names=TRUE)
+Annotated_Rlog_Positive_Averages <- read.csv("./Exports/Annotated_Rlog_Positive_Averages.csv", row.names=1, stringsAsFactors=FALSE)
 rownames(Annotated_Rlog_Positive_Averages) <- Annotated_Rlog_Positive_Averages$Chick_ENSEMBL
 
 HH6 <- read.csv(DESeq_1_files[5], row.names = 1)

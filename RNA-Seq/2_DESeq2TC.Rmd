@@ -1,6 +1,5 @@
 ---
 title: "NC Timecourse RNA-Seq: DESeq2"
-output: html_notebook
 ---
 # Step 2: Timecourse DESeq2 Design
 In addition to pairwise comparison, we want to test if we can detect things that are enriched in NC, regaurdless of time. To do this, we make the DESeq2 object as normal, but instead call results using LRT and reducing the model.
@@ -44,8 +43,8 @@ register(MulticoreParam(16)) # Set this to number of CPUs.
 ```{r Reading in featureCounts results}
 counts_summary <- read.delim("./Imports/featureCounts.txt.summary", row.names = 1)
 counts_summary <- rbind(counts_summary, percent_aligned = (counts_summary[1,]/colSums(counts_summary))*100)
-genes.universe <- read.csv("~/local_git/NC_Timecourse/RNA-Seq/Imports/GenesUniverse.csv")
-featureCounts <- read.delim("~/local_git/NC_Timecourse/RNA-Seq/Imports/featureCounts.txt", comment.char="#")
+genes.universe <- read.csv("./Imports/GenesUniverse.csv")
+featureCounts <- read.delim("./Imports/featureCounts.txt", comment.char="#")
 
 # Remove the gene information to just get the counts matrix.
 dat <- featureCounts[,7:56]

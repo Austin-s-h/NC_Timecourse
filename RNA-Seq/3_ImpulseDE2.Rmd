@@ -1,6 +1,5 @@
 ---
 title: "NC Timecourse RNA-Seq: ImpulseDE2"
-output: html_notebook
 ---
 
 # Step 3: ImpulseDE2 Analaysis
