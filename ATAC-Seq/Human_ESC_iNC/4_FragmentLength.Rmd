@@ -29,6 +29,16 @@ Human_fraglen <- Human_fraglen[!Human_fraglen$Sample %in% c("ATAC_Neuron_D5_1_to
   "ATAC_Mel_D5_1_toGRCh38_sorted_nodups.bam",
   "ATAC_Mel_D5_2_toGRCh38_sorted_nodups.bam"),]
 
+
+sample_rename <- data.frame(row.names = as.character(levels(as.factor(Human_fraglen$Sample))),
+                            Simplfied = c("ES_D0_1","ES_D0_2",
+                                          "Myo_D14_1","Myo_D14_2",
+                                          "NC_D3_1","NC_D3_2",
+                                          "NC_D5_1","NC_D5_2"))
+
+Human_fraglen$Sample <- sample_rename[Human_fraglen$Sample,1]
+
+
 total_occ <- as.data.frame(Human_fraglen %>% group_by(Sample) %>% summarize(Total_Occurences = sum(Occurrences)))
 
 rownames(total_occ) <- total_occ$Sample
