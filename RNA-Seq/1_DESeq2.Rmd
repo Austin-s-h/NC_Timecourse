@@ -17,6 +17,34 @@ Check out the MultiQC report that was generated to identify any outliers in sequ
 This analysis was performed on a 16 core machine running Ubuntu 18.04 LTS. Certain parameters may need to be updated based on your operating system and available CPUs.
 
 ```{r Loading Libraries, message=FALSE, include=TRUE}
+
+## First specify the packages of interest
+packages = c("tidyr", "reshape2",
+             "ggplot2", "scales",
+             "gridExtra","ggthemes",
+             "ggrepel","dplyr",
+             "readr","ggsci",
+             "purrr","ashr",
+             "stringr","UpSetR",
+             "viridis","qdapTools")
+
+## Now load or install&load all
+package.check <- lapply(
+  packages,
+  FUN = function(x) {
+    if (!require(x, character.only = TRUE)) {
+      install.packages(x, dependencies = TRUE)
+      library(x, character.only = TRUE)
+    }
+  }
+)
+
+bioc_packages <- c("edgeR","Rsubread","DESeq2","org.Gg.eg.db",
+                   "biomaRt","DOSE","org.Hs.eg.db","clusterProfiler")
+
+# Install bioconductor packages if they are missing.
+BiocManager::install(bioc_packages)
+
 library(tidyr)
 library(edgeR)
 library(reshape2)
@@ -25,7 +53,6 @@ library(scales)
 library(gridExtra)
 library(ggthemes)
 library(ggrepel)
-library(dplyr)
 library(Rsubread)
 library(DESeq2)
 library(dplyr)
@@ -35,13 +62,11 @@ library(purrr)
 library(BiocParallel)
 library(org.Gg.eg.db)
 library(ashr)
-library(BiocGenerics)
 library(stringr)
 library(biomaRt)
 library(DOSE)
 library(UpSetR)
 library(org.Hs.eg.db)
-library(org.Gg.eg.db)
 library(clusterProfiler)
 library(viridis)
 library(qdapTools)
