@@ -468,7 +468,26 @@ OE_Increased_Regions_gr <- makeGRangesFromDataFrame(Differential_regions_up)
 
 summary(OE_Fimo_Results_gr %over% OE_Increased_Regions_gr)
 
-
 ```
 
+Overlap of 5C (Overexpression peaks) with Shared OCT4/SOX2 Peaks from CR
+
+```{bash}
+bedtools shuffle -i ASH_Shared_Sox2_Oct4_peaks_Filt.bed -g /data/Austin/workdir/genome/galGal6/annotation/gg6_2.chrom.sizes > shuffled_matched_shared_OCT4_SOX2_peaks.bed
+```
+
+```{r}
+library(rtracklayer)
+Shared_dimer_peaks <- import.bed(con = "../CR/Exports/ASH_Shared_Sox2_Oct4_peaks_Filt.bed")
+random_peaks <- import.bed(con = "../CR/Exports/shuffled_matched_shared_OCT4_SOX2_peaks.bed")
+
+summary(OE_Increased_Regions_gr %over% Shared_dimer_peaks)
+# 59
+summary(OE_Increased_Regions_gr %over% random_peaks)
+# 8
+
+# 7.4 fold enrichment compared to random chance.
+
+
+```
 
