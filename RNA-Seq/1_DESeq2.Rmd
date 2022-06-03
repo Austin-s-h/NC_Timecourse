@@ -178,7 +178,8 @@ g <- ggplot(pcaAll, aes(x=PC1, y=PC2, color=Time, shape = Condition)) +
   geom_point(size = 4, alpha = .75) + 
   scale_color_npg() +
   ggtitle("pcaALL") +
-  labs(x = paste(c("PC1","%"),round(pcaAllVar[1]*100)) ,y = paste(c("PC2","%"), round(pcaAllVar[2]*100))) +
+  labs(x = paste0("PC1 ", round(pcaAllVar[1]*100)," %"),
+       y = paste0("PC2 ", round(pcaAllVar[2]*100)," %")) +
   theme(text=element_text(color="black", size = 10, face = "bold"),
         line=element_line(color="black", size = 2),
         axis.ticks = element_line(color = "black", size = 1),
@@ -273,7 +274,7 @@ DESeq2_Analyze <- function(timepoint = "", dds, genes.universe = genes.universe,
         #      axis.ticks = element_blank(),
         #      plot.title = element_blank()) #plot.title = element_text(hjust = 0.5))
       ggsave(filename = paste0("./Exports/",restest_title,"_labeled.png"), plot = g, width = 4, height = 4, device = "png")
-      ggsave(filename = paste0("./Exports/",restest_title,"_labeled.svg"), plot = g, width = 4, height = 4, device = "svg")
+      ggsave(filename = paste0("./Exports/",restest_title,"_labeled.pdf"), plot = g, width = 4, height = 4, device = "pdf")
       return(list(g, restest3))
     }
 }
