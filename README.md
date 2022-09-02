@@ -23,5 +23,7 @@ The processing scripts for each genomic sample type are found as individual bash
 - Calling Peaks
 - Quality Control
 
-If you reference any of these scripts or utilze methods developed from this codebase, please cite
-CITATION_HERE
+If you reference any of these scripts or utilze methods developed from this codebase, please cite:
+DEV_CELL_PUBLICATION_REFERENCE
+or
+Austin Hovland. (2022). Austin-s-h/NC_Timecourse: Publication Release (v1.0.0). Zenodo. https://doi.org/10.5281/zenodo.7044924
