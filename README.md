@@ -1,14 +1,27 @@
+Publication Release: [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7044924.svg)](https://doi.org/10.5281/zenodo.7044924)
+
 # Neural Crest Timecourse Analysis
-A collaboration between Austin and Debbie
-
 This repository is broken down into 3 sections
-1. RNA-Seq Data Processing and Analysis (./RNA-Seq)
-2. CUT&RUN Data Processing and Analysis (./CUT-RUN)
-3. ATAC-Seq Data Processing and Analysis (./ATAC-Seq)
+- RNA-Seq Data Processing and Analysis (./RNA-Seq)
+- CUT&RUN Data Processing and Analysis (./CUT-RUN)
+- ATAC-Seq Data Processing and Analysis (./ATAC-Seq)
 
-For analysis combining these datasets, we will have to create a new folder down the line.
+In each of these folders, you will find invidual Rmd notebooks for various analyses including...
+- Differential Expression / Binding
+- Transcription Factor motif enrichment using HOMER and ChromVAR
+- hint-ATAC footprinting
+- Calculation of fragment length distribution
+- Calculation of putative Peak to Gene Enhancer-Promoter linkages (RNA-Seq and ATAC-Seq integration)
+- Genomic Overlapping and Clustering
 
-## Working on this repository
-The first time you want to work on an aspect of this repository, after cloning the repo, make your own branch. This should allow us to work independently on the same documents without having conflicting merges.
+The processing scripts for each genomic sample type are found as individual bash scripts within their respective folders. These contain...
+- File Parsing
+- Adapter/Quality Trimming
+- Alignment
+- Duplication Marking and Removal
+- Calculation of BigWigs
+- Calling Peaks
+- Quality Control
 
-Please use R notebooks with extensive guides explaining codes/functions and with frequent chunks if displaying lots of graphs.
+If you reference any of these scripts or utilze methods developed from this codebase, please cite
+CITATION_HERE
